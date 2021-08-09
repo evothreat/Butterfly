@@ -1,6 +1,8 @@
+from sqlalchemy.exc import IntegrityError
+
 from application import *
 from application.models import *
-from flask import jsonify
+from flask import jsonify, request
 
 
 @app.route('/')
@@ -15,7 +17,17 @@ def get_workers():
 
 @app.route('/api/v1/workers', methods=['POST'])
 def create_worker():
-    pass
+    if not request.is_json:
+        return '', 400
+    try:
+        w = Worker.from_dict(request.json)
+        db.session.add(w)
+        db.session.commit()
+    except KeyError:
+        return '', 422
+    except IntegrityError:
+        return '', 409
+    return jsonify(w), 200
 
 
 @app.route('/api/v1/workers/<int:wid>', methods=['GET'])
@@ -26,17 +38,31 @@ def get_single_worker(wid):
 
 @app.route('/api/v1/workers/<int:wid>', methods=['DELETE'])
 def delete_worker(wid):
-    Worker.query.filter_by(id=wid).delete()
+    if Worker.query.filter_by(id=wid).delete() == 0:
+        return '', 404
     db.session.commit()
     return '', 200
 
 
 @app.route('/api/v1/workers/<int:wid>/jobs', methods=['GET'])
 def get_jobs(wid):
-    w = Worker.query.get(wid)
-    return ('', 404) if not w else (jsonify(w.jobs), 200)
+    if not Worker.query.get(wid):
+        return '', 404
+    jobs = Job.query.filter_by(worker_id=wid).all()
+    return jsonify(jobs), 200
 
 
 @app.route('/api/v1/workers/<int:wid>/jobs', methods=['POST'])
 def create_job(wid):
-    pass
+    if not request.is_json:
+        return '', 400
+    if not Worker.query.get(wid):  # TODO: remove after enabling foreign keys
+        return '', 404
+    try:
+        j = Job.from_dict(request.json)
+        j.worker_id = wid
+    except KeyError:
+        return '', 422
+    db.session.add(j)
+    db.session.commit()
+    return jsonify(j), 200
