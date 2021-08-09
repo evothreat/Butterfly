@@ -48,7 +48,9 @@ def delete_worker(wid):
 def get_jobs(wid):
     if not Worker.query.get(wid):
         return '', 404
-    jobs = Job.query.filter_by(worker_id=wid).all()
+    args = request.args.get('is_done')
+    is_done = args and args.lower() == 'true'
+    jobs = Job.query.filter_by(worker_id=wid, is_done=is_done).all()
     return jsonify(jobs), 200
 
 

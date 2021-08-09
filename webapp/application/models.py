@@ -8,13 +8,13 @@ from sqlalchemy.sql import func
 class Job(db.Model):
     id: int
     args: str
-    completed: bool
+    is_done: bool
     timestamp: datetime.datetime
     worker_id: int
 
     id = db.Column(db.Integer, primary_key=True)
     args = db.Column(db.String(250))
-    completed = db.Column(db.Boolean(), default=False)
+    is_done = db.Column(db.Boolean(), default=False)
     timestamp = db.Column(db.DateTime(), default=func.now())
     worker_id = db.Column(db.Integer, db.ForeignKey('worker.id'), nullable=False)
 
