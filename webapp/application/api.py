@@ -28,7 +28,7 @@ def create_worker():
 @app.route('/api/v1/workers/<int:wid>', methods=['GET'])
 def get_single_worker(wid):
     w = Worker.query.get(wid)
-    return ('', 404) if not w else (jsonify(w), 200)
+    return ('', 404) if not w else (jsonify(w), 200)        # TODO: use get_or_404 instead
 
 
 @app.route('/api/v1/workers/<int:wid>', methods=['DELETE'])

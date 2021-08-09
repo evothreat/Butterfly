@@ -1,0 +1,8 @@
+.op-link, .op-link:hover {
+    padding: 2px;
+    color: #343a40;
+}
+
+#worker-table td {
+    color: #343a40;
+}
