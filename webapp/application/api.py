@@ -5,11 +5,6 @@ from application.models import *
 from flask import jsonify, request
 
 
-@app.route('/')
-def hello_world():  # put application's code here
-    return 'Hello World!'
-
-
 @app.route('/api/v1/workers', methods=['GET'])
 def get_workers():
     return jsonify(Worker.query.all()), 200
@@ -49,7 +44,7 @@ def get_jobs(wid):
     if not Worker.query.get(wid):
         return '', 404
     args = request.args.get('is_done')
-    is_done = args and args.lower() == 'true'
+    is_done = bool(args and args.lower() == 'true')
     jobs = Job.query.filter_by(worker_id=wid, is_done=is_done).all()
     return jsonify(jobs), 200
 

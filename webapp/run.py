@@ -1,6 +1,7 @@
 from application import *
 import application.models as models
-import application.views as views
+import application.api
+import application.control
 
 
 def add_test_data():
