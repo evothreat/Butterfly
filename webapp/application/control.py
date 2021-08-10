@@ -2,7 +2,7 @@ from application import *
 from application.models import *
 from flask import render_template, request, redirect
 from werkzeug.security import check_password_hash
-from flask_login import login_user, login_required, current_user
+from flask_login import login_user, login_required, logout_user
 
 
 @login_manager.user_loader
@@ -26,7 +26,13 @@ def login():
     return redirect('/login')
 
 
-@app.route('/workers', methods=['GET', 'POST'])
+@app.route('/logout', methods=['POST'])
+def logout():
+    logout_user()
+    return redirect('/login')
+
+
+@app.route('/workers', methods=['GET', 'POST'])     # TODO: change to index?
 @login_required
 def list_workers():
     return render_template('workers.html', title='Workers', workers=Worker.query.all())
