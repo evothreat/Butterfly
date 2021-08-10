@@ -1,24 +1,34 @@
 function createWorkerTable() {
-    console.log("HELLO");
-    $.getJSON('/api/v1/workers', function (res) {                                                                    // TODO: handle errors
-        res.forEach(w => w['operation'] = '<a href="#" class="op-link"><i class="fa fa-info-circle fa-lg"></i></a>');
-        for (var i = 0; i < res.length; i++) {
-            id_link = '#' + res[i]['id'];                                                                                  // TODO: add url!
-            res[i]['operation'] = '<a href="' + id_link + '" class="op-link"><i class="fa fa-info-circle fa-lg"></i></a> \
-                                   <a href="' + id_link + '" class="op-link"><i class="fa fa-picture-o fa-lg"></i></a>';
-        }
-        console.log(res);
-        $('#worker-table').DataTable({
+    $.getJSON('/api/v1/workers', function (res) {     // TODO: handle errors
+        var workerTbl = $('#worker-table');
+        var workerDataTbl = workerTbl.DataTable({
                 data: res,
                 columns: [
-                    {'data': 'id', 'title': 'ID'},
-                    {'data': 'hostname', 'title': 'Hostname'},
-                    {'data': 'ip_addr', 'title': 'IP-Addr'},
-                    {'data': 'os', 'title': 'OS'},
-                    {'data': 'country', 'title': 'Country'},
-                    {'data': 'last_seen', 'title': 'Last-Seen'},
-                    {'data': 'operation', 'title': 'Operation'}]
+                    {data: 'id', title: 'ID'},
+                    {data: 'hostname', title: 'Hostname'},
+                    {data: 'ip_addr', title: 'IP-Addr'},
+                    {data: 'os', title: 'OS'},
+                    {data: 'country', title: 'Country'},
+                    {data: 'last_seen', title: 'Last-Seen'},
+                    {
+                        data: null,
+                        className: 'dt-center worker-info',
+                        defaultContent: '<i class="fa fa-info-circle fa-lg"></i>',
+                        orderable: false
+                    },
+                    {
+                        data: null,
+                        className: 'dt-center worker-screenshot',
+                        defaultContent: '<i class="fa fa-picture-o fa-lg"></i>',
+                        orderable: false
+                    }
+                ]
             }
-        )
+        );
+        workerTbl.on('click', 'td.worker-info', function (e) {
+            //e.preventDefault();
+            //console.log(workerDataTbl.row(this).data());
+            // TODO: redirect to new page
+        });
     });
 }
