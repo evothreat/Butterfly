@@ -1,7 +1,6 @@
 {% extends 'layout.html' %}
 
 {% block content %}
-    {% block workers %}
         <table id="worker-table" class="table table-dark">
             <thead>
             <tr>
@@ -25,10 +24,10 @@
                     <td>{{ w.country }}</td>
                     <td>{{ w.last_seen }}</td>
                     <td class="dt-center worker-info">
-                        <span style="cursor: pointer" class="fa fa-info-circle fa-lg"></span>
+                        <span style="cursor: pointer; font-size: 1.2em" class="bi bi-info-circle-fill"></span>
                     </td>
                     <td class="dt-center worker-screenshot">
-                        <span style="cursor: pointer" class="fa fa-picture-o fa-lg"></span>
+                        <span style="cursor: pointer; font-size: 1.2em" class="bi bi-camera-fill"></span>
                     </td>
                 </tr>
             {% endfor %}
@@ -46,5 +45,4 @@
                 });
             });
         </script>
-    {% endblock %}
 {% endblock %}
