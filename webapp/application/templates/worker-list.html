@@ -11,7 +11,8 @@
                 <th scope="col">OS</th>
                 <th scope="col">Country</th>
                 <th scope="col">Last Seen</th>
-                <th scope="col">Operation</th>
+                <th scope="col"></th>
+                <th scope="col"></th>
             </tr>
             </thead>
             <tbody>
@@ -23,10 +24,11 @@
                     <td>{{ w.os }}</td>
                     <td>{{ w.country }}</td>
                     <td>{{ w.last_seen }}</td>
-                    <td>
+                    <td class="dt-center">
                         <a href="#" class="op-link"><i class="fa fa-info-circle fa-lg"></i></a>
+                    </td>
+                    <td class="dt-center">
                         <a href="#" class="op-link"><i class="fa fa-picture-o fa-lg"></i></a>
-
                     </td>
                 </tr>
             {% endfor %}
@@ -34,7 +36,14 @@
         </table>
         <script>
             $(document).ready(function () {
-                $('#worker-table').DataTable();
+                $('#worker-table').DataTable({
+                    aoColumnDefs: [{
+                        bSortable: false,
+                        bSearchable: false,
+                        aTargets: [6, 7]
+                    }
+                    ]
+                });
             });
         </script>
     {% endblock %}
