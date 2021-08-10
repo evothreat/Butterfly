@@ -22,12 +22,11 @@ def login():
     if admin and check_password_hash(admin.password, passwd):
         # flash message
         login_user(admin, remember)
-        return redirect('/worker-list')  # TODO: use url_for
+        return redirect('/workers')  # TODO: use url_for
     return redirect('/login')
 
 
-# TODO: authentication required
-@app.route('/worker-list', methods=['GET', 'POST'])
+@app.route('/workers', methods=['GET', 'POST'])
 @login_required
 def list_workers():
-    return render_template('worker-list.html', title='Worker-List', workers=Worker.query.all())
+    return render_template('workers.html', title='Workers', workers=Worker.query.all())
