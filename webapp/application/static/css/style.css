@@ -1,3 +1,15 @@
 #worker-table td {
     color: #343a40;
 }
+
+.worker-info, .worker-screenshot {
+    cursor: pointer; font-size: 1.2em
+}
+
+.worker-info {
+    margin-right: 5px;
+}
+
+.worker-screenshot {
+    margin-left: 5px;
+}

@@ -10,8 +10,7 @@
                 <th scope="col">OS</th>
                 <th scope="col">Country</th>
                 <th scope="col">Last Seen</th>
-                <th scope="col"></th>
-                <th scope="col"></th>
+                <th scope="col">Operation</th>
             </tr>
             </thead>
             <tbody>
@@ -23,11 +22,9 @@
                     <td>{{ w.os }}</td>
                     <td>{{ w.country }}</td>
                     <td>{{ w.last_seen }}</td>
-                    <td class="dt-center worker-info">
-                        <span style="cursor: pointer; font-size: 1.2em" class="bi bi-info-circle-fill"></span>
-                    </td>
-                    <td class="dt-center worker-screenshot">
-                        <span style="cursor: pointer; font-size: 1.2em" class="bi bi-camera-fill"></span>
+                    <td>
+                        <span class="bi bi-info-circle-fill worker-info"></span>
+                        <span class="bi bi-camera-fill worker-screenshot"></span>
                     </td>
                 </tr>
             {% endfor %}
@@ -39,7 +36,7 @@
                     aoColumnDefs: [{
                         bSortable: false,
                         bSearchable: false,
-                        aTargets: [6, 7]
+                        aTargets: [6]
                     }
                     ]
                 });
