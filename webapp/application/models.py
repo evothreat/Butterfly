@@ -1,8 +1,8 @@
-import datetime
 from application import db
+import datetime
 from dataclasses import dataclass
 from sqlalchemy.sql import func
-
+from flask_login import UserMixin
 
 @dataclass
 class Job(db.Model):
@@ -68,3 +68,9 @@ class Worker(db.Model):
         ri = d['resource_info']
         w.resource_info = ResourceInfo(gpu=ri['gpu'], cpu=ri['cpu'], ram=ri['ram'])
         return w
+
+
+class Admin(UserMixin, db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(30), unique=True)
+    password = db.Column(db.String(64))

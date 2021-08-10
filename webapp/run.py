@@ -2,6 +2,7 @@ from application import *
 import application.models as models
 import application.api
 import application.control
+from werkzeug.security import generate_password_hash
 
 
 def add_test_data():
@@ -19,6 +20,11 @@ def add_test_data():
     db.session.add(w3)
     db.session.add(w4)
     db.session.add(j)
+
+    admin = models.Admin()
+    admin.username = 'Adam'
+    admin.password = generate_password_hash('12345')
+    db.session.add(admin)
 
 
 if __name__ == '__main__':
