@@ -13,19 +13,24 @@ function createWorkerTable() {
                     {
                         data: null,
                         className: 'dt-center worker-info',
-                        defaultContent: '<i class="fa fa-info-circle fa-lg"></i>',
+                        defaultContent: '<span style="cursor: pointer" class="fa fa-info-circle fa-lg"></span>',
                         orderable: false
                     },
                     {
                         data: null,
                         className: 'dt-center worker-screenshot',
-                        defaultContent: '<i class="fa fa-picture-o fa-lg"></i>',
+                        defaultContent: '<span style="cursor: pointer" class="fa fa-picture-o fa-lg"></span>',
                         orderable: false
                     }
                 ]
             }
         );
         workerTbl.on('click', 'td.worker-info', function (e) {
+            //e.preventDefault();
+            //console.log(workerDataTbl.row(this).data());
+            // TODO: redirect to new page
+        });
+        workerTbl.on('click', 'td.worker-screenshot', function (e) {
             //e.preventDefault();
             //console.log(workerDataTbl.row(this).data());
             // TODO: redirect to new page

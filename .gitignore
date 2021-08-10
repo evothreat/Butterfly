@@ -8,3 +8,8 @@
 /httpRequests/
 *.xml
 *.len
+*.dat.values
+*.dat
+*.dat.values.at
+*.dat.values.s
+*.dat_i
