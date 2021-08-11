@@ -53,8 +53,8 @@ function createWorkerTable2() {
                         data: null,
                         title: 'Operation',
                         render: function (data, type, row) {
-                            return `<a style="color: #343a40" href="/workers/${row.id}"><span class="bi bi-info-circle-fill worker-info"></span></a>
-                                    <a style="color: #343a40" href="/workers/${row.id}"><span class="bi bi-camera-fill worker-screenshot"></span></a>`
+                            return `<a class="op-link" href="/workers/${row.id}"><span class="bi bi-box-arrow-up-left"></span></a>
+                                    <a class="op-link" href="/workers/${row.id}"><span class="bi bi-info-circle-fill"></span></a>`
                         }
                     }
                 ]
