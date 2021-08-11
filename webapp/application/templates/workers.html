@@ -23,11 +23,11 @@
                 <td>{{ w.country }}</td>
                 <td>{{ w.last_seen }}</td>
                 <td>
-                    <button type="button" class="btn act-btn"
+                    <button type="button" class="btn action-btn"
                             onclick="document.location.href='{{ url_for('interact', wid=w.id) }}';">
                         <i class="bi bi-box-arrow-up-left"></i>
                     </button>
-                    <button type="button" class="btn act-btn" onclick="showResourceInfo({{ w.id }})">
+                    <button type="button" class="btn action-btn" onclick="showResourceInfo({{ w.id }})">
                         <i class="bi bi-info-circle-fill"></i>
                     </button>
                 </td>
