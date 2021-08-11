@@ -37,3 +37,28 @@ function createWorkerTable() {
         });
     });
 }
+
+function createWorkerTable2() {
+    $.getJSON('/api/v1/workers', function (res) {     // TODO: handle errors
+         $('#worker-table').DataTable({
+                data: res,
+                columns: [
+                    {data: 'id', title: 'ID'},
+                    {data: 'hostname', title: 'Hostname'},
+                    {data: 'ip_addr', title: 'IP-Addr'},
+                    {data: 'os', title: 'OS'},
+                    {data: 'country', title: 'Country'},
+                    {data: 'last_seen', title: 'Last-Seen'},
+                    {
+                        data: null,
+                        title: 'Operation',
+                        render: function (data, type, row) {
+                            return `<a style="color: #343a40" href="/workers/${row.id}"><span class="bi bi-info-circle-fill worker-info"></span></a>
+                                    <a style="color: #343a40" href="/workers/${row.id}"><span class="bi bi-camera-fill worker-screenshot"></span></a>`
+                        }
+                    }
+                ]
+            }
+        );
+    });
+}

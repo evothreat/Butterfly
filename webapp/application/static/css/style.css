@@ -3,13 +3,7 @@
 }
 
 .worker-info, .worker-screenshot {
-    cursor: pointer; font-size: 1.2em
-}
-
-.worker-info {
-    margin-right: 5px;
-}
-
-.worker-screenshot {
-    margin-left: 5px;
+    cursor: pointer;
+    font-size: 1.3em;
+    margin-left: 7px;
 }
