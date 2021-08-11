@@ -9,8 +9,8 @@
             <th scope="col">IP-Address</th>
             <th scope="col">OS</th>
             <th scope="col">Country</th>
-            <th scope="col">Last Seen</th>
-            <th scope="col">Operation</th>
+            <th scope="col">Last-Seen</th>
+            <th scope="col">Action</th>
         </tr>
         </thead>
         <tbody>
@@ -23,17 +23,50 @@
                 <td>{{ w.country }}</td>
                 <td>{{ w.last_seen }}</td>
                 <td>
-                    <a class="op-link" href="/workers/{{ w.id }}">
+                    <button type="button" class="btn act-btn">
                         <i class="bi bi-box-arrow-up-left"></i>
-                    </a>
-                    <a class="op-link" href="/workers/{{ w.id }}">
+                    </button>
+                    <button type="button" class="btn act-btn" onclick="showResourceInfo({{ w.id }})">
                         <i class="bi bi-info-circle-fill"></i>
-                    </a>
+                    </button>
                 </td>
             </tr>
         {% endfor %}
         </tbody>
     </table>
+    <div id="resource-dlg" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Resource-Info</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <table class="table">
+                        <tbody>
+                        <tr>
+                            <th>CPU</th>
+                            <td id="cpu-info"></td>
+                        </tr>
+                        <tr>
+                            <th>GPU</th>
+                            <td id="gpu-info"></td>
+                        </tr>
+                        <tr>
+                            <th>RAM</th>
+                            <td id="ram-info"></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
     <script>
         $(document).ready(function () {
             $('#worker-table').DataTable({
@@ -44,6 +77,7 @@
                 }
                 ]
             });
+            loadResourceInfo();
         });
     </script>
 {% endblock %}

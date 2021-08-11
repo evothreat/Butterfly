@@ -13,3 +13,4 @@
 *.dat.values.at
 *.dat.values.s
 *.dat_i
+*.pyc

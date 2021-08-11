@@ -10,6 +10,15 @@ def get_workers():
     return jsonify(Worker.query.all()), 200
 
 
+@app.route('/api/v1/workers/<wid>/resource-info', methods=['GET'])
+def get_resource_info(wid):
+    if wid == '-':
+        return jsonify(ResourceInfo.query.all()), 200
+    if wid.isnumeric() and Worker.query.get(int(wid)):       # TODO: remove after enabling foreign keys & use try except
+        return jsonify(ResourceInfo.query.filter_by(worker_id=wid).all())
+    return '', 404
+
+
 @app.route('/api/v1/workers', methods=['POST'])
 def create_worker():
     if not request.is_json:
