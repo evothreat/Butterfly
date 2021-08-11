@@ -36,3 +36,10 @@ def logout():
 @login_required
 def list_workers():
     return render_template('workers.html', title='Workers', workers=Worker.query.all())
+
+
+@app.route('/workers/<int:wid>/interact')
+@login_required
+def interact(wid):
+    w = Worker.query.get(wid)
+    return render_template('interact.html', title='Interaction', worker=w) if w else redirect('/workers', code=302)
