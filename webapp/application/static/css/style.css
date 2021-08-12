@@ -1,5 +1,10 @@
-#worker-table td {
-    color: #343a40;
+html {
+    font-family: helvetica, serif;
+}
+
+body {
+    padding: 0;
+    margin: 0;
 }
 
 .action-btn {
@@ -16,3 +21,32 @@
     color: white;
 }
 
+.navbar {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background-color: #343a40;
+}
+
+.navbar li {
+    float: left;
+}
+
+.navbar li a {
+    display: block;
+    color: #b2beb5;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+}
+
+.navbar li a:hover {
+    color: white;
+}
+
+#logo {
+    font-size: 1.3em;
+    font-weight: bold;
+    color: white;
+}
