@@ -7,9 +7,24 @@ body {
     margin: 0;
 }
 
+#body-content {
+    margin: auto;
+    width: 70%;
+    padding-top: 7px;
+}
+
+
 .action-btn {
-    padding: 0 2px 0 2px !important;
-    font-size: 1.2em !important;
+    padding: 0 2px 0 2px;
+    font-size: 1.2em;
+    cursor: pointer;
+    background: none;
+    border: none;
+}
+
+#worker-table thead {
+    color: white !important;
+    background-color: #343a40 !important;
 }
 
 #action-tabs .nav-link {
@@ -20,6 +35,7 @@ body {
     background-color: #343a40;
     color: white;
 }
+
 
 .navbar {
     list-style-type: none;

@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <title>{{ title }}</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
     <link rel="stylesheet" href="https://cdn.datatables.net/1.10.25/css/jquery.dataTables.min.css">
@@ -17,7 +18,7 @@
 <header>
     {% include 'navbar.html' %}
 </header>
-<div style="margin: auto; width: 70%; padding-top: 5px;">
+<div id="body-content">
     {% block content %}{% endblock %}
 </div>
 </body>
