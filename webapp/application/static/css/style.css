@@ -13,7 +13,6 @@ body {
     padding-top: 7px;
 }
 
-
 .action-btn {
     padding: 0 2px 0 2px;
     font-size: 1.2em;
@@ -36,34 +35,27 @@ body {
     color: white;
 }
 
+/* Navigation Bar */
 
 .navbar {
-    list-style-type: none;
-    margin: 0;
-    padding: 0;
-    overflow: hidden;
+    padding: 12px;
     background-color: #343a40;
+    display: flex;
+    align-items: baseline;
 }
 
-.navbar li {
-    float: left;
-}
-
-.navbar li a {
-    display: block;
-    color: #b2beb5;
-    text-align: center;
-    padding: 14px 16px;
+.navbar-logo {
+    color: white;
+    font-size: 1.3em;
+    font-weight: bold;
     text-decoration: none;
 }
 
-.navbar li a:hover {
-    color: white;
+.navbar-link {
+    color: #b2beb5;
 }
 
-#logo {
-    font-size: 1.3em;
-    font-weight: bold;
+.navbar-link:hover {
     color: white;
 }
 
@@ -71,20 +63,17 @@ body {
 
 .table {
     border-collapse: collapse;
+    /* remove width? */
     width: 100%;
-    /* width */
 }
 
 .table td, .table th {
-    border: 1px solid #ddd;
+    /* change border style? */
+    border-bottom: 1px solid #ddd;
     padding: 8px;
 }
 
 /*
-.table tr:nth-child(even) {
-    background-color: #f2f2f2;
-}
-
 .table tr:hover {
     background-color: #ddd;
 }*/
@@ -118,7 +107,6 @@ body {
     padding: 0;
     margin: 0;
     display: flex;
-    flex-direction: row;
     align-items: baseline;
 }
 
@@ -143,7 +131,7 @@ body {
 }
 
 .modal-title {
-    margin-right: auto;
+    /*margin-right: auto;*/
     padding: 0 0 0 20px;
     font-size: 1.2em;
 }
