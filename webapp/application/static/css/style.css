@@ -107,7 +107,6 @@ body {
     padding: 0;
     margin: 0;
     display: flex;
-    align-items: baseline;
 }
 
 .modal-body {
@@ -128,6 +127,7 @@ body {
     border-top-color: silver;
     border-top-style: solid;
     height: 20%;
+    /*align-items: baseline;*/
 }
 
 .modal-title {
@@ -148,4 +148,9 @@ body {
 
 .modal-close:hover {
     color: black;
+}
+
+/* Other stuff */
+#rsrc-table th {
+    text-align: left;
 }
