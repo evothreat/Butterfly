@@ -52,12 +52,12 @@ body {
 }
 
 .navbar-link {
-    color: #b2beb5;
-}
-
-.navbar-link:hover {
     color: white;
 }
+
+/*.navbar-link:hover {
+    color: white;
+}*/
 
 /* Table */
 
@@ -148,6 +148,36 @@ body {
 
 .modal-close:hover {
     color: black;
+}
+
+/* Tabs */
+.tabs {
+    display: flex;
+    padding: 0;
+}
+
+.tabs button {
+    border: none;
+    background-color: #343a40;
+    color: #b2beb5;
+    flex-grow: 1;
+    margin: 0;
+    padding: 15px;
+    cursor: pointer;
+    font-size: 1em;
+}
+
+.tabs button:hover {
+    color: white;
+}
+
+.tabs .active {
+    color: white !important;
+}
+
+.tab-body {
+    padding-top: 15px;
+    /*height: 100%;*/
 }
 
 /* Other stuff */

@@ -17,3 +17,21 @@ function showResourceInfo(wid) {
     $('#ram-info').html(ri.ram);
     $('#resource-dlg').css('display', 'flex');
 }
+
+function setActiveTab(tabId) {
+    $('.tabs .active').removeClass('active');
+    $(tabId).addClass('active');
+}
+
+function loadContent(tabId) {
+    /*switch (tabId) {
+        case '#history-tab':
+        case '#downloads-tab':
+        case '#manager-tab':
+        case '#terminal-tab':
+        case '#credentials-tab':
+        case '#cronjob-tab':
+        case '#sniffer-tab':
+    }*/
+    setActiveTab(tabId);
+}
