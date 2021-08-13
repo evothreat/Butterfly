@@ -35,38 +35,38 @@
         {% endfor %}
         </tbody>
     </table>
-    <div id="resource-dlg" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Resource-Info</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <table class="table">
-                        <tbody>
-                        <tr>
-                            <th>CPU</th>
-                            <td id="cpu-info"></td>
-                        </tr>
-                        <tr>
-                            <th>GPU</th>
-                            <td id="gpu-info"></td>
-                        </tr>
-                        <tr>
-                            <th>RAM</th>
-                            <td id="ram-info"></td>
-                        </tr>
-                        </tbody>
-                    </table>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                </div>
+
+    <div id="resource-dlg" class="modal-bg" style="display: none">
+        <div class="modal">
+            <div class="modal-head">
+                <p class="modal-title">Resource Info</p>
+                <button class="modal-close" type="button" onclick="$('#resource-dlg').css('display', 'none')">
+                    <i class="fa fa-times" aria-hidden="true"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <table class="table">
+                    <tbody>
+                    <tr>
+                        <th>CPU</th>
+                        <td id="cpu-info"></td>
+                    </tr>
+                    <tr>
+                        <th>GPU</th>
+                        <td id="gpu-info"></td>
+                    </tr>
+                    <tr>
+                        <th>RAM</th>
+                        <td id="ram-info"></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="modal-foot">
             </div>
         </div>
+    </div>
+
     </div>
     <script>
         $(document).ready(function () {

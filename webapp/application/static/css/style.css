@@ -67,7 +67,31 @@ body {
     color: white;
 }
 
-#modal-bg {
+/* Table */
+
+.table {
+    border-collapse: collapse;
+    width: 100%;
+    /* width */
+}
+
+.table td, .table th {
+    border: 1px solid #ddd;
+    padding: 8px;
+}
+
+/*
+.table tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+.table tr:hover {
+    background-color: #ddd;
+}*/
+
+/* Modal Dialog */
+
+.modal-bg {
     position: fixed;
     top: 0;
     left: 0;
@@ -79,54 +103,61 @@ body {
     align-items: center;
 }
 
-#modal {
+.modal {
     position: relative;
     background-color: white;
-    width: 400px;
-    height: 300px;
+    width: 500px;
+    height: 320px;
     overflow: hidden;
     border-radius: 3px;
     display: flex;
     flex-direction: column;
 }
 
-#modal-header, #modal-footer {
+.modal-head, .modal-foot {
     padding: 0;
     margin: 0;
+    display: flex;
+    flex-direction: row;
+    align-items: baseline;
 }
 
-#modal-content {
-    padding: 15px;
+.modal-body {
+    padding: 20px;
     height: 70%;
-    overflow-y: scroll;
+    overflow-y: auto;
 }
 
-#modal-header {
+.modal-head {
     border-bottom-width: 1px;
     border-bottom-color: silver;
     border-bottom-style: solid;
-    height: 13%;
+    height: 15%;
 }
 
-#modal-footer {
+.modal-foot {
     border-top-width: 1px;
     border-top-color: silver;
     border-top-style: solid;
-    height: 17%;
+    height: 20%;
 }
 
-#modal-close {
+.modal-title {
+    margin-right: auto;
+    padding: 0 0 0 20px;
+    font-size: 1.2em;
+}
+
+.modal-close {
     color: #aaaaaa;
-    float: right;
-    margin: 5px 8px 5px 5px;
-    padding: 0;
-    font-size: 1.3em;
+    margin-left: auto;
+    padding: 0 15px 0 10px;
+    font-size: 1.4em;
     border: none;
     background: none;
     cursor: pointer;
 }
 
-#modal-close:hover {
+.modal-close:hover {
     color: black;
 }
-
