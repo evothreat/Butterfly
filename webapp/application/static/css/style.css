@@ -66,3 +66,67 @@ body {
     font-weight: bold;
     color: white;
 }
+
+#modal-bg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    background-color: rgba(0, 0, 0, .5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#modal {
+    position: relative;
+    background-color: white;
+    width: 400px;
+    height: 300px;
+    overflow: hidden;
+    border-radius: 3px;
+    display: flex;
+    flex-direction: column;
+}
+
+#modal-header, #modal-footer {
+    padding: 0;
+    margin: 0;
+}
+
+#modal-content {
+    padding: 15px;
+    height: 70%;
+    overflow-y: scroll;
+}
+
+#modal-header {
+    border-bottom-width: 1px;
+    border-bottom-color: silver;
+    border-bottom-style: solid;
+    height: 13%;
+}
+
+#modal-footer {
+    border-top-width: 1px;
+    border-top-color: silver;
+    border-top-style: solid;
+    height: 17%;
+}
+
+#modal-close {
+    color: #aaaaaa;
+    float: right;
+    margin: 5px 8px 5px 5px;
+    padding: 0;
+    font-size: 1.3em;
+    border: none;
+    background: none;
+    cursor: pointer;
+}
+
+#modal-close:hover {
+    color: black;
+}
+
