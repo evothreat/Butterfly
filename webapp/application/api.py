@@ -1,22 +1,20 @@
 from sqlalchemy.exc import IntegrityError
+from sqlalchemy import exists
 
 from application import *
 from application.models import *
 from flask import jsonify, request
 
 
+def obj_exists(cond):
+    return db.session.query(exists().where(cond)).scalar()
+
+
+# WORKERS -----------------------------------------------------------------------
+
 @app.route('/api/v1/workers', methods=['GET'])
 def get_workers():
     return jsonify(Worker.query.all()), 200
-
-
-@app.route('/api/v1/workers/<wid>/resource-info', methods=['GET'])
-def get_resource_info(wid):
-    if wid == '-':
-        return jsonify(ResourceInfo.query.all()), 200
-    if wid.isnumeric() and Worker.query.get(int(wid)):       # TODO: remove after enabling foreign keys & use try except
-        return jsonify(ResourceInfo.query.filter_by(worker_id=wid).all())
-    return '', 404
 
 
 @app.route('/api/v1/workers', methods=['POST'])
@@ -37,7 +35,7 @@ def create_worker():
 @app.route('/api/v1/workers/<int:wid>', methods=['GET'])
 def get_single_worker(wid):
     w = Worker.query.get(wid)
-    return ('', 404) if not w else (jsonify(w), 200)        # TODO: use get_or_404 instead
+    return ('', 404) if not w else (jsonify(w), 200)  # TODO: use get_or_404 instead
 
 
 @app.route('/api/v1/workers/<int:wid>', methods=['DELETE'])
@@ -48,9 +46,11 @@ def delete_worker(wid):
     return '', 200
 
 
+# JOBS -----------------------------------------------------------------------
+
 @app.route('/api/v1/workers/<int:wid>/jobs', methods=['GET'])
 def get_jobs(wid):
-    if not Worker.query.get(wid):
+    if not obj_exists(Worker.id == wid):
         return '', 404
     args = request.args.get('is_done')
     is_done = bool(args and args.lower() == 'true')
@@ -62,7 +62,7 @@ def get_jobs(wid):
 def create_job(wid):
     if not request.is_json:
         return '', 400
-    if not Worker.query.get(wid):  # TODO: remove after enabling foreign keys
+    if not obj_exists(Worker.id == wid):  # TODO: remove after enabling foreign keys?
         return '', 404
     try:
         j = Job.from_dict(request.json)
@@ -72,3 +72,19 @@ def create_job(wid):
     db.session.add(j)
     db.session.commit()
     return jsonify(j), 200
+
+
+# OTHER --------------------------------------------------------------------
+
+@app.route('/api/v1/workers/<wid>/resource-info', methods=['GET'])
+def get_resource_info(wid):
+    if wid == '-':
+        return jsonify(ResourceInfo.query.all()), 200
+    if wid.isnumeric() and obj_exists(Worker.id == int(wid)):               # TODO: use try except?
+        return jsonify(ResourceInfo.query.filter_by(worker_id=wid).all())
+    return '', 404
+
+
+@app.route('/api/v1/workers/<int:wid>/uploads/<uid>/info', methods=['GET'])
+def get_upload_info(wid, uid):
+    pass
