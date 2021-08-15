@@ -35,7 +35,7 @@ def create_worker():
 @app.route('/api/v1/workers/<int:wid>', methods=['GET'])
 def get_single_worker(wid):
     w = Worker.query.get(wid)
-    return ('', 404) if not w else (jsonify(w), 200)                    # TODO: use get_or_404 instead
+    return ('', 404) if not w else (jsonify(w), 200)  # TODO: use get_or_404 instead
 
 
 @app.route('/api/v1/workers/<int:wid>', methods=['DELETE'])
@@ -62,7 +62,7 @@ def get_jobs(wid):
 def create_job(wid):
     if not request.is_json:
         return '', 400
-    if not obj_exists(Worker.id == wid):                                # TODO: remove after enabling foreign keys?
+    if not obj_exists(Worker.id == wid):  # TODO: remove after enabling foreign keys?
         return '', 404
     try:
         j = Job.from_dict(request.json)
@@ -91,12 +91,12 @@ def create_resource_info(wid):
     return jsonify(ri), 201
 
 
-@app.route('/api/v1/workers/<wid>/resource-info', methods=['GET'])
+@app.route('/api/v1/workers/<int:wid>/resource-info', methods=['GET'])
 def get_resource_info(wid):
-    if wid == '-':
+    if wid == 0:
         return jsonify(ResourceInfo.query.all()), 200
-    if wid.isnumeric() and obj_exists(Worker.id == int(wid)):               # TODO: use try except?
-        return jsonify(ResourceInfo.query.filter_by(worker_id=wid).all())
+    if obj_exists(Worker.id == wid):
+        return jsonify(ResourceInfo.query.filter_by(worker_id=wid).all()), 200
     return '', 404
 
 
@@ -104,8 +104,8 @@ def get_resource_info(wid):
 def create_upload(wid):
     if not obj_exists(Worker.id == wid):
         return '', 404
-    try:                                                                    # TODO: use if-else?
-        file = request.files['file']                                        # TODO: name attribute in upload html
+    try:  # TODO: use if-else?
+        file = request.files['file']  # TODO: name attribute in upload html
     except KeyError:
         return '', 422
     name = secure_filename(file.filename)
@@ -134,3 +134,12 @@ def get_single_upload(wid, uid):
         return send_file(filepath)
     except FileNotFoundError:
         return '', 404
+
+
+@app.route('/api/v1/workers/<int:wid>/uploads/<int:uid>/info', methods=['GET'])
+def get_upload_info(wid, uid):
+    if not obj_exists(Worker.id == wid):
+        return '', 404
+    if uid == 0:
+        return jsonify(Upload.query.filter_by(worker_id=wid).all()), 200
+    return jsonify(Upload.query.filter_by(id=uid, worker_id=wid).all()), 200

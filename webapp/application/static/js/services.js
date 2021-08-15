@@ -10,7 +10,7 @@ function hideModal(modalId) {
 }
 
 function loadResourceInfo() {
-    $.getJSON('/api/v1/workers/-/resource-info', function (res) {
+    $.getJSON('/api/v1/workers/0/resource-info', function (res) {
         resourceInfo = res.reduce(function (map, ri) {
             map[ri.worker_id] = ri;
             return map;
