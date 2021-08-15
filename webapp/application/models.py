@@ -1,8 +1,13 @@
-from application import db
 import datetime
 from dataclasses import dataclass
 from sqlalchemy.sql import func
+from sqlalchemy import exists
 from flask_login import UserMixin
+from application import db
+
+
+def obj_exists(cond):
+    return db.session.query(exists().where(cond)).scalar()
 
 
 @dataclass

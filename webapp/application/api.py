@@ -1,16 +1,11 @@
 from sqlalchemy.exc import IntegrityError
-from sqlalchemy import exists
-from flask import jsonify, request
+from flask import jsonify, request, send_file
 from werkzeug.utils import secure_filename
 from os import mkdir
 from os.path import join as path_join, getsize, getctime, splitext
 import datetime
 from application import *
 from application.models import *
-
-
-def obj_exists(cond):
-    return db.session.query(exists().where(cond)).scalar()
 
 
 # WORKERS -----------------------------------------------------------------------
@@ -40,7 +35,7 @@ def create_worker():
 @app.route('/api/v1/workers/<int:wid>', methods=['GET'])
 def get_single_worker(wid):
     w = Worker.query.get(wid)
-    return ('', 404) if not w else (jsonify(w), 200)  # TODO: use get_or_404 instead
+    return ('', 404) if not w else (jsonify(w), 200)                    # TODO: use get_or_404 instead
 
 
 @app.route('/api/v1/workers/<int:wid>', methods=['DELETE'])
@@ -67,7 +62,7 @@ def get_jobs(wid):
 def create_job(wid):
     if not request.is_json:
         return '', 400
-    if not obj_exists(Worker.id == wid):  # TODO: remove after enabling foreign keys?
+    if not obj_exists(Worker.id == wid):                                # TODO: remove after enabling foreign keys?
         return '', 404
     try:
         j = Job.from_dict(request.json)
@@ -100,7 +95,7 @@ def create_resource_info(wid):
 def get_resource_info(wid):
     if wid == '-':
         return jsonify(ResourceInfo.query.all()), 200
-    if wid.isnumeric() and obj_exists(Worker.id == int(wid)):  						# TODO: use try except?
+    if wid.isnumeric() and obj_exists(Worker.id == int(wid)):               # TODO: use try except?
         return jsonify(ResourceInfo.query.filter_by(worker_id=wid).all())
     return '', 404
 
@@ -109,8 +104,8 @@ def get_resource_info(wid):
 def create_upload(wid):
     if not obj_exists(Worker.id == wid):
         return '', 404
-    try:                                    # TODO: use if-else?
-        file = request.files['file']        # TODO: name attribute in upload html
+    try:                                                                    # TODO: use if-else?
+        file = request.files['file']                                        # TODO: name attribute in upload html
     except KeyError:
         return '', 422
     name = secure_filename(file.filename)
@@ -125,3 +120,17 @@ def create_upload(wid):
     db.session.add(up)
     db.session.commit()
     return jsonify(up), 201
+
+
+@app.route('/api/v1/workers/<int:wid>/uploads/<int:uid>', methods=['GET'])
+def get_single_upload(wid, uid):
+    if not obj_exists(Worker.id == wid):
+        return '', 404
+    up = Upload.query.get(uid)
+    if not up:
+        return '', 404
+    filepath = path_join(app.config['UPLOADS_DIR'], str(wid), up.filename)
+    try:
+        return send_file(filepath)
+    except FileNotFoundError:
+        return '', 404
