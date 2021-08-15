@@ -20,9 +20,8 @@ def login():
     remember = bool(request.form.get('remember'))
     admin = Admin.query.filter_by(username=name).first()
     if admin and check_password_hash(admin.password, passwd):
-        # flash message
         login_user(admin, remember)
-        return redirect('/workers')  # TODO: use url_for
+        return redirect('/workers')  							# TODO: use url_for
     return redirect('/login')
 
 
@@ -32,7 +31,7 @@ def logout():
     return redirect('/login')
 
 
-@app.route('/workers', methods=['GET', 'POST'])     # TODO: change to index?
+@app.route('/workers', methods=['GET', 'POST'])     			# TODO: change to index?
 @login_required
 def list_workers():
     return render_template('workers.html', title='Workers', workers=Worker.query.all())

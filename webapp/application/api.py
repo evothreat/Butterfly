@@ -1,9 +1,12 @@
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy import exists
-
+from flask import jsonify, request
+from werkzeug.utils import secure_filename
+from os import mkdir
+from os.path import join as path_join, getsize, getctime, splitext
+import datetime
 from application import *
 from application.models import *
-from flask import jsonify, request
 
 
 def obj_exists(cond):
@@ -25,11 +28,13 @@ def create_worker():
         w = Worker.from_dict(request.json)
         db.session.add(w)
         db.session.commit()
+        # Creating uploads directory
+        mkdir(path_join(app.config['UPLOADS_DIR'], str(w.id)))
     except KeyError:
         return '', 422
     except IntegrityError:
         return '', 409
-    return jsonify(w), 200
+    return jsonify(w), 201
 
 
 @app.route('/api/v1/workers/<int:wid>', methods=['GET'])
@@ -71,20 +76,52 @@ def create_job(wid):
         return '', 422
     db.session.add(j)
     db.session.commit()
-    return jsonify(j), 200
+    return jsonify(j), 201
 
 
 # OTHER --------------------------------------------------------------------
+@app.route('/api/v1/workers/<wid>/resource-info', methods=['POST'])
+def create_resource_info(wid):
+    if not request.is_json:
+        return '', 400
+    if not obj_exists(Worker.id == wid):
+        return '', 404
+    try:
+        ri = ResourceInfo.from_dict(request.json)
+        ri.worker_id = wid
+    except KeyError:
+        return '', 422
+    db.session.add(ri)
+    db.session.commit()
+    return jsonify(ri), 201
+
 
 @app.route('/api/v1/workers/<wid>/resource-info', methods=['GET'])
 def get_resource_info(wid):
     if wid == '-':
         return jsonify(ResourceInfo.query.all()), 200
-    if wid.isnumeric() and obj_exists(Worker.id == int(wid)):               # TODO: use try except?
+    if wid.isnumeric() and obj_exists(Worker.id == int(wid)):  						# TODO: use try except?
         return jsonify(ResourceInfo.query.filter_by(worker_id=wid).all())
     return '', 404
 
 
-@app.route('/api/v1/workers/<int:wid>/uploads/<uid>/info', methods=['GET'])
-def get_upload_info(wid, uid):
-    pass
+@app.route('/api/v1/workers/<int:wid>/uploads', methods=['POST'])
+def create_upload(wid):
+    if not obj_exists(Worker.id == wid):
+        return '', 404
+    try:                                    # TODO: use if-else?
+        file = request.files['file']        # TODO: name attribute in upload html
+    except KeyError:
+        return '', 422
+    name = secure_filename(file.filename)
+    path = path_join(app.config['UPLOADS_DIR'], str(wid), name)
+    _, ext = splitext(name)
+    ext = ext[1:].upper() if ext else 'NONE'
+    file.save(path)
+    file.close()
+    up = Upload(filename=name, size=getsize(path),
+                type=ext, created=datetime.datetime.fromtimestamp(getctime(path)),
+                worker_id=wid)
+    db.session.add(up)
+    db.session.commit()
+    return jsonify(up), 201

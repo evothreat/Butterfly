@@ -4,6 +4,7 @@ from dataclasses import dataclass
 from sqlalchemy.sql import func
 from flask_login import UserMixin
 
+
 @dataclass
 class Job(db.Model):
     id: int
@@ -34,8 +35,12 @@ class ResourceInfo(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     gpu = db.Column(db.String(48))
     cpu = db.Column(db.String(64))
-    ram = db.Column(db.String(10))                                                  # TODO: maybe use integer?
+    ram = db.Column(db.String(10))  # TODO: maybe use integer?
     worker_id = db.Column(db.Integer, db.ForeignKey('worker.id'), nullable=False)
+
+    @staticmethod
+    def from_dict(d):
+        return ResourceInfo(gpu=d['gpu'], cpu=d['cpu'], ram=d['ram'])
 
 
 @dataclass
@@ -56,16 +61,33 @@ class Worker(db.Model):
     country = db.Column(db.String(15))
     ip_addr = db.Column(db.String(15))
     mac_addr = db.Column(db.String(17), unique=True)  # set as primary key?
-    last_seen = db.Column(db.DateTime(), default=func.now())
+    last_seen = db.Column(db.DateTime, default=func.now())
 
     # resource_info = db.relationship("ResourceInfo", uselist=False, cascade="all, delete-orphan")
     # jobs = db.relationship("Job", cascade="all, delete-orphan")
 
     @staticmethod
     def from_dict(d):
-        w = Worker(hostname=d['hostname'], os=d['os'], country=d['country'],
-                   ip_addr=d['ip_addr'], mac_addr=d['mac_addr'])
-        return w
+        return Worker(hostname=d['hostname'], os=d['os'], country=d['country'],
+                      ip_addr=d['ip_addr'], mac_addr=d['mac_addr'])
+
+
+@dataclass
+class Upload(db.Model):
+    id: int
+    filename: str
+    type: str
+    size: int
+    created: datetime.datetime
+    worker_id: int
+    # TODO: add content url?
+
+    id = db.Column(db.Integer, primary_key=True)
+    filename = db.Column(db.String(64))
+    type = db.Column(db.String(16))
+    size = db.Column(db.BigInteger())
+    created = db.Column(db.DateTime)
+    worker_id = db.Column(db.Integer, db.ForeignKey('worker.id'), nullable=False)
 
 
 class Admin(UserMixin, db.Model):

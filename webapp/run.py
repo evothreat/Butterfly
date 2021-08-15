@@ -4,6 +4,8 @@ import application.api
 import application.control
 from werkzeug.security import generate_password_hash
 from time import sleep
+from os.path import exists
+from os import mkdir
 
 
 def add_test_data():
@@ -53,9 +55,15 @@ def add_test_data():
     db.session.add(admin)
 
 
+def create_dirs():
+    if not exists(app.config['UPLOADS_DIR']):
+        mkdir(app.config['UPLOADS_DIR'])
+
+
 if __name__ == '__main__':
     # db.drop_all()
     # db.create_all()
     # add_test_data()
     # db.session.commit()
+    # create_dirs()
     app.run()
