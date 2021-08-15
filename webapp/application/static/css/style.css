@@ -184,3 +184,7 @@ body {
 #rsrc-table th {
     text-align: left;
 }
+
+.one-select, .all-select {
+    transform: scale(1.2);
+}

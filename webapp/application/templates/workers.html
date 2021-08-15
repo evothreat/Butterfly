@@ -4,6 +4,7 @@
     <table id="worker-table">
         <thead>
         <tr>
+            <th><input class="all-select" type="checkbox" onclick="selectAllRows('#worker-table')"></th>
             <th>ID</th>
             <th>Hostname</th>
             <th>IP-Address</th>
@@ -16,6 +17,7 @@
         <tbody>
         {% for w in workers %}
             <tr>
+                <td class="dt-body-center"><input class="one-select" type="checkbox" value="{{ w.id }}"/></td>
                 <td>{{ w.id }}</td>
                 <td>{{ w.hostname }}</td>
                 <td>{{ w.ip_addr }}</td>
@@ -35,7 +37,6 @@
         {% endfor %}
         </tbody>
     </table>
-
     <div id="resource-dlg" class="modal-bg" style="display: none">
         <div class="modal">
             <div class="modal-head">
@@ -70,12 +71,13 @@
     <script>
         $(document).ready(function () {
             $('#worker-table').DataTable({
-                aoColumnDefs: [{
-                    bSortable: false,
-                    bSearchable: false,
-                    aTargets: [6]
+                columnDefs: [{
+                    searchable: false,
+                    orderable: false,
+                    targets: [0, 7]
                 }
-                ]
+                ],
+                order: [[ 1, 'asc' ]]
             });
             loadResourceInfo();
         });
