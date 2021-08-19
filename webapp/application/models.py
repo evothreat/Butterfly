@@ -15,13 +15,13 @@ class Job(db.Model):
     id: int
     args: str
     is_done: bool
-    timestamp: datetime.datetime
+    created: datetime.datetime
     worker_id: int
 
     id = db.Column(db.Integer, primary_key=True)
     args = db.Column(db.String(250))
-    is_done = db.Column(db.Boolean(), default=False)
-    timestamp = db.Column(db.DateTime(), default=func.now())
+    is_done = db.Column(db.Boolean, default=False)
+    created = db.Column(db.DateTime, default=func.now())
     worker_id = db.Column(db.Integer, db.ForeignKey('worker.id'), nullable=False)
 
     @staticmethod
@@ -90,7 +90,7 @@ class Upload(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     filename = db.Column(db.String(64))
     type = db.Column(db.String(16))
-    size = db.Column(db.BigInteger())
+    size = db.Column(db.BigInteger)
     created = db.Column(db.DateTime)
     worker_id = db.Column(db.Integer, db.ForeignKey('worker.id'), nullable=False)
 

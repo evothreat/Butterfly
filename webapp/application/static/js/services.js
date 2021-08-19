@@ -1,4 +1,6 @@
 var resourceInfo;
+var currWorkerId;
+var jobsTable;
 
 // MODAL
 function showModal(modalId) {
@@ -29,8 +31,8 @@ function showResourceInfo(wid) {
 
 // TABS
 function setActiveTab(tabId) {
-    $('.tabs .active').removeClass('active');
-    $(tabId).addClass('active');
+    $('.tabs .active-tab').removeClass('active-tab');
+    $(tabId).addClass('active-tab');
 }
 
 function loadContent(tabId) {
@@ -60,4 +62,23 @@ function selectAllRows(tableId) {
     $(tableId + ' .one-select').each(function () {
         $(this).prop('checked', current);
     })
+}
+
+// HISTORY
+function setCurrWorkerId() {
+    var url = window.location.pathname;
+    currWorkerId = url.substring(url.lastIndexOf('/') + 1);
+}
+
+function removeJob(jobId) {
+    $.ajax({
+        url: '/api/v1/workers/' + currWorkerId + '/jobs/' + jobId,
+        type: 'DELETE',
+        error: function (xhr, stat, err) {
+            alert('Failed to delete job!');
+        }
+    });
+    jobsTable.rows(function (ix, data, node) {
+        return jobId === data[1];
+    }).remove().draw();
 }

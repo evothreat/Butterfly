@@ -1,46 +1,7 @@
 {% extends 'layout.html' %}
 {% block content %}
-    {#<ul class="nav nav-tabs nav-fill" id="action-tabs" role="tablist">
-        <li class="nav-item">
-            <a class="nav-link active" id="history-tab" data-toggle="tab" href="#history" role="tab"
-               aria-controls="history" aria-selected="true">History</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" id="downloads-tab" data-toggle="tab" href="#downloads" role="tab"
-               aria-controls="downloads" aria-selected="true">Downloads</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" id="manager-tab" data-toggle="tab" href="#manager" role="tab"
-               aria-controls="manager" aria-selected="false">File manager</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" id="terminal-tab" data-toggle="tab" href="#terminal" role="tab"
-               aria-controls="terminal" aria-selected="false">Terminal</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" id="credentials-tab" data-toggle="tab" href="#credentials" role="tab"
-               aria-controls="credentials" aria-selected="false">Credentials</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" id="cronjob-tab" data-toggle="tab" href="#cronjob" role="tab"
-               aria-controls="cronjob" aria-selected="false">Cron-Job</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" id="sniffer-tab" data-toggle="tab" href="#sniffer" role="tab"
-               aria-controls="sniffer" aria-selected="false">Sniffer</a>
-        </li>
-    </ul>
-    <div class="tab-content">
-        <div class="tab-pane active" id="history" role="tabpanel" aria-labelledby="history-tab">history</div>
-        <div class="tab-pane" id="downloads" role="tabpanel" aria-labelledby="downloads-tab">downloads</div>
-        <div class="tab-pane" id="manager" role="tabpanel" aria-labelledby="manager-tab">manager</div>
-        <div class="tab-pane" id="terminal" role="tabpanel" aria-labelledby="terminal-tab">terminal</div>
-        <div class="tab-pane" id="credentials" role="tabpanel" aria-labelledby="credentials-tab">credentials</div>
-        <div class="tab-pane" id="cronjob" role="tabpanel" aria-labelledby="cronjob-tab">cronjob</div>
-        <div class="tab-pane" id="sniffer" role="tabpanel" aria-labelledby="sniffer-tab">sniffer</div>
-    </div>#}
     <div class="tabs">
-        <button class="active" id="history-tab" onclick="loadContent('#history-tab')">History</button>
+        <button class="active-tab" id="history-tab" onclick="loadContent('#history-tab')">History</button>
         <button id="downloads-tab" onclick="loadContent('#downloads-tab')">Downloads</button>
         <button id="manager-tab" onclick="loadContent('#manager-tab')">File manager</button>
         <button id="terminal-tab" onclick="loadContent('#terminal-tab')">Terminal</button>
@@ -48,8 +9,66 @@
         <button id="cronjob-tab" onclick="loadContent('#cronjob-tab')">Cron-Job</button>
         <button id="sniffer-tab" onclick="loadContent('#sniffer-tab')">Sniffer</button>
     </div>
-
-    <div class="tab-body">
-        Aloha
+    <div class='tab-body active-body' id="history-body">
+        <table id="jobs-table">
+        <thead>
+        <tr>
+            <th><input class="all-select" type="checkbox" onclick="selectAllRows('#jobs-table')"></th>
+            <th>ID</th>
+            <th>Job</th>
+            <th>Completed</th>
+            <th>Created</th>
+            <th>Action</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for j in jobs %}
+            <tr>
+                <td class="dt-body-center"><input class="one-select" type="checkbox" value="{{ j.id }}"/></td>
+                <td>{{ j.id }}</td>
+                <td>{{ j.args }}</td>
+                <td>{{ 'YES' if j.completed else 'NO' }}</td>
+                <td>{{ j.created }}</td>
+                <td>
+                    <button type="button" onclick="removeJob('{{ j.id }}')" class="action-btn del-btn">
+                        <i class="fa fa-trash" aria-hidden="true"></i>
+                    </button>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
     </div>
+    <div class='tab-body' id="manager-body">
+
+    </div>
+    <div class='tab-body' id="terminal-body">
+
+    </div>
+    <div class='tab-body' id="creds-body">
+
+    </div>
+    <div class='tab-body' id="cronjob-body">
+
+    </div>
+    <div class='tab-body' id="sniffer-body">
+
+    </div>
+    <div class='tab-body' id="history-body">
+
+    </div>
+    <script>
+        $(document).ready(function () {
+            jobsTable = $('#jobs-table').DataTable({
+                columnDefs: [{
+                    searchable: false,
+                    orderable: false,
+                    targets: [0, 5]
+                }
+                ],
+                order: [[ 1, 'asc' ]]
+            });
+            setCurrWorkerId();
+        });
+    </script>
 {% endblock %}

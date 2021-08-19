@@ -171,13 +171,18 @@ body {
     color: white;
 }
 
-.tabs .active {
+.active-tab {
     color: white !important;
 }
 
 .tab-body {
+    display: none;
     padding-top: 15px;
     /*height: 100%;*/
+}
+
+.active-body {
+    display: block !important;
 }
 
 /* Other stuff */

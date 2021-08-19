@@ -74,6 +74,16 @@ def create_job(wid):
     return jsonify(j), 201
 
 
+@app.route('/api/v1/workers/<int:wid>/jobs/<int:jid>', methods=['DELETE'])
+def delete_job(wid, jid):
+    if not obj_exists(Worker.id == wid):
+        return '', 404
+    if Job.query.filter_by(id=jid, worker_id=wid).delete() == 0:
+        return '', 404
+    db.session.commit()
+    return '', 200
+
+
 # OTHER --------------------------------------------------------------------
 @app.route('/api/v1/workers/<wid>/resource-info', methods=['POST'])
 def create_resource_info(wid):

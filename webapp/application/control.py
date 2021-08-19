@@ -37,8 +37,10 @@ def list_workers():
     return render_template('workers.html', title='Workers', workers=Worker.query.all())
 
 
-@app.route('/workers/<int:wid>/interact')
+@app.route('/workers/<int:wid>')
 @login_required
 def interact(wid):
     w = Worker.query.get(wid)
-    return render_template('interact.html', title='Interaction', worker=w) if w else redirect('/workers', code=302)
+    if not w:
+        return redirect('/workers', code=302)
+    return render_template('interact.html', title='Interaction', jobs=Job.query.all())
