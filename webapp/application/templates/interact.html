@@ -1,73 +1,17 @@
 {% extends 'layout.html' %}
 {% block content %}
     <div class="tabs">
-        <button class="active-tab" id="history-tab" onclick="loadContent('#history-tab')">History</button>
-        <button id="downloads-tab" onclick="loadContent('#downloads-tab')">Downloads</button>
-        <button id="manager-tab" onclick="loadContent('#manager-tab')">File manager</button>
-        <button id="terminal-tab" onclick="loadContent('#terminal-tab')">Terminal</button>
-        <button id="creds-tab" onclick="loadContent('#creds-tab')">Credentials</button>
-        <button id="cronjob-tab" onclick="loadContent('#cronjob-tab')">Cron-Job</button>
-        <button id="sniffer-tab" onclick="loadContent('#sniffer-tab')">Sniffer</button>
+        <button class="active-tab" id="history-tab" aria-controls="history-body" onclick="loadContent(this)">History
+        </button>
+        <button id="downloads-tab" aria-controls="downloads-body" onclick="loadContent(this)">Downloads</button>
+        <button id="manager-tab" aria-controls="manager-body" onclick="loadContent(this)">File manager</button>
+        <button id="terminal-tab" aria-controls="terminal-body" onclick="loadContent(this)">Terminal</button>
+        <button id="creds-tab" aria-controls="creds-body" onclick="loadContent(this)">Credentials</button>
+        <button id="cronjob-tab" aria-controls="cronjob-body" onclick="loadContent(this)">Cron-Job</button>
+        <button id="sniffer-tab" aria-controls="sniffer-body" onclick="loadContent(this)">Sniffer</button>
     </div>
     <div class="tab-body active-body" id="history-body">
-        <button type="button" class="add-btn" onclick="showModal('#new-job-dlg')">
-            New Job
-            <i class="fa fa-plus" aria-hidden="true"></i>
-        </button>
-        <table id="jobs-table">
-            <thead>
-            <tr>
-                <th data-data="checkbox"><input class="all-select" type="checkbox" onclick="selectAllRows('#jobs-table')"></th>
-                <th data-data="id">ID</th>
-                <th data-data="todo">ToDo</th>
-                <th data-data="is_done">Completed</th>
-                <th data-data="created">Created</th>
-                <th data-data="action">Action</th>
-            </tr>
-            </thead>
-            <tbody>
-            {% for j in jobs %}
-                <tr>
-                    <td class="dt-body-center"><input class="one-select" type="checkbox" value="{{ j.id }}"/></td>
-                    <td>{{ j.id }}</td>
-                    <td>{{ j.todo }}</td>
-                    <td>{{ 'YES' if j.completed else 'NO' }}</td>
-                    <td>{{ j.created.strftime('%a, %e %b %Y %H:%M:%S') }}</td>
-                    <td>
-                        <button type="button" onclick="removeJob('{{ j.id }}')" class="action-btn">
-                            <i class="fa fa-trash" aria-hidden="true"></i>
-                        </button>
-                    </td>
-                </tr>
-            {% endfor %}
-            </tbody>
-        </table>
-        <div id="new-job-dlg" class="modal-bg" style="display: none">
-            <div class="modal">
-                <div class="modal-head">
-                    <p class="modal-title">New job</p>
-                    <button class="modal-close" type="button" onclick="hideModal('#new-job-dlg')">
-                        <i class="fa fa-window-close" aria-hidden="true"></i>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <table class="ver-table">
-                        <tbody>
-                        <tr>
-                            <th>ToDo</th>
-                            <td><input id="todo" type="text"></td>
-                        </tr>
-                        </tbody>
-                    </table>
-                </div>
-                <div class="modal-foot">
-                    <button class="modal-submit" type="button" onclick="createJob(); hideModal('#new-job-dlg')">
-                        Create <i class="fa fa-check" aria-hidden="true"></i>
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
+        {% include 'history.html' %}
     </div>
     <div class="tab-body" id="manager-body">
 
@@ -94,7 +38,11 @@
                     searchable: false,
                     orderable: false,
                     targets: [0, 5]
-                }
+                },
+                    {
+                        className: 'dt-body-center',
+                        targets: [0]
+                    }
                 ],
                 order: [[1, 'asc']],
                 {#columns: [

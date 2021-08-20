@@ -30,9 +30,15 @@ function showResourceInfo(wid) {
 }
 
 // TABS
-function setActiveTab(tabId) {
-    $('.tabs .active-tab').removeClass('active-tab');
-    $(tabId).addClass('active-tab');
+function setActiveTab(tab) {
+    // get current tab
+    var currTab = $('.tabs .active-tab');
+    currTab.removeClass('active-tab');
+    $('#' + currTab.attr('aria-controls')).removeClass('active-body');
+    // set clicked tab
+    var selected = $(tab);
+    selected.addClass('active-tab');
+    $('#' + selected.attr('aria-controls')).addClass('active-body');
 }
 
 function loadContent(tabId) {
@@ -95,7 +101,7 @@ function createJob() {
         contentType: 'application/json',
         dataType: 'json',
         success: function (data, stat, xhr) {
-            data.checkbox = '<td class="dt-body-center"><input class="one-select" type="checkbox" value="' + data.id + '"/></td>'
+            data.check = '<td><input class="one-select" type="checkbox" value="' + data.id + '"/></td>'
             data.action = '<button type="button" onclick="removeJob(' + data.id + ')" class="action-btn"> \
                            <i class="fa fa-trash" aria-hidden="true"></i></button>';
             jobsTable.row.add(data).draw();

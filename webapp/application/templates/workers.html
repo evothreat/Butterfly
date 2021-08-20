@@ -17,7 +17,7 @@
         <tbody>
         {% for w in workers %}
             <tr>
-                <td class="dt-body-center"><input class="one-select" type="checkbox" value="{{ w.id }}"/></td>
+                <td><input class="one-select" type="checkbox" value="{{ w.id }}"/></td>
                 <td>{{ w.id }}</td>
                 <td>{{ w.hostname }}</td>
                 <td>{{ w.ip_addr }}</td>
@@ -75,7 +75,11 @@
                     searchable: false,
                     orderable: false,
                     targets: [0, 7]
-                }
+                },
+                    {
+                        className: 'dt-body-center',
+                        targets: [0]
+                    }
                 ],
                 order: [[1, 'asc']]
             });

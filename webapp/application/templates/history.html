@@ -1,0 +1,57 @@
+<button type="button" class="add-btn" onclick="showModal('#new-job-dlg')">
+    New Job
+    <i class="fa fa-plus" aria-hidden="true"></i>
+</button>
+<table id="jobs-table">
+    <thead>
+    <tr>
+        <th data-data="check"><input class="all-select" type="checkbox" onclick="selectAllRows('#jobs-table')"></th>
+        <th data-data="id">ID</th>
+        <th data-data="todo">ToDo</th>
+        <th data-data="is_done">Completed</th>
+        <th data-data="created">Created</th>
+        <th data-data="action">Action</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for j in jobs %}
+        <tr>
+            <td><input class="one-select" type="checkbox" value="{{ j.id }}"/></td>
+            <td>{{ j.id }}</td>
+            <td>{{ j.todo }}</td>
+            <td>{{ 'true' if j.completed else 'false' }}</td>
+            <td>{{ j.created.strftime('%a, %e %b %Y %H:%M:%S') }}</td>
+            <td>
+                <button type="button" onclick="removeJob('{{ j.id }}')" class="action-btn">
+                    <i class="fa fa-trash" aria-hidden="true"></i>
+                </button>
+            </td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+<div id="new-job-dlg" class="modal-bg" style="display: none">
+    <div class="modal">
+        <div class="modal-head">
+            <p class="modal-title">New job</p>
+            <button class="modal-close" type="button" onclick="hideModal('#new-job-dlg')">
+                <i class="fa fa-window-close" aria-hidden="true"></i>
+            </button>
+        </div>
+        <div class="modal-body">
+            <table class="ver-table">
+                <tbody>
+                <tr>
+                    <th>ToDo</th>
+                    <td><input id="todo" type="text"></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="modal-foot">
+            <button class="modal-submit" type="button" onclick="createJob(); hideModal('#new-job-dlg')">
+                Create <i class="fa fa-check" aria-hidden="true"></i>
+            </button>
+        </div>
+    </div>
+</div>
