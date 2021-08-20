@@ -95,7 +95,7 @@ function createJob() {
         contentType: 'application/json',
         dataType: 'json',
         success: function (data, stat, xhr) {
-            data.checkbox = '<td class="dt-body-center"><input class="one-select" type="checkbox" value="{{ j.id }}"/></td>'
+            data.checkbox = '<td class="dt-body-center"><input class="one-select" type="checkbox" value="' + data.id + '"/></td>'
             data.action = '<button type="button" onclick="removeJob(' + data.id + ')" class="action-btn"> \
                            <i class="fa fa-trash" aria-hidden="true"></i></button>';
             jobsTable.row.add(data).draw();

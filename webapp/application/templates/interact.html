@@ -32,7 +32,7 @@
                     <td>{{ j.id }}</td>
                     <td>{{ j.todo }}</td>
                     <td>{{ 'YES' if j.completed else 'NO' }}</td>
-                    <td>{{ j.created }}</td>
+                    <td>{{ j.created.strftime('%a, %e %b %Y %H:%M:%S GMT') }}</td>
                     <td>
                         <button type="button" onclick="removeJob('{{ j.id }}')" class="action-btn">
                             <i class="fa fa-trash" aria-hidden="true"></i>
