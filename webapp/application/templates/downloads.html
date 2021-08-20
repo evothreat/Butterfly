@@ -1,0 +1,29 @@
+<table id="uploads-table">
+    <thead>
+    <tr>
+        <th data-data="check"><input class="all-select" type="checkbox" onclick="selectAllRows('#uploads-table')"></th>
+        <th data-data="id">ID</th>
+        <th data-data="filename">Filename</th>
+        <th data-data="type">Type</th>
+        <th data-data="size">Size</th>
+        <th data-data="created">Created</th>
+        <th data-data="action">Action</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for j in jobs %}
+        <tr>
+            <td><input class="one-select" type="checkbox" value="{{ j.id }}"/></td>
+            <td>{{ j.id }}</td>
+            <td>{{ j.todo }}</td>
+            <td>{{ 'true' if j.completed else 'false' }}</td>
+            <td>{{ j.created.strftime('%a, %e %b %Y %H:%M:%S') }}</td>
+            <td>
+                <button type="button" onclick="removeJob('{{ j.id }}')" class="action-btn">
+                    <i class="fa fa-trash" aria-hidden="true"></i>
+                </button>
+            </td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
