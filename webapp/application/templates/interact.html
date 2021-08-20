@@ -1,14 +1,13 @@
 {% extends 'layout.html' %}
 {% block content %}
     <div class="tabs">
-        <button class="active-tab" id="history-tab" aria-controls="history-body" onclick="loadContent(this)">History
-        </button>
-        <button id="downloads-tab" aria-controls="downloads-body" onclick="loadContent(this)">Downloads</button>
-        <button id="manager-tab" aria-controls="manager-body" onclick="loadContent(this)">File manager</button>
-        <button id="terminal-tab" aria-controls="terminal-body" onclick="loadContent(this)">Terminal</button>
-        <button id="creds-tab" aria-controls="creds-body" onclick="loadContent(this)">Credentials</button>
-        <button id="cronjob-tab" aria-controls="cronjob-body" onclick="loadContent(this)">Cron-Job</button>
-        <button id="sniffer-tab" aria-controls="sniffer-body" onclick="loadContent(this)">Sniffer</button>
+        <button class="active-tab" id="history-tab" aria-controls="history-body">History</button>
+        <button id="downloads-tab" aria-controls="downloads-body">Downloads</button>
+        <button id="manager-tab" aria-controls="manager-body">File manager</button>
+        <button id="terminal-tab" aria-controls="terminal-body">Terminal</button>
+        <button id="creds-tab" aria-controls="creds-body">Credentials</button>
+        <button id="cronjob-tab" aria-controls="cronjob-body">Cron-Job</button>
+        <button id="sniffer-tab" aria-controls="sniffer-body">Sniffer</button>
     </div>
     <div class="tab-body active-body" id="history-body">
         {% include 'history.html' %}
@@ -45,14 +44,10 @@
                     }
                 ],
                 order: [[1, 'asc']],
-                {#columns: [
-                {data: 'id', title: 'ID'},
-                {data: 'todo', title: 'ToDo'},
-                {data: 'is_done', title: 'Completed'},
-                {data: 'created', title: 'Created'},
-                {data: 'action', title: 'Action'}]#}
             });
             setCurrWorkerId();
+
+            $('.tabs button').click(switchTab);
         });
     </script>
 {% endblock %}

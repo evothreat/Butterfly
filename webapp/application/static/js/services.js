@@ -30,28 +30,15 @@ function showResourceInfo(wid) {
 }
 
 // TABS
-function setActiveTab(tab) {
+function switchTab() {
     // get current tab
     var currTab = $('.tabs .active-tab');
     currTab.removeClass('active-tab');
     $('#' + currTab.attr('aria-controls')).removeClass('active-body');
     // set clicked tab
-    var selected = $(tab);
+    var selected = $(this);
     selected.addClass('active-tab');
     $('#' + selected.attr('aria-controls')).addClass('active-body');
-}
-
-function loadContent(tabId) {
-    /*switch (tabId) {
-        case '#history-tab':
-        case '#downloads-tab':
-        case '#manager-tab':
-        case '#terminal-tab':
-        case '#credentials-tab':
-        case '#cronjob-tab':
-        case '#sniffer-tab':
-    }*/
-    setActiveTab(tabId);
 }
 
 // TABLE ROWS

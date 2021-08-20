@@ -101,7 +101,7 @@ def create_resource_info(wid):
     return jsonify(ri), 201
 
 
-@app.route('/api/v1/workers/<int:wid>/resource-info', methods=['GET'])
+@app.route('/api/v1/workers/<int:wid>/resource-info', methods=['GET'])      # TODO: add new path /workers/resource-info
 def get_resource_info(wid):
     if wid == 0:
         return jsonify(ResourceInfo.query.all()), 200
