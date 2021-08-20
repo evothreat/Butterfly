@@ -13,20 +13,20 @@ def obj_exists(cond):
 @dataclass
 class Job(db.Model):
     id: int
-    args: str
+    todo: str
     is_done: bool
     created: datetime.datetime
     worker_id: int
 
     id = db.Column(db.Integer, primary_key=True)
-    args = db.Column(db.String(250))
+    todo = db.Column(db.String(250))
     is_done = db.Column(db.Boolean, default=False)
     created = db.Column(db.DateTime, default=func.now())
     worker_id = db.Column(db.Integer, db.ForeignKey('worker.id'), nullable=False)
 
     @staticmethod
     def from_dict(d):
-        return Job(args=d['args'])
+        return Job(todo=d['todo'])
 
 
 @dataclass

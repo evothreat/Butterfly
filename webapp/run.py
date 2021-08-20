@@ -9,7 +9,7 @@ from os import mkdir
 
 
 def add_test_data():
-    j = models.Job(args='upload test.exe', worker_id=1)
+    j = models.Job(todo='upload test.exe', worker_id=1)
 
     ri = models.ResourceInfo(cpu='Intel(R) Core(TM) i7-8750H CPU @ 2.20GHz 2.21 GHz',
                              gpu='NVIDIA GeForce GTX 1060',

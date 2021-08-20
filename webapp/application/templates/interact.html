@@ -10,34 +10,64 @@
         <button id="sniffer-tab" onclick="loadContent('#sniffer-tab')">Sniffer</button>
     </div>
     <div class='tab-body active-body' id="history-body">
+        <button type="button" class="add-btn" onclick="showModal('#new-job-dlg')">
+            New Job
+            <i class="fa fa-plus" aria-hidden="true"></i>
+        </button>
         <table id="jobs-table">
-        <thead>
-        <tr>
-            <th><input class="all-select" type="checkbox" onclick="selectAllRows('#jobs-table')"></th>
-            <th>ID</th>
-            <th>Job</th>
-            <th>Completed</th>
-            <th>Created</th>
-            <th>Action</th>
-        </tr>
-        </thead>
-        <tbody>
-        {% for j in jobs %}
+            <thead>
             <tr>
-                <td class="dt-body-center"><input class="one-select" type="checkbox" value="{{ j.id }}"/></td>
-                <td>{{ j.id }}</td>
-                <td>{{ j.args }}</td>
-                <td>{{ 'YES' if j.completed else 'NO' }}</td>
-                <td>{{ j.created }}</td>
-                <td>
-                    <button type="button" onclick="removeJob('{{ j.id }}')" class="action-btn del-btn">
-                        <i class="fa fa-trash" aria-hidden="true"></i>
-                    </button>
-                </td>
+                <th data-data="checkbox"><input class="all-select" type="checkbox" onclick="selectAllRows('#jobs-table')"></th>
+                <th data-data="id">ID</th>
+                <th data-data="todo">ToDo</th>
+                <th data-data="is_done">Completed</th>
+                <th data-data="created">Created</th>
+                <th data-data="action">Action</th>
             </tr>
-        {% endfor %}
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+            {% for j in jobs %}
+                <tr>
+                    <td class="dt-body-center"><input class="one-select" type="checkbox" value="{{ j.id }}"/></td>
+                    <td>{{ j.id }}</td>
+                    <td>{{ j.todo }}</td>
+                    <td>{{ 'YES' if j.completed else 'NO' }}</td>
+                    <td>{{ j.created }}</td>
+                    <td>
+                        <button type="button" onclick="removeJob('{{ j.id }}')" class="action-btn">
+                            <i class="fa fa-trash" aria-hidden="true"></i>
+                        </button>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        <div id="new-job-dlg" class="modal-bg" style="display: none">
+            <div class="modal">
+                <div class="modal-head">
+                    <p class="modal-title">New job</p>
+                    <button class="modal-close" type="button" onclick="hideModal('#new-job-dlg')">
+                        <i class="fa fa-window-close" aria-hidden="true"></i>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <table class="ver-table">
+                        <tbody>
+                        <tr>
+                            <th>ToDo</th>
+                            <td><input id="todo" type="text"></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="modal-foot">
+                    <button class="modal-submit" type="button" onclick="createJob(); hideModal('#new-job-dlg')">
+                        Create <i class="fa fa-check" aria-hidden="true"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
     </div>
     <div class='tab-body' id="manager-body">
 
@@ -66,7 +96,13 @@
                     targets: [0, 5]
                 }
                 ],
-                order: [[ 1, 'asc' ]]
+                order: [[1, 'asc']],
+                {#columns: [
+                {data: 'id', title: 'ID'},
+                {data: 'todo', title: 'ToDo'},
+                {data: 'is_done', title: 'Completed'},
+                {data: 'created', title: 'Created'},
+                {data: 'action', title: 'Action'}]#}
             });
             setCurrWorkerId();
         });

@@ -61,16 +61,33 @@ body {
 
 /* Table */
 
-.table {
+.ver-table {
     border-collapse: collapse;
     /* remove width? */
     width: 100%;
 }
 
-.table td, .table th {
+.ver-table td, .ver-table th {
     /* change border style? */
     border-bottom: 1px solid #ddd;
-    padding: 8px;
+    text-align: left;
+    vertical-align: top;
+    padding: 7px;
+}
+
+.ver-table th {
+    width: 20%;
+}
+
+.ver-table input {
+    margin: 0;
+    font-size: 1em;
+    padding: 2px;
+    width: 60%;
+}
+
+.ver-table input:focus {
+    outline: none;
 }
 
 /*
@@ -150,6 +167,12 @@ body {
     color: black;
 }
 
+.modal-submit {
+    padding: 5px;
+    margin: 10px 10px 10px auto;
+    cursor: pointer;
+}
+
 /* Tabs */
 .tabs {
     display: flex;
@@ -159,7 +182,7 @@ body {
 .tabs button {
     border: none;
     background-color: #343a40;
-    color: #b2beb5;
+    color: darkgray;
     flex-grow: 1;
     margin: 0;
     padding: 15px;
@@ -186,10 +209,13 @@ body {
 }
 
 /* Other stuff */
-#rsrc-table th {
-    text-align: left;
-}
 
 .one-select, .all-select {
     transform: scale(1.2);
+}
+
+.add-btn {
+    padding: 5px 10px 5px 10px;
+    margin-bottom: 7px;
+    cursor: pointer;
 }

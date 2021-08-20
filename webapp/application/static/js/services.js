@@ -74,11 +74,35 @@ function removeJob(jobId) {
     $.ajax({
         url: '/api/v1/workers/' + currWorkerId + '/jobs/' + jobId,
         type: 'DELETE',
+        success: function () {
+            jobsTable.rows(function (ix, data, node) {
+                return jobId === data.id;
+            }).remove().draw();
+        },
         error: function (xhr, stat, err) {
             alert('Failed to delete job!');
         }
     });
-    jobsTable.rows(function (ix, data, node) {
-        return jobId === data[1];
-    }).remove().draw();
+}
+
+function createJob() {
+    var job = {}
+    job.todo = $('#todo').val();
+    $.ajax({
+        type: "POST",
+        url: '/api/v1/workers/' + currWorkerId + '/jobs',
+        data: JSON.stringify(job),
+        contentType: 'application/json',
+        dataType: 'json',
+        success: function (data, stat, xhr) {
+            data.checkbox = '<td class="dt-body-center"><input class="one-select" type="checkbox" value="{{ j.id }}"/></td>'
+            data.action = '<button type="button" onclick="removeJob(' + data.id + ')" class="action-btn"> \
+                           <i class="fa fa-trash" aria-hidden="true"></i></button>';
+            jobsTable.row.add(data).draw();
+        },
+        error: function (xhr, stat, err) {
+            alert('Failed to create job!');
+        }
+    });
+
 }
