@@ -23,7 +23,7 @@
                 <td>{{ w.ip_addr }}</td>
                 <td>{{ w.os }}</td>
                 <td>{{ w.country }}</td>
-                <td>{{ w.last_seen }}</td>
+                <td>{{ w.last_seen.strftime('%a, %e %b %Y %H:%M:%S') }}</td>
                 <td>
                     <button type="button" class="action-btn"
                             onclick="document.location.href='{{ url_for('interact', wid=w.id) }}';">

@@ -9,7 +9,7 @@
         <button id="cronjob-tab" onclick="loadContent('#cronjob-tab')">Cron-Job</button>
         <button id="sniffer-tab" onclick="loadContent('#sniffer-tab')">Sniffer</button>
     </div>
-    <div class='tab-body active-body' id="history-body">
+    <div class="tab-body active-body" id="history-body">
         <button type="button" class="add-btn" onclick="showModal('#new-job-dlg')">
             New Job
             <i class="fa fa-plus" aria-hidden="true"></i>
@@ -32,7 +32,7 @@
                     <td>{{ j.id }}</td>
                     <td>{{ j.todo }}</td>
                     <td>{{ 'YES' if j.completed else 'NO' }}</td>
-                    <td>{{ j.created.strftime('%a, %e %b %Y %H:%M:%S GMT') }}</td>
+                    <td>{{ j.created.strftime('%a, %e %b %Y %H:%M:%S') }}</td>
                     <td>
                         <button type="button" onclick="removeJob('{{ j.id }}')" class="action-btn">
                             <i class="fa fa-trash" aria-hidden="true"></i>
@@ -69,22 +69,22 @@
         </div>
     </div>
     </div>
-    <div class='tab-body' id="manager-body">
+    <div class="tab-body" id="manager-body">
 
     </div>
-    <div class='tab-body' id="terminal-body">
+    <div class="tab-body" id="terminal-body">
 
     </div>
-    <div class='tab-body' id="creds-body">
+    <div class="tab-body" id="creds-body">
 
     </div>
-    <div class='tab-body' id="cronjob-body">
+    <div class="tab-body" id="cronjob-body">
 
     </div>
-    <div class='tab-body' id="sniffer-body">
+    <div class="tab-body" id="sniffer-body">
 
     </div>
-    <div class='tab-body' id="history-body">
+    <div class="tab-body" id="history-body">
 
     </div>
     <script>
