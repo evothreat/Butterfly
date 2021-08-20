@@ -55,3 +55,21 @@
         </div>
     </div>
 </div>
+
+<script>
+    $(document).ready(function () {
+        jobsTable = $('#jobs-table').DataTable({
+            columnDefs: [{
+                searchable: false,
+                orderable: false,
+                targets: [0, 5]
+            },
+                {
+                    className: 'dt-body-center',
+                    targets: [0]
+                }
+            ],
+            order: [[1, 'asc']],
+        });
+    })
+</script>
