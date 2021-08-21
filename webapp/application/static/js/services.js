@@ -63,16 +63,69 @@ function setCurrWorkerId() {
     currWorkerId = url.substring(url.lastIndexOf('/') + 1);
 }
 
+function getCurrWorkerId() {
+    var url = window.location.pathname;
+    return url.substring(url.lastIndexOf('/') + 1);
+}
+
+
+// JOBS
+
+function createJobsTable() {
+    jobsTable = $('#jobs-table').DataTable({
+        ajax: {
+            url: '/api/v1/workers/' + getCurrWorkerId() + '/jobs',
+            dataSrc: '',
+            error: function () {
+                alert("Failed to load jobs data!");
+            }
+        },
+        columns: [
+            {
+                data: null,
+                title: `<input class="all-select" type="checkbox" onclick="selectAllRows('#jobs-table')">`,
+                render: function (data, type, row) {
+                    return '<input class="one-select" type="checkbox" value="' + row.id + '"/>'
+                }
+            },
+            {data: 'id', title: 'ID'},
+            {data: 'todo', title: 'ToDo'},
+            {data: 'is_done', title: 'Completed'},
+            {data: 'created', title: 'Created'},
+            {
+                data: null,
+                title: 'Action',
+                render: function (data, type, row) {
+                    return '<button type="button" onclick="removeJob(' + row.id + ')" class="action-btn"> \
+                                    <i class="fa fa-trash" aria-hidden="true"></i> \
+                            </button>';
+                }
+            }],
+        columnDefs: [
+            {
+                searchable: false,
+                orderable: false,
+                targets: [0, 5]
+            },
+            {
+                className: 'dt-body-center',
+                targets: [0]
+            }
+        ],
+        order: [[1, 'asc']]
+    });
+}
+
 function removeJob(jobId) {
     $.ajax({
         url: '/api/v1/workers/' + currWorkerId + '/jobs/' + jobId,
         type: 'DELETE',
         success: function () {
-            jobsTable.rows(function (ix, data, node) {
+            jobsTable.rows(function (ix, data) {
                 return jobId === data.id;
             }).remove().draw();
         },
-        error: function (xhr, stat, err) {
+        error: function () {
             alert('Failed to delete job!');
         }
     });
@@ -87,13 +140,10 @@ function createJob() {
         data: JSON.stringify(job),
         contentType: 'application/json',
         dataType: 'json',
-        success: function (data, stat, xhr) {
-            data.check = '<td><input class="one-select" type="checkbox" value="' + data.id + '"/></td>'
-            data.action = '<button type="button" onclick="removeJob(' + data.id + ')" class="action-btn"> \
-                           <i class="fa fa-trash" aria-hidden="true"></i></button>';
+        success: function (data) {
             jobsTable.row.add(data).draw();
         },
-        error: function (xhr, stat, err) {
+        error: function () {
             alert('Failed to create job!');
         }
     });

@@ -2,34 +2,7 @@
     New Job
     <i class="fa fa-plus" aria-hidden="true"></i>
 </button>
-<table id="jobs-table">
-    <thead>
-    <tr>
-        <th data-data="check"><input class="all-select" type="checkbox" onclick="selectAllRows('#jobs-table')"></th>
-        <th data-data="id">ID</th>
-        <th data-data="todo">ToDo</th>
-        <th data-data="is_done">Completed</th>
-        <th data-data="created">Created</th>
-        <th data-data="action">Action</th>
-    </tr>
-    </thead>
-    <tbody>
-    {% for j in jobs %}
-        <tr>
-            <td><input class="one-select" type="checkbox" value="{{ j.id }}"/></td>
-            <td>{{ j.id }}</td>
-            <td>{{ j.todo }}</td>
-            <td>{{ 'true' if j.completed else 'false' }}</td>
-            <td>{{ j.created.strftime('%a, %e %b %Y %H:%M:%S') }}</td>
-            <td>
-                <button type="button" onclick="removeJob('{{ j.id }}')" class="action-btn">
-                    <i class="fa fa-trash" aria-hidden="true"></i>
-                </button>
-            </td>
-        </tr>
-    {% endfor %}
-    </tbody>
-</table>
+<table id="jobs-table"></table>
 <div id="new-job-dlg" class="modal-bg" style="display: none">
     <div class="modal">
         <div class="modal-head">
@@ -58,18 +31,6 @@
 
 <script>
     $(document).ready(function () {
-        jobsTable = $('#jobs-table').DataTable({
-            columnDefs: [{
-                searchable: false,
-                orderable: false,
-                targets: [0, 5]
-            },
-                {
-                    className: 'dt-body-center',
-                    targets: [0]
-                }
-            ],
-            order: [[1, 'asc']],
-        });
+        createJobsTable();
     })
 </script>
