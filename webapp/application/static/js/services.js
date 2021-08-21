@@ -74,18 +74,11 @@ function setCurrWorkerId() {
     currWorkerId = url.substring(url.lastIndexOf('/') + 1);
 }
 
-function getCurrWorkerId() {
-    var url = window.location.pathname;
-    return url.substring(url.lastIndexOf('/') + 1);
-}
-
-
 // JOBS
-
 function createJobsTable() {
     jobsTable = $('#jobs-table').DataTable({
         ajax: {
-            url: '/api/v1/workers/' + getCurrWorkerId() + '/jobs',
+            url: '/api/v1/workers/' + currWorkerId + '/jobs',
             dataSrc: '',
             error: function () {
                 alert("Failed to load jobs data!");
@@ -96,7 +89,7 @@ function createJobsTable() {
                 data: null,
                 title: `<input class="all-select" type="checkbox" onclick="selectAllRows('#jobs-table')">`,
                 render: function (data, type, row) {
-                    return '<input class="one-select" type="checkbox" value="' + row.id + '"/>'
+                    return `<input class="one-select" type="checkbox" value="${row.id}"/>`
                 }
             },
             {data: 'id', title: 'ID'},
@@ -107,7 +100,7 @@ function createJobsTable() {
                 data: null,
                 title: 'Action',
                 render: function (data, type, row) {
-                    return `<button type="button" onclick="removeJob(` + row.id + `)" class="action-btn">
+                    return `<button type="button" onclick="removeJob(${row.id})" class="action-btn">
                                     <i class="fa fa-trash" aria-hidden="true"></i>
                             </button>`;
                 }
@@ -163,7 +156,7 @@ function createJob() {
 function createUploadsTable() {
     uploadsTable = $('#uploads-table').DataTable({
         ajax: {
-            url: '/api/v1/workers/' + getCurrWorkerId() + '/uploads/0/info',
+            url: '/api/v1/workers/' + currWorkerId + '/uploads/0/info',
             dataSrc: '',
             error: function () {
                 alert("Failed to load uploads data!");
@@ -174,7 +167,7 @@ function createUploadsTable() {
                 data: null,
                 title: `<input class="all-select" type="checkbox" onclick="selectAllRows('#uploads-table')">`,
                 render: function (data, type, row) {
-                    return '<input class="one-select" type="checkbox" value="' + row.id + '"/>'
+                    return `<input class="one-select" type="checkbox" value="${row.id}"/>`
                 }
             },
             {data: 'id', title: 'ID'},
@@ -198,7 +191,7 @@ function createUploadsTable() {
                     return `<button type="button" onclick="" class="action-btn">
                                 <i class="fa fa-trash" aria-hidden="true"></i>
                             </button>
-                            <a href="/api/v1/workers/` + currWorkerId + `/uploads/` + row.id + `" download>
+                            <a href="/api/v1/workers/${currWorkerId}/uploads/${row.id}" download>
                                 <button type="button" class="action-btn">
                                     <i class="fa fa-download" aria-hidden="true"></i>
                                 </button>
@@ -219,8 +212,4 @@ function createUploadsTable() {
         ],
         order: [[1, 'asc']]
     });
-}
-
-function download(uploadId) {
-
 }
