@@ -196,18 +196,26 @@ function createUploadsTable() {
                                 <button type="button" class="action-btn">
                                     <i class="fa fa-download" aria-hidden="true"></i>
                                 </button>
-                            </a>`;
+                            </a>
+                            <button type="button" class="action-btn"
+                                    onclick="window.open('/api/v1/workers/${currWorkerId}/uploads/${row.id}')">
+                                <i class="fa fa-eye" aria-hidden="true"></i>
+                            </button>`;
                 }
             }],
         columnDefs: [
             {
                 searchable: false,
-                orderable: false,
+                orderable: false,       // exclude checkbox & buttons
                 targets: [0, 6]
             },
             {
+                searchable: false,
+                targets: [4]            // exclude size
+            },
+            {
                 className: 'dt-body-center',
-                targets: [0]
+                targets: [0]            // center checkboxes
             }
         ],
         order: [[1, 'asc']]
