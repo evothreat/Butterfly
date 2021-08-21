@@ -214,7 +214,7 @@ body {
     transform: scale(1.2);
 }
 
-.add-btn {
+.btn {
     padding: 5px 10px 5px 10px;
     margin-bottom: 7px;
     cursor: pointer;
