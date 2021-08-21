@@ -1,9 +1,8 @@
 from sqlalchemy.exc import IntegrityError
 from flask import jsonify, request, send_file
 from re import match
-from os import mkdir
+from os import mkdir, remove as remove_file
 from os.path import join as path_join, getsize, getctime, splitext
-import datetime
 from application import *
 from application.models import *
 
@@ -110,7 +109,7 @@ def get_resource_info(wid):
     if wid == 0:
         return jsonify(ResourceInfo.query.all()), 200
     if obj_exists(Worker.id == wid):
-        return jsonify(ResourceInfo.query.filter_by(worker_id=wid).all()), 200
+        return jsonify(ResourceInfo.query.filter_by(worker_id=wid).first()), 200
     return '', 404
 
 
@@ -118,8 +117,8 @@ def get_resource_info(wid):
 def create_upload(wid):
     if not obj_exists(Worker.id == wid):
         return '', 404
-    try:  # TODO: use if-else?
-        file = request.files['file']  # TODO: name attribute in upload html
+    try:                                                            # TODO: use if-else?
+        file = request.files['file']                                # TODO: name attribute in upload html
     except KeyError:
         return '', 422
     if not valid_filename(file.filename):
@@ -142,7 +141,7 @@ def create_upload(wid):
 def get_single_upload(wid, uid):
     if not obj_exists(Worker.id == wid):
         return '', 404
-    up = Upload.query.get(uid)
+    up = Upload.query.filter_by(id=uid, worker_id=wid).first()
     if not up:
         return '', 404
     filepath = path_join(app.config['UPLOADS_DIR'], str(wid), up.filename)
@@ -152,10 +151,27 @@ def get_single_upload(wid, uid):
         return '', 404
 
 
+@app.route('/api/v1/workers/<int:wid>/uploads/<int:uid>', methods=['DELETE'])       # TODO: add own parameter decoder?
+def delete_upload(wid, uid):
+    if not obj_exists(Worker.id == wid):
+        return '', 404
+    up = Upload.query.filter_by(id=uid, worker_id=wid).first()
+    if not up:
+        return '', 404
+    filepath = path_join(app.config['UPLOADS_DIR'], str(wid), up.filename)
+    try:
+        remove_file(filepath)
+    except FileNotFoundError:
+        return '', 404
+    db.session.delete(up)
+    db.session.commit()
+    return '', 200
+
+
 @app.route('/api/v1/workers/<int:wid>/uploads/<int:uid>/info', methods=['GET'])
 def get_upload_info(wid, uid):
     if not obj_exists(Worker.id == wid):
         return '', 404
     if uid == 0:
         return jsonify(Upload.query.filter_by(worker_id=wid).all()), 200
-    return jsonify(Upload.query.filter_by(id=uid, worker_id=wid).all()), 200
+    return jsonify(Upload.query.filter_by(id=uid, worker_id=wid).first()), 200

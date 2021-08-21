@@ -153,6 +153,7 @@ function createJob() {
     });
 }
 
+// UPLOADS
 function createUploadsTable() {
     uploadsTable = $('#uploads-table').DataTable({
         ajax: {
@@ -188,7 +189,7 @@ function createUploadsTable() {
                 data: null,
                 title: 'Action',
                 render: function (data, type, row) {
-                    return `<button type="button" onclick="" class="action-btn">
+                    return `<button type="button" onclick="removeUpload(${row.id})" class="action-btn">
                                 <i class="fa fa-trash" aria-hidden="true"></i>
                             </button>
                             <a href="/api/v1/workers/${currWorkerId}/uploads/${row.id}" download>
@@ -196,7 +197,6 @@ function createUploadsTable() {
                                     <i class="fa fa-download" aria-hidden="true"></i>
                                 </button>
                             </a>`;
-                    // TODO: add removeUpload/downloadUpload
                 }
             }],
         columnDefs: [
@@ -211,5 +211,20 @@ function createUploadsTable() {
             }
         ],
         order: [[1, 'asc']]
+    });
+}
+
+function removeUpload(uploadId) {
+    $.ajax({
+        url: '/api/v1/workers/' + currWorkerId + '/uploads/' + uploadId,
+        type: 'DELETE',
+        success: function () {
+            uploadsTable.rows(function (ix, data) {
+                return uploadId === data.id;
+            }).remove().draw();
+        },
+        error: function () {
+            alert('Failed to delete upload!');
+        }
     });
 }
