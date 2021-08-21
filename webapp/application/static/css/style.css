@@ -7,6 +7,10 @@ body {
     margin: 0;
 }
 
+button {
+    cursor: pointer;
+}
+
 #body-content {
     margin: auto;
     width: 70%;
@@ -16,30 +20,20 @@ body {
 .action-btn {
     padding: 0 2px 0 2px;
     font-size: 1.2em;
-    cursor: pointer;
     background: none;
     border: none;
 }
 
 #workers-table thead {
     color: white !important;
-    background-color: #343a40 !important;
-}
-
-#action-tabs .nav-link {
-    color: #343a40;
-}
-
-#action-tabs .nav-link.active {
-    background-color: #343a40;
-    color: white;
+    background-color: #0D1B2A !important;
 }
 
 /* Navigation Bar */
 
 .navbar {
     padding: 12px;
-    background-color: #343a40;
+    background-color: #0D1B2A;
     display: flex;
     align-items: baseline;
 }
@@ -160,7 +154,6 @@ body {
     font-size: 1.5em;
     border: none;
     background: none;
-    cursor: pointer;
 }
 
 .modal-close:hover {
@@ -170,7 +163,9 @@ body {
 .modal-submit {
     padding: 5px;
     margin: 10px 10px 10px auto;
-    cursor: pointer;
+    background-color: #415A77;
+    color: white;
+    border: none;
 }
 
 /* Tabs */
@@ -181,12 +176,11 @@ body {
 
 .tabs button {
     border: none;
-    background-color: #343a40;
+    background-color: #1B263B;
     color: darkgray;
     flex-grow: 1;
     margin: 0;
     padding: 15px;
-    cursor: pointer;
     font-size: 1em;
 }
 
@@ -217,5 +211,7 @@ body {
 .btn {
     padding: 5px 10px 5px 10px;
     margin-bottom: 7px;
-    cursor: pointer;
+    background-color: #415A77;
+    color: white;
+    border: none;
 }
