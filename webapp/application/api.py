@@ -1,11 +1,15 @@
 from sqlalchemy.exc import IntegrityError
 from flask import jsonify, request, send_file
-from werkzeug.utils import secure_filename
+from re import match
 from os import mkdir
 from os.path import join as path_join, getsize, getctime, splitext
 import datetime
 from application import *
 from application.models import *
+
+
+def valid_filename(name):
+    return match('^[\w\-. ]+$', name)
 
 
 # WORKERS -----------------------------------------------------------------------
@@ -101,7 +105,7 @@ def create_resource_info(wid):
     return jsonify(ri), 201
 
 
-@app.route('/api/v1/workers/<int:wid>/resource-info', methods=['GET'])      # TODO: add new path /workers/resource-info
+@app.route('/api/v1/workers/<int:wid>/resource-info', methods=['GET'])  # TODO: add new path /workers/resource-info
 def get_resource_info(wid):
     if wid == 0:
         return jsonify(ResourceInfo.query.all()), 200
@@ -118,7 +122,9 @@ def create_upload(wid):
         file = request.files['file']  # TODO: name attribute in upload html
     except KeyError:
         return '', 422
-    name = secure_filename(file.filename)
+    if not valid_filename(file.filename):
+        return '', 422
+    name = file.filename
     path = path_join(app.config['UPLOADS_DIR'], str(wid), name)
     _, ext = splitext(name)
     ext = ext[1:].upper() if ext else 'NONE'

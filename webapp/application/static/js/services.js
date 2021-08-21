@@ -1,6 +1,17 @@
 var resourceInfo;
 var currWorkerId;
-var jobsTable;
+var jobsTable,
+    uploadsTable;
+
+// BYTES TO HUMAN-READABLE
+function formatBytes(bytes, decimals = 2) {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const dm = decimals < 0 ? 0 : decimals;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
+}
 
 // MODAL
 function showModal(modalId) {
@@ -96,9 +107,9 @@ function createJobsTable() {
                 data: null,
                 title: 'Action',
                 render: function (data, type, row) {
-                    return '<button type="button" onclick="removeJob(' + row.id + ')" class="action-btn"> \
-                                    <i class="fa fa-trash" aria-hidden="true"></i> \
-                            </button>';
+                    return `<button type="button" onclick="removeJob(` + row.id + `)" class="action-btn">
+                                    <i class="fa fa-trash" aria-hidden="true"></i>
+                            </button>`;
                 }
             }],
         columnDefs: [
@@ -147,5 +158,69 @@ function createJob() {
             alert('Failed to create job!');
         }
     });
+}
+
+function createUploadsTable() {
+    uploadsTable = $('#uploads-table').DataTable({
+        ajax: {
+            url: '/api/v1/workers/' + getCurrWorkerId() + '/uploads/0/info',
+            dataSrc: '',
+            error: function () {
+                alert("Failed to load uploads data!");
+            }
+        },
+        columns: [
+            {
+                data: null,
+                title: `<input class="all-select" type="checkbox" onclick="selectAllRows('#uploads-table')">`,
+                render: function (data, type, row) {
+                    return '<input class="one-select" type="checkbox" value="' + row.id + '"/>'
+                }
+            },
+            {data: 'id', title: 'ID'},
+            {data: 'filename', title: 'Filename'},
+            {data: 'type', title: 'Type'},
+            {
+                data: 'size',
+                title: 'Size',
+                render: function (data, type) {
+                    if (type === 'display') {
+                        return formatBytes(parseInt(data));
+                    }
+                    return data;
+                }
+            },
+            {data: 'created', title: 'Created'},
+            {
+                data: null,
+                title: 'Action',
+                render: function (data, type, row) {
+                    return `<button type="button" onclick="" class="action-btn">
+                                <i class="fa fa-trash" aria-hidden="true"></i>
+                            </button>
+                            <a href="/api/v1/workers/` + currWorkerId + `/uploads/` + row.id + `" download>
+                                <button type="button" class="action-btn">
+                                    <i class="fa fa-download" aria-hidden="true"></i>
+                                </button>
+                            </a>`;
+                    // TODO: add removeUpload/downloadUpload
+                }
+            }],
+        columnDefs: [
+            {
+                searchable: false,
+                orderable: false,
+                targets: [0, 6]
+            },
+            {
+                className: 'dt-body-center',
+                targets: [0]
+            }
+        ],
+        order: [[1, 'asc']]
+    });
+}
+
+function download(uploadId) {
 
 }
