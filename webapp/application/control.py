@@ -43,5 +43,4 @@ def interact(wid):
     w = Worker.query.get(wid)
     if not w:
         return redirect('/workers', code=302)
-    return render_template('interact.html', title='Interaction',
-                           jobs=Job.query.filter_by(worker_id=wid).all())
+    return render_template('interact.html', title='Interaction')

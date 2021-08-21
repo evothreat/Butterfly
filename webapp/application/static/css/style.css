@@ -21,7 +21,7 @@ body {
     border: none;
 }
 
-#worker-table thead {
+#workers-table thead {
     color: white !important;
     background-color: #343a40 !important;
 }
