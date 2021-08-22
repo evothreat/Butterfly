@@ -56,16 +56,9 @@ function switchTab() {
 function getSelectedRows(tableId) {
     var selected = [];
     $(tableId + ' .one-select').each(function () {
-        selected.push($(this).val());               // TODO: use .all-select? convert to number? avoid injection?
+        selected.push($(this).val());               // TODO: use .all-select? convert to number? avoid injection? add active class?
     });
     return selected;
-}
-
-function selectAllRows(tableId) {
-    var current = $(tableId + ' .all-select').is(':checked');
-    $(tableId + ' .one-select').each(function () {
-        $(this).prop('checked', current);
-    })
 }
 
 // HISTORY
@@ -87,7 +80,7 @@ function createJobsTable() {
         columns: [
             {
                 data: null,
-                title: `<input class="all-select" type="checkbox" onclick="selectAllRows('#jobs-table')">`,
+                title: `<input class="all-select" type="checkbox">`,
                 render: function (data, type, row) {
                     return `<input class="one-select" type="checkbox" value="${row.id}"/>`
                 }
@@ -166,7 +159,7 @@ function createUploadsTable() {
         columns: [
             {
                 data: null,
-                title: `<input class="all-select" type="checkbox" onclick="selectAllRows('#uploads-table')">`,
+                title: `<input class="all-select" type="checkbox">`,
                 render: function (data, type, row) {
                     return `<input class="one-select" type="checkbox" value="${row.id}"/>`
                 }

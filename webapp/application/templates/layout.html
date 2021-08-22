@@ -20,5 +20,16 @@
 <div id="body-content">
     {% block content %}{% endblock %}
 </div>
+<script>
+    $(document).ready(function () {
+        $('.all-select').change(function () {
+            var box = $(this);
+            var val = box.is(':checked');
+            box.closest('tbody').find('.one-select').each(function () {
+                $(this).prop('checked', val);
+            })
+        });
+    });
+</script>
 </body>
 </html>
