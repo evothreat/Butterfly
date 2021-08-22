@@ -25,7 +25,7 @@
         $('.all-select').change(function () {
             var box = $(this);
             var val = box.is(':checked');
-            box.closest('tbody').find('.one-select').each(function () {
+            box.closest('table').find('.one-select').each(function () {
                 $(this).prop('checked', val);
             })
         });
