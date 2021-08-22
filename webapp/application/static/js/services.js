@@ -61,6 +61,14 @@ function getSelectedRows(tableId) {
     return selected;
 }
 
+function selectAllRows() {
+    var box = $(this);
+    var val = box.is(':checked');
+    box.closest('table').find('.one-select').each(function () {
+        $(this).prop('checked', val);
+    })
+}
+
 // HISTORY
 function setCurrWorkerId() {
     var url = window.location.pathname;

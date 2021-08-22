@@ -22,13 +22,7 @@
 </div>
 <script>
     $(document).ready(function () {
-        $('.all-select').change(function () {
-            var box = $(this);
-            var val = box.is(':checked');
-            box.closest('table').find('.one-select').each(function () {
-                $(this).prop('checked', val);
-            })
-        });
+        $('.all-select').change(selectAllRows);
     });
 </script>
 </body>
