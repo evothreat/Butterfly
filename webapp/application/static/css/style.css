@@ -24,9 +24,9 @@ button {
     border: none;
 }
 
-#workers-table thead {
+.dataTable thead {
     color: white !important;
-    background-color: #0D1B2A !important;
+    background-color: #415A77 !important;
 }
 
 /* Navigation Bar */
@@ -161,8 +161,8 @@ button {
 }
 
 .modal-submit {
-    padding: 5px;
-    margin: 10px 10px 10px auto;
+    padding: 7px;
+    margin: 8px 12px 8px auto;
     background-color: #415A77;
     color: white;
     border: none;
