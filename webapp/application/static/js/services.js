@@ -193,11 +193,10 @@ function createUploadsTable() {
                     return `<button type="button" onclick="removeUpload(${row.id})" class="action-btn">
                                 <i class="fa fa-trash" aria-hidden="true"></i>
                             </button>
-                            <a href="/api/v1/workers/${currWorkerId}/uploads/${row.id}" download>
-                                <button type="button" class="action-btn">
-                                    <i class="fa fa-download" aria-hidden="true"></i>
-                                </button>
-                            </a>
+                            <button type="button" class="action-btn"
+                                    onclick="window.location.href='/api/v1/workers/${currWorkerId}/uploads/${row.id}?attach'">
+                                <i class="fa fa-download" aria-hidden="true"></i>
+                            </button>
                             <button type="button" class="action-btn"
                                     onclick="window.open('/api/v1/workers/${currWorkerId}/uploads/${row.id}')">
                                 <i class="fa fa-eye" aria-hidden="true"></i>

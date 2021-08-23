@@ -145,8 +145,9 @@ def get_single_upload(wid, uid):
     if not up:
         return '', 404
     filepath = path_join(app.config['UPLOADS_DIR'], str(wid), up.filename)
+    attach = bool('attach' in request.args)
     try:
-        return send_file(filepath)
+        return send_file(filepath, as_attachment=attach)
     except FileNotFoundError:
         return '', 404
 
