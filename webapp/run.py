@@ -9,7 +9,8 @@ from os import mkdir
 
 
 def add_test_data():
-    j = models.Job(todo='upload test.exe', worker_id=1)
+    j = models.Job(todo='upload test.exe', worker_id=1, is_done=True)
+    j2 = models.Job(todo='ddos fbi.gov', worker_id=1)
 
     ri = models.ResourceInfo(cpu='Intel(R) Core(TM) i7-8750H CPU @ 2.20GHz 2.21 GHz',
                              gpu='NVIDIA GeForce GTX 1060',
@@ -44,6 +45,7 @@ def add_test_data():
     db.session.add(w4)
 
     db.session.add(j)
+    db.session.add(j2)
     db.session.add(ri)
     db.session.add(ri2)
     db.session.add(ri3)

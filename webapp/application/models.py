@@ -16,12 +16,14 @@ class Job(db.Model):
     todo: str
     is_done: bool
     created: datetime.datetime
+    report_type: str
     worker_id: int
 
     id = db.Column(db.Integer, primary_key=True)
     todo = db.Column(db.String(250))
     is_done = db.Column(db.Boolean, default=False)
     created = db.Column(db.DateTime, default=func.now())
+    report_type = db.Column(db.String(8))
     worker_id = db.Column(db.Integer, db.ForeignKey('worker.id'), nullable=False)
 
     @staticmethod
@@ -40,7 +42,7 @@ class ResourceInfo(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     gpu = db.Column(db.String(48))
     cpu = db.Column(db.String(64))
-    ram = db.Column(db.String(10))  # TODO: maybe use integer?
+    ram = db.Column(db.String(10))                                                  # TODO: maybe use integer?
     worker_id = db.Column(db.Integer, db.ForeignKey('worker.id'), nullable=False)
 
     @staticmethod

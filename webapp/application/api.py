@@ -3,8 +3,11 @@ from flask import jsonify, request, send_file
 from re import match
 from os import mkdir, remove as remove_file
 from os.path import join as path_join, getsize, getctime, splitext
+from mimetypes import guess_extension
 from application import *
 from application.models import *
+
+# TODO: handle wrong type errors (in json)!
 
 
 def valid_filename(name):
@@ -28,6 +31,7 @@ def create_worker():
         db.session.commit()
         # Creating uploads directory
         mkdir(path_join(app.config['UPLOADS_DIR'], str(w.id)))
+        mkdir(path_join(app.config['REPORTS_DIR'], str(w.id)))
     except KeyError:
         return '', 422
     except IntegrityError:
@@ -68,13 +72,13 @@ def create_job(wid):
     if not obj_exists(Worker.id == wid):  # TODO: remove after enabling foreign keys?
         return '', 404
     try:
-        j = Job.from_dict(request.json)
-        j.worker_id = wid
+        job = Job.from_dict(request.json)
+        job.worker_id = wid
     except KeyError:
         return '', 422
-    db.session.add(j)
+    db.session.add(job)
     db.session.commit()
-    return jsonify(j), 201
+    return jsonify(job), 201
 
 
 @app.route('/api/v1/workers/<int:wid>/jobs/<int:jid>', methods=['DELETE'])
@@ -87,7 +91,26 @@ def delete_job(wid, jid):
     return '', 200
 
 
-# OTHER --------------------------------------------------------------------
+@app.route('/api/v1/workers/<int:wid>/jobs/<int:jid>', methods=['PATCH'])
+def update_job(wid, jid):
+    if not request.is_json:
+        return '', 400
+    if not obj_exists(Worker.id == wid):
+        return '', 404
+    job = Job.query.filter_by(id=jid, worker_id=wid).first()
+    if not job:
+        return '', 404
+    # job.id = request.json.get('id', job.id)
+    # job.todo = request.json.get('todo', job.todo)
+    job.is_done = request.json.get('is_done', job.is_done)
+    # job.created = request.json.get('created', job.created)
+    # job.report_type = request.json.get('report_type', job.report_type)
+    # job.worker_id = request.json.get('worker_id', job.worker_id)
+    db.session.commit()
+    return '', 200
+
+
+# RESOURCE INFO --------------------------------------------------------------------
 @app.route('/api/v1/workers/<wid>/resource-info', methods=['POST'])
 def create_resource_info(wid):
     if not request.is_json:
@@ -113,20 +136,17 @@ def get_resource_info(wid):
     return '', 404
 
 
+# UPLOADS --------------------------------------------------------------------
 @app.route('/api/v1/workers/<int:wid>/uploads', methods=['POST'])
 def create_upload(wid):
     if not obj_exists(Worker.id == wid):
         return '', 404
-    try:                                                            # TODO: use if-else?
-        file = request.files['file']                                # TODO: name attribute in upload html
-    except KeyError:
+    file = request.files.get('file')                    # name attribute in upload html
+    if not file or not valid_filename(file.filename):
         return '', 422
-    if not valid_filename(file.filename):
-        return '', 422
-    name = file.filename
-    path = path_join(app.config['UPLOADS_DIR'], str(wid), name)
-    _, ext = splitext(name)
+    name, ext = splitext(file.filename)
     ext = ext[1:].upper() if ext else 'NONE'
+    path = path_join(app.config['UPLOADS_DIR'], str(wid), name)
     file.save(path)
     file.close()
     up = Upload(filename=name, size=getsize(path),
@@ -152,7 +172,7 @@ def get_single_upload(wid, uid):
         return '', 404
 
 
-@app.route('/api/v1/workers/<int:wid>/uploads/<int:uid>', methods=['DELETE'])       # TODO: add own parameter decoder?
+@app.route('/api/v1/workers/<int:wid>/uploads/<int:uid>', methods=['DELETE'])  # TODO: add own parameter decoder?
 def delete_upload(wid, uid):
     if not obj_exists(Worker.id == wid):
         return '', 404
@@ -176,3 +196,30 @@ def get_upload_info(wid, uid):
     if uid == 0:
         return jsonify(Upload.query.filter_by(worker_id=wid).all()), 200
     return jsonify(Upload.query.filter_by(id=uid, worker_id=wid).first()), 200
+
+
+# REPORTS --------------------------------------------------------------------
+@app.route('/api/v1/workers/<int:wid>/jobs/<int:jid>/report', methods=['POST'])
+def create_report(wid, jid):
+    if not obj_exists(Worker.id == wid):
+        return '', 404
+    job = Job.query.filter_by(id=jid, worker_id=wid).first()
+    if not job:
+        return '', 404
+    if not job.is_done or job.report_type:  # if job undone or already reported
+        return '', 409
+    path = path_join(app.config['REPORTS_DIR'], str(wid), 'report_{}{}')
+    if request.mimetype == 'multipart/form-data':
+        file = request.files.get('file')
+        if not file:
+            return '', 422
+        _, ext = splitext(file.filename)            # or use guess_extension(file.content_type)
+        file.save(path.format(jid, ext))            # TODO: if no extension, return error
+        file.close()
+    else:
+        ext = guess_extension(request.content_type)
+        with open(path.format(jid, ext), 'wb') as f:
+            f.write(request.get_data(cache=False))
+    job.report_type = ext
+    db.session.commit()
+    return '', 204
