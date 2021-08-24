@@ -37,7 +37,7 @@ def list_workers():
     return render_template('workers.html', title='Workers', workers=Worker.query.all())
 
 
-@app.route('/workers/<int:wid>')
+@app.route('/workers/<wid>')
 @login_required
 def interact(wid):
     w = Worker.query.get(wid)

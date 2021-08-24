@@ -5,7 +5,6 @@
         <thead>
         <tr>
             <th><input class="all-select" type="checkbox"></th>
-            <th>ID</th>
             <th>Hostname</th>
             <th>IP-Address</th>
             <th>OS</th>
@@ -18,7 +17,6 @@
         {% for w in workers %}
             <tr>
                 <td><input class="one-select" type="checkbox" value="{{ w.id }}"/></td>
-                <td>{{ w.id }}</td>
                 <td>{{ w.hostname }}</td>
                 <td>{{ w.ip_addr }}</td>
                 <td>{{ w.os }}</td>
@@ -29,7 +27,7 @@
                             onclick="document.location.href='{{ url_for('interact', wid=w.id) }}';">
                         <i class="fa fa-pencil-square-o" aria-hidden="true"></i>
                     </button>
-                    <button type="button" class="action-btn" onclick="showResourceInfo({{ w.id }})">
+                    <button type="button" class="action-btn" onclick="showResourceInfo('{{ w.id }}')">
                         <i class="fa fa-info-circle" aria-hidden="true"></i>
                     </button>
                 </td>
@@ -72,14 +70,14 @@
                 columnDefs: [{
                     searchable: false,
                     orderable: false,
-                    targets: [0, 7]
+                    targets: [0, 6]
                 },
                     {
                         className: 'dt-body-center',
                         targets: [0]
                     }
                 ],
-                order: [[1, 'asc']]
+                order: [[5, 'asc']]
             });
             loadResourceInfo();
         });
