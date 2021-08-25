@@ -1,7 +1,7 @@
-var resourceInfo;
 var currWorkerId;
 var jobsTable,
     uploadsTable;
+// TODO: add workersTable
 
 // BYTES TO HUMAN-READABLE
 function formatBytes(bytes, decimals = 2) {
@@ -23,21 +23,13 @@ function hideModal(modalId) {
 }
 
 // RESOURCE INFO
-function loadResourceInfo() {
-    $.getJSON('/api/v1/workers/-/resource-info', function (res) {
-        resourceInfo = res.reduce(function (map, ri) {
-            map[ri.worker_id] = ri;
-            return map;
-        }, {});
-    });
-}
-
 function showResourceInfo(wid) {
-    var ri = resourceInfo[wid];
-    $('#cpu-info').html(ri.cpu);
-    $('#gpu-info').html(ri.gpu);
-    $('#ram-info').html(ri.ram);
-    showModal('#resource-dlg');
+    $.getJSON('/api/v1/workers/' + wid + '/resource-info', function (res) {
+        $('#cpu-info').html(res.cpu);
+        $('#gpu-info').html(res.gpu);
+        $('#ram-info').html(res.ram);
+        showModal('#resource-dlg');
+    });
 }
 
 // TABS
