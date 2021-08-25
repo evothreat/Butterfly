@@ -17,19 +17,26 @@ def base64_uuid():
 
 
 @dataclass
+class JobReport(db.Model):
+    job_id: int
+    report: str
+
+    job_id = db.Column(db.Integer, db.ForeignKey('job.id'), primary_key=True, nullable=False)
+    report = db.Column(db.Text)
+
+
+@dataclass
 class Job(db.Model):
     id: int
     todo: str
-    is_done: bool
+    completed: bool
     created: datetime
-    report_type: str
     worker_id: str
 
     id = db.Column(db.Integer, primary_key=True)
     todo = db.Column(db.String(250))
-    is_done = db.Column(db.Boolean, default=False)
+    completed = db.Column(db.Boolean, default=False)
     created = db.Column(db.DateTime, default=datetime.now)
-    report_type = db.Column(db.String(8))
     worker_id = db.Column(db.String(22), db.ForeignKey('worker.id'), nullable=False)
 
     @staticmethod
@@ -39,17 +46,15 @@ class Job(db.Model):
 
 @dataclass
 class ResourceInfo(db.Model):
-    id: int
     gpu: str
     cpu: str
     ram: str
     worker_id: str
 
-    id = db.Column(db.Integer, primary_key=True)
     gpu = db.Column(db.String(48))
     cpu = db.Column(db.String(64))
     ram = db.Column(db.String(10))                                                  # TODO: maybe use integer?
-    worker_id = db.Column(db.String(22), db.ForeignKey('worker.id'), nullable=False)
+    worker_id = db.Column(db.String(22), db.ForeignKey('worker.id'), primary_key=True, nullable=False)
 
     @staticmethod
     def from_dict(d):

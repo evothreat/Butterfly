@@ -30,6 +30,7 @@ function showResourceInfo(wid) {
         $('#ram-info').html(res.ram);
         showModal('#resource-dlg');
     });
+    // TODO: check for errors!
 }
 
 // TABS
@@ -87,7 +88,7 @@ function createJobsTable() {
             },
             {data: 'id', title: 'ID'},
             {data: 'todo', title: 'ToDo'},
-            {data: 'is_done', title: 'Completed'},
+            {data: 'completed', title: 'Completed'},
             {data: 'created', title: 'Created'},
             {
                 data: null,

@@ -24,7 +24,7 @@ def add_test_data():
     db.session.commit()
     db.session.add(w4)
 
-    j = models.Job(todo='upload test.exe', worker_id=w.id, is_done=True)
+    j = models.Job(todo='upload test.exe', worker_id=w.id, completed=True)
     j2 = models.Job(todo='ddos fbi.gov', worker_id=w.id)
 
     ri = models.ResourceInfo(cpu='Intel(R) Core(TM) i7-8750H CPU @ 2.20GHz 2.21 GHz',
