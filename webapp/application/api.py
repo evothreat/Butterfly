@@ -216,4 +216,4 @@ def get_report(wid, jid):
     if not obj_exists(and_(Job.worker_id == wid, Job.id == jid)):
         return '', 404
     rep = JobReport.query.get(jid)
-    return (rep.report, 200) if rep else ('', 404)
+    return (rep.report, 200, {'Content-type': 'text/plain; charset=utf-8'}) if rep else ('', 404, {})

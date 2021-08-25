@@ -15,11 +15,11 @@ function formatBytes(bytes, decimals = 2) {
 
 // MODAL
 function showModal(modalId) {
-    $(modalId).css('display', 'flex');
+    $(modalId).removeClass('hidden');
 }
 
 function hideModal(modalId) {
-    $(modalId).css('display', 'none')
+    $(modalId).addClass('hidden');
 }
 
 // RESOURCE INFO
@@ -83,7 +83,10 @@ function createJobsTable() {
                 data: null,
                 title: `<input class="all-select" type="checkbox">`,
                 render: function (data, type, row) {
-                    return `<input class="one-select" type="checkbox" value="${row.id}"/>`
+                    if (type === 'display') {
+                        return `<input class="one-select" type="checkbox" value="${row.id}"/>`;
+                    }
+                    return null;
                 }
             },
             {data: 'id', title: 'ID'},
@@ -94,9 +97,18 @@ function createJobsTable() {
                 data: null,
                 title: 'Action',
                 render: function (data, type, row) {
-                    return `<button type="button" onclick="removeJob(${row.id})" class="action-btn">
+                    if (type === 'display') {
+                        var res = `<button type="button" onclick="removeJob(${row.id})" class="action-btn">
                                     <i class="fa fa-trash" aria-hidden="true"></i>
-                            </button>`;
+                                </button>`;
+                        if (row.completed) {
+                            res += `<button type="button" onclick="window.open('/api/v1/workers/${currWorkerId}/jobs/${row.id}/report')" 
+                                    class="action-btn"> <i class="fa fa-search" aria-hidden="true"></i>
+                                </button>`;
+                        }
+                        return res;
+                    }
+                    return null;
                 }
             }],
         columnDefs: [
@@ -162,7 +174,10 @@ function createUploadsTable() {
                 data: null,
                 title: `<input class="all-select" type="checkbox">`,
                 render: function (data, type, row) {
-                    return `<input class="one-select" type="checkbox" value="${row.id}"/>`
+                    if (type === 'display') {
+                        return `<input class="one-select" type="checkbox" value="${row.id}"/>`
+                    }
+                    return null;
                 }
             },
             {data: 'id', title: 'ID'},
@@ -183,17 +198,20 @@ function createUploadsTable() {
                 data: null,
                 title: 'Action',
                 render: function (data, type, row) {
-                    return `<button type="button" onclick="removeUpload(${row.id})" class="action-btn">
-                                <i class="fa fa-trash" aria-hidden="true"></i>
-                            </button>
-                            <button type="button" class="action-btn"
+                    if (type === 'display') {
+                        return `<button type="button" onclick="removeUpload(${row.id})" class="action-btn">
+                                    <i class="fa fa-trash" aria-hidden="true"></i>
+                                </button>
+                                <button type="button" class="action-btn"
                                     onclick="window.location.href='/api/v1/workers/${currWorkerId}/uploads/${row.id}?attach'">
-                                <i class="fa fa-download" aria-hidden="true"></i>
-                            </button>
-                            <button type="button" class="action-btn"
+                                    <i class="fa fa-download" aria-hidden="true"></i>
+                                </button>
+                                <button type="button" class="action-btn"
                                     onclick="window.open('/api/v1/workers/${currWorkerId}/uploads/${row.id}')">
-                                <i class="fa fa-eye" aria-hidden="true"></i>
-                            </button>`;
+                                    <i class="fa fa-eye" aria-hidden="true"></i>
+                                </button>`;
+                    }
+                    return null;
                 }
             }],
         columnDefs: [
