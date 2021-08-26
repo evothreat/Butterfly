@@ -40,7 +40,7 @@ def create_worker():
 @app.route('/api/v1/workers/<wid>', methods=['GET'])
 def get_single_worker(wid):
     w = Worker.query.get(wid)
-    return (jsonify(w), 200) if w else ('', 404)                                        # TODO: use get_or_404 instead?
+    return (jsonify(w), 200) if w else ('', 404)  # TODO: use get_or_404 instead?
 
 
 @app.route('/api/v1/workers/<wid>', methods=['DELETE'])
@@ -70,7 +70,7 @@ def get_jobs(wid):
 def create_job(wid):
     if not request.is_json:
         return '', 400
-    if not obj_exists(Worker.id == wid):                                    # TODO: remove after enabling foreign keys?
+    if not obj_exists(Worker.id == wid):  # TODO: remove after enabling foreign keys?
         return '', 404
     try:
         job = Job.from_dict(request.json)
@@ -127,7 +127,7 @@ def create_resource_info(wid):
     return jsonify(ri), 201
 
 
-@app.route('/api/v1/workers/<wid>/resource-info', methods=['GET'])          # TODO: add new path /workers/resource-info
+@app.route('/api/v1/workers/<wid>/resource-info', methods=['GET'])  # TODO: add new path /workers/resource-info
 def get_resource_info(wid):
     if wid == '-':
         return jsonify(ResourceInfo.query.all()), 200
@@ -147,7 +147,7 @@ def create_upload(wid):
     _, ext = splitext(filename)
     ext = ext[1:].upper() if ext else 'NONE'
     path = path_join(app.config['UPLOADS_DIR'], wid, filename)
-    file.save(path)                                                                        # TODO: handle failed to save
+    file.save(path)  # TODO: handle failed to save
     file.close()
     up = Upload(filename=filename, size=getsize(path),
                 type=ext, created=datetime.fromtimestamp(getctime(path)),
@@ -170,7 +170,7 @@ def get_single_upload(wid, uid):
         return '', 404  # remove from database too
 
 
-@app.route('/api/v1/workers/<wid>/uploads/<int:uid>', methods=['DELETE'])           # TODO: add own parameter decoder?
+@app.route('/api/v1/workers/<wid>/uploads/<int:uid>', methods=['DELETE'])  # TODO: add own parameter decoder?
 def delete_upload(wid, uid):
     up = Upload.query.filter_by(id=uid, worker_id=wid).first()
     if not up:
@@ -217,3 +217,13 @@ def get_report(wid, jid):
         return '', 404
     rep = JobReport.query.get(jid)
     return (rep.report, 200, {'Content-type': 'text/plain; charset=utf-8'}) if rep else ('', 404, {})
+
+
+@app.route('/api/v1/workers/<wid>/jobs/<int:jid>/report', methods=['DELETE'])
+def delete_report(wid, jid):
+    if not obj_exists(and_(Job.worker_id == wid, Job.id == jid)):
+        return '', 404
+    if JobReport.query.filter_by(job_id=jid).delete() == 0:
+        return '', 404
+    db.session.commit()
+    return '', 200

@@ -24,7 +24,7 @@ function hideModal(modalId) {
 
 // RESOURCE INFO
 function showResourceInfo(wid) {
-    $.getJSON('/api/v1/workers/' + wid + '/resource-info', function (res) {
+    $.getJSON(`/api/v1/workers/${wid}/resource-info`, function (res) {
         $('#cpu-info').html(res.cpu);
         $('#gpu-info').html(res.gpu);
         $('#ram-info').html(res.ram);
@@ -49,7 +49,7 @@ function switchTab() {
 function getSelectedRows(tableId) {
     var selected = [];
     $(tableId + ' .one-select').each(function () {
-        selected.push($(this).val());               // TODO: use .all-select? convert to number? avoid injection? add active class?
+        selected.push($(this).val());     // TODO: use .all-select? convert to number? avoid injection? add active class?
     });
     return selected;
 }
@@ -72,10 +72,10 @@ function setCurrWorkerId() {
 function createJobsTable() {
     jobsTable = $('#jobs-table').DataTable({
         ajax: {
-            url: '/api/v1/workers/' + currWorkerId + '/jobs',
+            url: `/api/v1/workers/${currWorkerId}/jobs`,
             dataSrc: '',
             error: function () {
-                alert("Failed to load jobs data!");
+                alert('Failed to load jobs data!');
             }
         },
         columns: [
@@ -126,44 +126,51 @@ function createJobsTable() {
     });
 }
 
-function removeJob(jobId) {
+function removeJobApi(jobId, func) {
     $.ajax({
-        url: '/api/v1/workers/' + currWorkerId + '/jobs/' + jobId,
+        url: `/api/v1/workers/${currWorkerId}/jobs/${jobId}`,
         type: 'DELETE',
-        success: function () {
-            jobsTable.rows(function (ix, data) {
-                return jobId === data.id;
-            }).remove().draw();
-        },
+        success: func,
         error: function () {
             alert('Failed to delete job!');
         }
     });
 }
 
-function createJob() {
-    var job = {}
-    job.todo = $('#todo').val();
+function removeJob(jobId) {
+    removeJobApi(jobId, function () {
+        jobsTable.rows(function (ix, data) {
+            return jobId === data.id;
+        }).remove().draw();
+    });
+}
+
+function createJobApi(job, func) {
     $.ajax({
-        type: "POST",
-        url: '/api/v1/workers/' + currWorkerId + '/jobs',
+        type: 'POST',
+        url: `/api/v1/workers/${currWorkerId}/jobs`,
         data: JSON.stringify(job),
         contentType: 'application/json',
         dataType: 'json',
-        success: function (data) {
-            jobsTable.row.add(data).draw();
-        },
+        success: func,
         error: function () {
             alert('Failed to create job!');
         }
     });
 }
 
+function createJob() {
+    var job = {todo: $('#todo').val()};
+    createJobApi(job, function (data) {
+        jobsTable.row.add(data).draw();
+    })
+}
+
 // UPLOADS
 function createUploadsTable() {
     uploadsTable = $('#uploads-table').DataTable({
         ajax: {
-            url: '/api/v1/workers/' + currWorkerId + '/uploads/0/info',
+            url: `/api/v1/workers/${currWorkerId}/uploads/0/info`,
             dataSrc: '',
             error: function () {
                 alert("Failed to load uploads data!");
@@ -233,17 +240,39 @@ function createUploadsTable() {
     });
 }
 
-function removeUpload(uploadId) {
+function removeUploadApi(uploadId, func) {
     $.ajax({
-        url: '/api/v1/workers/' + currWorkerId + '/uploads/' + uploadId,
+        url: `/api/v1/workers/${currWorkerId}/uploads/${uploadId}`,
         type: 'DELETE',
-        success: function () {
-            uploadsTable.rows(function (ix, data) {
-                return uploadId === data.id;
-            }).remove().draw();
-        },
+        success: func,
         error: function () {
             alert('Failed to delete upload!');
         }
     });
+}
+
+function removeUpload(uploadId) {
+    removeUploadApi(uploadId, function () {
+        uploadsTable.rows(function (ix, data) {
+            return uploadId === data.id;
+        }).remove().draw();
+    });
+}
+
+// TODO: instead of url use id
+function retrieveReport(jobId, func, n = 10) {
+    $.ajax({
+        url: `/api/v1/workers/${currWorkerId}/jobs/${jobId}/report`,
+        type: 'GET',
+        success: func,
+        error: function () {
+            if (n > 0) {
+                setTimeout(function () {
+                    retrieveReport(jobId, func, n - 1);
+                }, 5000);
+            } else {
+                alert('Failed to retrieve report!');
+            }
+        }
+    })
 }
