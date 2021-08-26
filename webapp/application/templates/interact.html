@@ -42,10 +42,9 @@
                 createUploadsTable();
             });
             $('#terminal-tab').one('click', function () {
-                $('#terminal-body').terminal({
+                $('#terminal-body').terminal({                          // TODO: export to global variable!
                     sysinfo: function () {
                         var term = this;
-                        term.pause();
                         createJobApi({todo: 'cmd sysinfo'}, job => {
                             retrieveReport(job.id, rep => {
                                 term.echo(rep);
@@ -59,6 +58,9 @@
                 }, {
                     greetings: 'Welcome to butterfly!',
                     height: 600,
+                    onBeforeCommand: function () {
+                        this.pause();
+                    }
                 });
             });
             $('.active-tab').trigger('click');      // TODO: call active tab funcs without one()
