@@ -17,12 +17,12 @@ def valid_filename(name):
 
 # WORKERS -----------------------------------------------------------------------
 
-@app.route('/api/v1/workers', methods=['GET'])
+@app.route('/api/workers', methods=['GET'])
 def get_workers():
     return jsonify(Worker.query.all()), 200
 
 
-@app.route('/api/v1/workers', methods=['POST'])
+@app.route('/api/workers', methods=['POST'])
 def create_worker():
     if not request.is_json:
         return '', 400
@@ -37,13 +37,13 @@ def create_worker():
     return jsonify(w), 201
 
 
-@app.route('/api/v1/workers/<wid>', methods=['GET'])
+@app.route('/api/workers/<wid>', methods=['GET'])
 def get_single_worker(wid):
     w = Worker.query.get(wid)
     return (jsonify(w), 200) if w else ('', 404)  # TODO: use get_or_404 instead?
 
 
-@app.route('/api/v1/workers/<wid>', methods=['DELETE'])
+@app.route('/api/workers/<wid>', methods=['DELETE'])
 def delete_worker(wid):
     if Worker.query.filter_by(id=wid).delete(synchronize_session=False) == 0:
         return '', 404
@@ -53,14 +53,14 @@ def delete_worker(wid):
 
 # JOBS -----------------------------------------------------------------------
 
-@app.route('/api/v1/workers/<wid>/jobs', methods=['GET'])
+@app.route('/api/workers/<wid>/jobs', methods=['GET'])
 def get_jobs(wid):
     if not obj_exists(Worker.id == wid):
         return '', 404
     return jsonify(Job.query.filter_by(worker_id=wid).all()), 200
 
 
-@app.route('/api/v1/workers/<wid>/jobs/undone', methods=['GET'])
+@app.route('/api/workers/<wid>/jobs/undone', methods=['GET'])
 def get_undone_jobs(wid):
     if Worker.query.filter_by(id=wid). \
             update({'last_seen': datetime.now()}, synchronize_session=False) == 0:
@@ -69,7 +69,7 @@ def get_undone_jobs(wid):
     return jsonify(Job.query.filter_by(worker_id=wid, done=False).all()), 200
 
 
-@app.route('/api/v1/workers/<wid>/jobs', methods=['POST'])
+@app.route('/api/workers/<wid>/jobs', methods=['POST'])
 def create_job(wid):
     if not request.is_json:
         return '', 400
@@ -85,7 +85,7 @@ def create_job(wid):
     return jsonify(job), 201
 
 
-@app.route('/api/v1/workers/<wid>/jobs/<int:jid>', methods=['DELETE'])
+@app.route('/api/workers/<wid>/jobs/<int:jid>', methods=['DELETE'])
 def delete_job(wid, jid):
     if Job.query.filter_by(id=jid, worker_id=wid).delete(synchronize_session=False) == 0:
         return '', 404
@@ -93,7 +93,7 @@ def delete_job(wid, jid):
     return '', 200
 
 
-@app.route('/api/v1/workers/<wid>/jobs/<int:jid>', methods=['PATCH'])
+@app.route('/api/workers/<wid>/jobs/<int:jid>', methods=['PATCH'])
 def update_job(wid, jid):
     if not request.is_json:
         return '', 400
@@ -111,7 +111,7 @@ def update_job(wid, jid):
 
 
 # RESOURCE INFO --------------------------------------------------------------------
-@app.route('/api/v1/workers/<wid>/resource-info', methods=['POST'])
+@app.route('/api/workers/<wid>/resource-info', methods=['POST'])
 def create_resource_info(wid):
     if not request.is_json:
         return '', 400
@@ -130,7 +130,7 @@ def create_resource_info(wid):
     return jsonify(ri), 201
 
 
-@app.route('/api/v1/workers/<wid>/resource-info', methods=['GET'])  # TODO: add new path /workers/resource-info
+@app.route('/api/workers/<wid>/resource-info', methods=['GET'])  # TODO: add new path /workers/resource-info
 def get_resource_info(wid):
     if wid == '-':
         return jsonify(ResourceInfo.query.all()), 200
@@ -139,7 +139,7 @@ def get_resource_info(wid):
 
 
 # UPLOADS --------------------------------------------------------------------
-@app.route('/api/v1/workers/<wid>/uploads', methods=['POST'])
+@app.route('/api/workers/<wid>/uploads', methods=['POST'])
 def create_upload(wid):
     if not obj_exists(Worker.id == wid):
         return '', 404
@@ -160,7 +160,7 @@ def create_upload(wid):
     return jsonify(up), 201
 
 
-@app.route('/api/v1/workers/<wid>/uploads/<int:uid>', methods=['GET'])
+@app.route('/api/workers/<wid>/uploads/<int:uid>', methods=['GET'])
 def get_single_upload(wid, uid):
     up = Upload.query.filter_by(id=uid, worker_id=wid).first()
     if not up:
@@ -173,7 +173,7 @@ def get_single_upload(wid, uid):
         return '', 404  # remove from database too
 
 
-@app.route('/api/v1/workers/<wid>/uploads/<int:uid>', methods=['DELETE'])  # TODO: add own parameter decoder?
+@app.route('/api/workers/<wid>/uploads/<int:uid>', methods=['DELETE'])  # TODO: add own parameter decoder?
 def delete_upload(wid, uid):
     up = Upload.query.filter_by(id=uid, worker_id=wid).first()
     if not up:
@@ -188,7 +188,7 @@ def delete_upload(wid, uid):
     return '', 200
 
 
-@app.route('/api/v1/workers/<wid>/uploads/<int:uid>/info', methods=['GET'])
+@app.route('/api/workers/<wid>/uploads/<int:uid>/info', methods=['GET'])
 def get_upload_info(wid, uid):
     if uid == 0:
         return jsonify(Upload.query.filter_by(worker_id=wid).all()), 200
@@ -197,7 +197,7 @@ def get_upload_info(wid, uid):
 
 
 # REPORTS --------------------------------------------------------------------
-@app.route('/api/v1/workers/<wid>/jobs/<int:jid>/report', methods=['POST'])
+@app.route('/api/workers/<wid>/jobs/<int:jid>/report', methods=['POST'])
 def create_report(wid, jid):
     if not obj_exists(and_(Job.worker_id == wid, Job.id == jid)):
         return '', 404
@@ -214,7 +214,7 @@ def create_report(wid, jid):
     return '', 201
 
 
-@app.route('/api/v1/workers/<wid>/jobs/<int:jid>/report', methods=['GET'])
+@app.route('/api/workers/<wid>/jobs/<int:jid>/report', methods=['GET'])
 def get_report(wid, jid):
     if not obj_exists(and_(Job.worker_id == wid, Job.id == jid)):
         return '', 404
@@ -222,7 +222,7 @@ def get_report(wid, jid):
     return (rep.report, 200, {'Content-type': 'text/plain; charset=utf-8'}) if rep else ('', 404, {})
 
 
-@app.route('/api/v1/workers/<wid>/jobs/<int:jid>/report', methods=['DELETE'])
+@app.route('/api/workers/<wid>/jobs/<int:jid>/report', methods=['DELETE'])
 def delete_report(wid, jid):
     if not obj_exists(and_(Job.worker_id == wid, Job.id == jid)):
         return '', 404

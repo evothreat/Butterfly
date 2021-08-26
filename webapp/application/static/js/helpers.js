@@ -1,7 +1,7 @@
 var workers;
 
 function loadWorkers() {
-    $.getJSON('/api/v1/workers', function (res) {
+    $.getJSON('/api/workers', function (res) {
         workers = res.reduce(function (map, w) {            // TODO: use array with filter?
             map[w.id] = w;
             return map;

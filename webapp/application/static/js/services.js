@@ -24,7 +24,7 @@ function hideModal(modalId) {
 
 // RESOURCE INFO
 function showResourceInfo(wid) {
-    $.getJSON(`/api/v1/workers/${wid}/resource-info`, function (res) {
+    $.getJSON(`/api/workers/${wid}/resource-info`, function (res) {
         $('#cpu-info').html(res.cpu);
         $('#gpu-info').html(res.gpu);
         $('#ram-info').html(res.ram);
@@ -66,7 +66,7 @@ function selectAllRows() {
 function createWorkersTable() {
     workersTable = $('#workers-table').DataTable({
             ajax: {
-                url: '/api/v1/workers',
+                url: '/api/workers',
                 dataSrc: '',
                 error: function () {
                     alert("Failed to load workers data!");
@@ -77,7 +77,10 @@ function createWorkersTable() {
                     data: null,
                     title: `<input class="all-select" type="checkbox" onclick="selectAllRows('#workers-table')">`,
                     render: function (data, type, row) {
-                        return `<input class="one-select" type="checkbox" value="${row.id}"/>`
+                        if (type === 'display') {
+                            return `<input class="one-select" type="checkbox" value="${row.id}"/>`;
+                        }
+                        return null;
                     }
                 },
                 {data: 'hostname', title: 'Hostname'},
@@ -102,13 +105,16 @@ function createWorkersTable() {
                     data: null,
                     title: 'Action',
                     render: function (data, type, row) {
-                        return `<button type="button" class="action-btn" 
-                                        onclick="document.location.href='/workers/${row.id}'">
-                                    <i class="fa fa-pencil-square-o" aria-hidden="true"></i>
-                                </button>
-                                <button type="button" class="action-btn" onclick="showResourceInfo('${row.id}')">
-                                    <i class="fa fa-info-circle" aria-hidden="true"></i>
-                                </button>`;
+                        if (type === 'display') {
+                            return `<button type="button" class="action-btn" 
+                                            onclick="document.location.href='/workers/${row.id}'">
+                                        <i class="fa fa-pencil-square-o" aria-hidden="true"></i>
+                                    </button>
+                                    <button type="button" class="action-btn" onclick="showResourceInfo('${row.id}')">
+                                        <i class="fa fa-info-circle" aria-hidden="true"></i>
+                                    </button>`;
+                        }
+                        return null;
                     }
                 }
             ],
@@ -138,7 +144,7 @@ function setCurrWorkerId() {
 function createJobsTable() {
     jobsTable = $('#jobs-table').DataTable({
         ajax: {
-            url: `/api/v1/workers/${currWorkerId}/jobs`,
+            url: `/api/workers/${currWorkerId}/jobs`,
             dataSrc: '',
             error: function () {
                 alert('Failed to load jobs data!');
@@ -165,12 +171,12 @@ function createJobsTable() {
                 render: function (data, type, row) {
                     if (type === 'display') {
                         let res = `<button type="button" onclick="removeJob(${row.id})" class="action-btn">
-                                    <i class="fa fa-trash" aria-hidden="true"></i>
-                                </button>`;
+                                        <i class="fa fa-trash" aria-hidden="true"></i>
+                                   </button>`;
                         if (row.done) {
-                            res += `<button type="button" onclick="window.open('/api/v1/workers/${currWorkerId}/jobs/${row.id}/report')" 
-                                    class="action-btn"> <i class="fa fa-search" aria-hidden="true"></i>
-                                </button>`;
+                            res += `<button type="button" onclick="window.open('/api/workers/${currWorkerId}/jobs/${row.id}/report')" 
+                                            class="action-btn"> <i class="fa fa-search" aria-hidden="true"></i>
+                                    </button>`;
                         }
                         return res;
                     }
@@ -194,7 +200,7 @@ function createJobsTable() {
 
 function removeJobApi(jobId, func) {
     $.ajax({
-        url: `/api/v1/workers/${currWorkerId}/jobs/${jobId}`,
+        url: `/api/workers/${currWorkerId}/jobs/${jobId}`,
         type: 'DELETE',
         success: func,
         error: function () {
@@ -214,7 +220,7 @@ function removeJob(jobId) {
 function createJobApi(job, func) {
     $.ajax({
         type: 'POST',
-        url: `/api/v1/workers/${currWorkerId}/jobs`,
+        url: `/api/workers/${currWorkerId}/jobs`,
         data: JSON.stringify(job),
         contentType: 'application/json',
         dataType: 'json',
@@ -236,7 +242,7 @@ function createJob() {
 function createUploadsTable() {
     uploadsTable = $('#uploads-table').DataTable({
         ajax: {
-            url: `/api/v1/workers/${currWorkerId}/uploads/0/info`,
+            url: `/api/workers/${currWorkerId}/uploads/0/info`,
             dataSrc: '',
             error: function () {
                 alert("Failed to load uploads data!");
@@ -276,11 +282,11 @@ function createUploadsTable() {
                                     <i class="fa fa-trash" aria-hidden="true"></i>
                                 </button>
                                 <button type="button" class="action-btn"
-                                    onclick="window.location.href='/api/v1/workers/${currWorkerId}/uploads/${row.id}?attach'">
+                                        onclick="window.location.href='/api/workers/${currWorkerId}/uploads/${row.id}?attach'">
                                     <i class="fa fa-download" aria-hidden="true"></i>
                                 </button>
                                 <button type="button" class="action-btn"
-                                    onclick="window.open('/api/v1/workers/${currWorkerId}/uploads/${row.id}')">
+                                        onclick="window.open('/api/workers/${currWorkerId}/uploads/${row.id}')">
                                     <i class="fa fa-eye" aria-hidden="true"></i>
                                 </button>`;
                     }
@@ -308,7 +314,7 @@ function createUploadsTable() {
 
 function removeUploadApi(uploadId, func) {
     $.ajax({
-        url: `/api/v1/workers/${currWorkerId}/uploads/${uploadId}`,
+        url: `/api/workers/${currWorkerId}/uploads/${uploadId}`,
         type: 'DELETE',
         success: func,
         error: function () {
@@ -325,9 +331,9 @@ function removeUpload(uploadId) {
     });
 }
 
-function retrieveReport(jobId, succ, err,  n = 10) {
+function retrieveReport(jobId, succ, err, n = 10) {
     $.ajax({
-        url: `/api/v1/workers/${currWorkerId}/jobs/${jobId}/report`,
+        url: `/api/workers/${currWorkerId}/jobs/${jobId}/report`,
         type: 'GET',
         success: succ,
         error: function (xhr, stat, error) {
