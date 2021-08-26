@@ -1,7 +1,7 @@
-var currWorkerId;
-var jobsTable,
+let currWorkerId;
+let workersTable,
+    jobsTable,
     uploadsTable;
-// TODO: add workersTable
 
 // BYTES TO HUMAN-READABLE
 function formatBytes(bytes, decimals = 2) {
@@ -36,18 +36,18 @@ function showResourceInfo(wid) {
 // TABS
 function switchTab() {
     // get current tab
-    var currTab = $('.tabs .active-tab');
+    let currTab = $('.tabs .active-tab');
     currTab.removeClass('active-tab');
     $('#' + currTab.attr('aria-controls')).removeClass('active-body');
     // set clicked tab
-    var selected = $(this);
+    let selected = $(this);
     selected.addClass('active-tab');
     $('#' + selected.attr('aria-controls')).addClass('active-body');
 }
 
 // TABLE ROWS
 function getSelectedRows(tableId) {
-    var selected = [];
+    let selected = [];
     $(tableId + ' .one-select').each(function () {
         selected.push($(this).val());     // TODO: use .all-select? convert to number? avoid injection? add active class?
     });
@@ -55,16 +55,82 @@ function getSelectedRows(tableId) {
 }
 
 function selectAllRows() {
-    var box = $(this);
-    var val = box.is(':checked');
+    let box = $(this);
+    let val = box.is(':checked');
     box.closest('table').find('.one-select').each(function () {
         $(this).prop('checked', val);
     })
 }
 
+// WORKERS
+function createWorkersTable() {
+    workersTable = $('#workers-table').DataTable({
+            ajax: {
+                url: '/api/v1/workers',
+                dataSrc: '',
+                error: function () {
+                    alert("Failed to load workers data!");
+                }
+            },
+            columns: [
+                {
+                    data: null,
+                    title: `<input class="all-select" type="checkbox" onclick="selectAllRows('#workers-table')">`,
+                    render: function (data, type, row) {
+                        return `<input class="one-select" type="checkbox" value="${row.id}"/>`
+                    }
+                },
+                {data: 'hostname', title: 'Hostname'},
+                {data: 'ip_addr', title: 'IP-Addr'},
+                {data: 'os', title: 'OS'},
+                {data: 'country', title: 'Country'},
+                {
+                    data: 'last_seen',
+                    title: 'Last-Seen',
+                    render: function (data, type, row) {
+                        if (type === 'display') {
+                            let diff = new Date() - new Date(data);
+                            if (diff > 60000) {
+                                return data;
+                            }
+                            return 'Online';
+                        }
+                        return data;
+                    }
+                },
+                {
+                    data: null,
+                    title: 'Action',
+                    render: function (data, type, row) {
+                        return `<button type="button" class="action-btn" 
+                                        onclick="document.location.href='/workers/${row.id}'">
+                                    <i class="fa fa-pencil-square-o" aria-hidden="true"></i>
+                                </button>
+                                <button type="button" class="action-btn" onclick="showResourceInfo('${row.id}')">
+                                    <i class="fa fa-info-circle" aria-hidden="true"></i>
+                                </button>`;
+                    }
+                }
+            ],
+            columnDefs: [
+                {
+                    searchable: false,
+                    orderable: false,
+                    targets: [0, 6]
+                },
+                {
+                    className: 'dt-body-center',
+                    targets: [0]
+                }
+            ],
+            order: [[5, 'asc']]
+        }
+    );
+}
+
 // HISTORY
 function setCurrWorkerId() {
-    var url = window.location.pathname;
+    let url = window.location.pathname;
     currWorkerId = url.substring(url.lastIndexOf('/') + 1);
 }
 
@@ -91,17 +157,17 @@ function createJobsTable() {
             },
             {data: 'id', title: 'ID'},
             {data: 'todo', title: 'ToDo'},
-            {data: 'completed', title: 'Completed'},
+            {data: 'done', title: 'Completed'},
             {data: 'created', title: 'Created'},
             {
                 data: null,
                 title: 'Action',
                 render: function (data, type, row) {
                     if (type === 'display') {
-                        var res = `<button type="button" onclick="removeJob(${row.id})" class="action-btn">
+                        let res = `<button type="button" onclick="removeJob(${row.id})" class="action-btn">
                                     <i class="fa fa-trash" aria-hidden="true"></i>
                                 </button>`;
-                        if (row.completed) {
+                        if (row.done) {
                             res += `<button type="button" onclick="window.open('/api/v1/workers/${currWorkerId}/jobs/${row.id}/report')" 
                                     class="action-btn"> <i class="fa fa-search" aria-hidden="true"></i>
                                 </button>`;
@@ -160,7 +226,7 @@ function createJobApi(job, func) {
 }
 
 function createJob() {
-    var job = {todo: $('#todo').val()};
+    let job = {todo: $('#todo').val()};
     createJobApi(job, function (data) {
         jobsTable.row.add(data).draw();
     })
@@ -259,7 +325,6 @@ function removeUpload(uploadId) {
     });
 }
 
-// TODO: use url instead of jobId?
 function retrieveReport(jobId, succ, err,  n = 10) {
     $.ajax({
         url: `/api/v1/workers/${currWorkerId}/jobs/${jobId}/report`,

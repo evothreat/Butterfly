@@ -1,40 +1,11 @@
 {% extends 'layout.html' %}
 
 {% block content %}
-    <table id="workers-table">
-        <thead>
-        <tr>
-            <th><input class="all-select" type="checkbox"></th>
-            <th>Hostname</th>
-            <th>IP-Address</th>
-            <th>OS</th>
-            <th>Country</th>
-            <th>Last-Seen</th>
-            <th>Action</th>
-        </tr>
-        </thead>
-        <tbody>
-        {% for w in workers %}
-            <tr>
-                <td><input class="one-select" type="checkbox" value="{{ w.id }}"/></td>
-                <td>{{ w.hostname }}</td>
-                <td>{{ w.ip_addr }}</td>
-                <td>{{ w.os }}</td>
-                <td>{{ w.country }}</td>
-                <td>{{ w.last_seen.strftime('%a, %e %b %Y %H:%M:%S') }}</td>
-                <td>
-                    <button type="button" class="action-btn"
-                            onclick="document.location.href='{{ url_for('interact', wid=w.id) }}';">
-                        <i class="fa fa-pencil-square-o" aria-hidden="true"></i>
-                    </button>
-                    <button type="button" class="action-btn" onclick="showResourceInfo('{{ w.id }}')">
-                        <i class="fa fa-info-circle" aria-hidden="true"></i>
-                    </button>
-                </td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
+    <button type="button" class="btn" onclick="workersTable.ajax.reload()">
+        Refresh
+        <i class="fa fa-refresh" aria-hidden="true"></i>
+    </button>
+    <table id="workers-table"></table>
     <div id="resource-dlg" class="modal-bg hidden">
         <div class="modal">
             <div class="modal-head">
@@ -66,19 +37,7 @@
 
     <script>
         $(document).ready(function () {
-            $('#workers-table').DataTable({
-                columnDefs: [{
-                    searchable: false,
-                    orderable: false,
-                    targets: [0, 6]
-                },
-                    {
-                        className: 'dt-body-center',
-                        targets: [0]
-                    }
-                ],
-                order: [[5, 'asc']]
-            });
+            createWorkersTable();
         });
     </script>
 {% endblock %}

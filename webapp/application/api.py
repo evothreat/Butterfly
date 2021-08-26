@@ -45,7 +45,7 @@ def get_single_worker(wid):
 
 @app.route('/api/v1/workers/<wid>', methods=['DELETE'])
 def delete_worker(wid):
-    if Worker.query.filter_by(id=wid).delete() == 0:
+    if Worker.query.filter_by(id=wid).delete(synchronize_session=False) == 0:
         return '', 404
     db.session.commit()
     return '', 200
@@ -57,13 +57,16 @@ def delete_worker(wid):
 def get_jobs(wid):
     if not obj_exists(Worker.id == wid):
         return '', 404
-    if 'done' in request.args:
-        jobs = Job.query.filter_by(worker_id=wid, completed=True).all()
-    elif 'undone' in request.args:
-        jobs = Job.query.filter_by(worker_id=wid, completed=False).all()
-    else:
-        jobs = Job.query.filter_by(worker_id=wid).all()
-    return jsonify(jobs), 200
+    return jsonify(Job.query.filter_by(worker_id=wid).all()), 200
+
+
+@app.route('/api/v1/workers/<wid>/jobs/undone', methods=['GET'])
+def get_undone_jobs(wid):
+    if Worker.query.filter_by(id=wid). \
+            update({'last_seen': datetime.now()}, synchronize_session=False) == 0:
+        return '', 404
+    db.session.commit()
+    return jsonify(Job.query.filter_by(worker_id=wid, done=False).all()), 200
 
 
 @app.route('/api/v1/workers/<wid>/jobs', methods=['POST'])
@@ -84,7 +87,7 @@ def create_job(wid):
 
 @app.route('/api/v1/workers/<wid>/jobs/<int:jid>', methods=['DELETE'])
 def delete_job(wid, jid):
-    if Job.query.filter_by(id=jid, worker_id=wid).delete() == 0:
+    if Job.query.filter_by(id=jid, worker_id=wid).delete(synchronize_session=False) == 0:
         return '', 404
     db.session.commit()
     return '', 200
@@ -99,7 +102,7 @@ def update_job(wid, jid):
         return '', 404
     # job.id = request.json.get('id', job.id)
     # job.todo = request.json.get('todo', job.todo)
-    job.completed = request.json.get('completed', job.completed)
+    job.done = request.json.get('done', job.done)
     # job.created = request.json.get('created', job.created)
     # job.report_type = request.json.get('report_type', job.report_type)
     # job.worker_id = request.json.get('worker_id', job.worker_id)
@@ -203,9 +206,9 @@ def create_report(wid, jid):
     rep = JobReport(job_id=jid, report=request.get_data(cache=False))
     try:
         db.session.add(rep)
-        Job.query.filter_by(id=jid).update({'completed': True})
+        Job.query.filter_by(id=jid).update({'done': True}, synchronize_session=False)
         db.session.commit()
-    except IntegrityError:  # report already exists, means Job.completed == True
+    except IntegrityError:  # report already exists, means Job.done == True
         db.session.rollback()
         return '', 409
     return '', 201
@@ -223,7 +226,7 @@ def get_report(wid, jid):
 def delete_report(wid, jid):
     if not obj_exists(and_(Job.worker_id == wid, Job.id == jid)):
         return '', 404
-    if JobReport.query.filter_by(job_id=jid).delete() == 0:
+    if JobReport.query.filter_by(job_id=jid).delete(synchronize_session=False) == 0:
         return '', 404
     db.session.commit()
     return '', 200

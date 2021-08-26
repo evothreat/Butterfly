@@ -29,13 +29,13 @@ class JobReport(db.Model):
 class Job(db.Model):
     id: int
     todo: str
-    completed: bool
+    done: bool
     created: datetime
     worker_id: str
 
     id = db.Column(db.Integer, primary_key=True)
     todo = db.Column(db.String(250))
-    completed = db.Column(db.Boolean, default=False)
+    done = db.Column(db.Boolean, default=False)
     created = db.Column(db.DateTime, default=datetime.now)
     worker_id = db.Column(db.String(22), db.ForeignKey('worker.id'), nullable=False)
 
