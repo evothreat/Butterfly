@@ -41,6 +41,26 @@
             $('#uploads-tab').one('click', function () {
                 createUploadsTable();
             });
+            $('#terminal-tab').one('click', function () {
+                $('#terminal-body').terminal({
+                    sysinfo: function () {
+                        var term = this;
+                        term.pause();
+                        createJobApi({todo: 'cmd sysinfo'}, job => {
+                            retrieveReport(job.id, rep => {
+                                term.echo(rep);
+                                term.resume();
+                            }, () => {
+                                term.error('Failed to retrieve report!');
+                                term.resume();
+                            });
+                        });
+                    }
+                }, {
+                    greetings: 'Welcome to butterfly!',
+                    height: 600,
+                });
+            });
             $('.active-tab').trigger('click');      // TODO: call active tab funcs without one()
         });
     </script>

@@ -219,3 +219,8 @@ button {
 .hidden {
     display: none !important;
 }
+
+/* Terminal */
+.terminal {
+    --size: 1.2;
+}

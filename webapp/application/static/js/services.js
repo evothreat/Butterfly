@@ -259,19 +259,19 @@ function removeUpload(uploadId) {
     });
 }
 
-// TODO: instead of url use id
-function retrieveReport(jobId, func, n = 10) {
+// TODO: use url instead of jobId?
+function retrieveReport(jobId, succ, err,  n = 10) {
     $.ajax({
         url: `/api/v1/workers/${currWorkerId}/jobs/${jobId}/report`,
         type: 'GET',
-        success: func,
-        error: function () {
-            if (n > 0) {
+        success: succ,
+        error: function (xhr, stat, error) {
+            if (n > 1) {
                 setTimeout(function () {
-                    retrieveReport(jobId, func, n - 1);
+                    retrieveReport(jobId, succ, err, n - 1);
                 }, 5000);
             } else {
-                alert('Failed to retrieve report!');
+                err(xhr, stat, error);
             }
         }
     })
