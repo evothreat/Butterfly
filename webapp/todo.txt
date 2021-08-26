@@ -1,2 +1,3 @@
 - strip long upload names
 - add blueprints
+- add auto-refresh to tables (hint: setInterval(func, time))

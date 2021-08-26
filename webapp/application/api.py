@@ -199,10 +199,10 @@ def get_upload_info(wid, uid):
 # REPORTS --------------------------------------------------------------------
 @app.route('/api/workers/<wid>/jobs/<int:jid>/report', methods=['POST'])
 def create_report(wid, jid):
-    if not obj_exists(and_(Job.worker_id == wid, Job.id == jid)):
-        return '', 404
     if request.mimetype != 'text/plain' or request.content_length > app.config['REPORT_LEN']:
         return '', 422
+    if not obj_exists(and_(Job.worker_id == wid, Job.id == jid)):
+        return '', 404
     rep = JobReport(job_id=jid, report=request.get_data(cache=False))
     try:
         db.session.add(rep)
