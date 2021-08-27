@@ -331,18 +331,18 @@ function removeUpload(uploadId) {
     });
 }
 
-function retrieveReport(jobId, succ, err, n = 10) {
+function retrieveReport(jobId, funSucc, funcErr, n = 10) {
     $.ajax({
         url: `/api/workers/${currWorkerId}/jobs/${jobId}/report`,
         type: 'GET',
-        success: succ,
+        success: funSucc,
         error: function (xhr, stat, error) {
             if (n > 1) {
                 setTimeout(function () {
-                    retrieveReport(jobId, succ, err, n - 1);
+                    retrieveReport(jobId, funSucc, funcErr, n - 1);
                 }, 5000);
             } else {
-                err(xhr, stat, error);
+                funcErr(xhr, stat, error);
             }
         }
     })
