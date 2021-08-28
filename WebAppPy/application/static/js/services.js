@@ -91,7 +91,7 @@ function createWorkersTable() {
                     data: 'is_admin',
                     title: 'Admin',
                     render: function (data, type) {
-                        if (type === 'display') {
+                        if (type === 'display' || type === 'filter') {
                             return data ? 'yes' : 'no';
                         }
                         return data;
@@ -177,7 +177,7 @@ function createJobsTable() {
                 data: 'is_done',
                 title: 'Completed',
                 render: function (data, type) {
-                        if (type === 'display') {
+                        if (type === 'display' || type === 'filter') {
                             return data ? 'yes' : 'no';
                         }
                         return data;
