@@ -1,6 +1,6 @@
 from sqlalchemy import and_
 from sqlalchemy.exc import IntegrityError
-from flask import jsonify, request, send_file
+from flask import jsonify, request, send_file, url_for
 from re import match
 from os import mkdir, remove as remove_file
 from os.path import join as path_join, getsize, getctime, splitext
@@ -32,9 +32,8 @@ def create_worker():
         return '', 422
     db.session.add(w)
     db.session.commit()
-    # Create upload dir
     mkdir(path_join(app.config['UPLOADS_DIR'], w.id))
-    return jsonify(w), 201
+    return '', 201, {'Location': url_for('get_single_worker', wid=w.id)}
 
 
 @app.route('/api/workers/<wid>', methods=['GET'])
@@ -85,6 +84,12 @@ def create_job(wid):
     return jsonify(job), 201
 
 
+@app.route('/api/workers/<wid>/jobs/<int:jid>', methods=['GET'])
+def get_single_job(wid, jid):
+    job = Job.query.filter_by(id=jid, worker_id=wid).first()
+    return (jsonify(job), 200) if job else ('', 404)
+
+
 @app.route('/api/workers/<wid>/jobs/<int:jid>', methods=['DELETE'])
 def delete_job(wid, jid):
     if Job.query.filter_by(id=jid, worker_id=wid).delete(synchronize_session=False) == 0:
@@ -127,7 +132,7 @@ def create_resource_info(wid):
     except IntegrityError:
         db.session.rollback()
         return '', 409
-    return jsonify(ri), 201
+    return '', 201, {'Location': url_for('get_resource_info', wid=wid)}
 
 
 @app.route('/api/workers/<wid>/resource-info', methods=['GET'])  # TODO: add new path /workers/resource-info
@@ -157,7 +162,7 @@ def create_upload(wid):
                 worker_id=wid)
     db.session.add(up)
     db.session.commit()
-    return jsonify(up), 201
+    return '', 201, {'Location': url_for('get_single_upload', wid=wid, uid=up.id)}
 
 
 @app.route('/api/workers/<wid>/uploads/<int:uid>', methods=['GET'])
@@ -211,7 +216,7 @@ def create_report(wid, jid):
     except IntegrityError:  # report already exists, means Job.is_done == True
         db.session.rollback()
         return '', 409
-    return '', 201
+    return '', 201, {'Location': url_for('get_report', wid=wid, jid=jid)}
 
 
 @app.route('/api/workers/<wid>/jobs/<int:jid>/report', methods=['GET'])
