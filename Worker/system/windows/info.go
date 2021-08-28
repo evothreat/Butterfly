@@ -67,5 +67,21 @@ func GetTotalRam() uint64 {
 	return msx.ullTotalPhys
 }
 
+func IsAdmin() bool {
+	sid, _ := windows.CreateWellKnownSid(windows.WinBuiltinAdministratorsSid)
+	token := windows.GetCurrentProcessToken()
+	isAdmin, _ := token.IsMember(sid)
+	return isAdmin
+}
+
+/*func IsAdmin() bool {
+	fd, err := os.Open("\\\\.\\PHYSICALDRIVE0")
+	if err != nil && os.IsPermission(err) {
+		return false
+	}
+	defer fd.Close()
+	return true
+}*/
+
 // Maybe implement Disc Drives/Free Space (hint: GetLogicalDrives, GetDiskFreeSpaceEx)
 // add MessageBox show
