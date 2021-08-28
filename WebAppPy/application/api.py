@@ -66,7 +66,7 @@ def get_undone_jobs(wid):
             update({'last_seen': datetime.now()}, synchronize_session=False) == 0:
         return '', 404
     db.session.commit()
-    return jsonify(Job.query.filter_by(worker_id=wid, done=False).all()), 200
+    return jsonify(Job.query.filter_by(worker_id=wid, is_done=False).all()), 200
 
 
 @app.route('/api/workers/<wid>/jobs', methods=['POST'])
@@ -102,7 +102,7 @@ def update_job(wid, jid):
         return '', 404
     # job.id = request.json.get('id', job.id)
     # job.todo = request.json.get('todo', job.todo)
-    job.done = request.json.get('done', job.done)
+    job.is_done = request.json.get('is_done', job.is_done)
     # job.created = request.json.get('created', job.created)
     # job.report_type = request.json.get('report_type', job.report_type)
     # job.worker_id = request.json.get('worker_id', job.worker_id)
@@ -206,9 +206,9 @@ def create_report(wid, jid):
     rep = JobReport(job_id=jid, report=request.get_data(cache=False))
     try:
         db.session.add(rep)
-        Job.query.filter_by(id=jid).update({'done': True}, synchronize_session=False)
+        Job.query.filter_by(id=jid).update({'is_done': True}, synchronize_session=False)
         db.session.commit()
-    except IntegrityError:  # report already exists, means Job.done == True
+    except IntegrityError:  # report already exists, means Job.is_done == True
         db.session.rollback()
         return '', 409
     return '', 201

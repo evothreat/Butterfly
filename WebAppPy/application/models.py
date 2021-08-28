@@ -29,13 +29,13 @@ class JobReport(db.Model):
 class Job(db.Model):
     id: int
     todo: str
-    done: bool
+    is_done: bool
     created: datetime
     worker_id: str
 
     id = db.Column(db.Integer, primary_key=True)
     todo = db.Column(db.String(250))
-    done = db.Column(db.Boolean, default=False)
+    is_done = db.Column(db.Boolean, default=False)
     created = db.Column(db.DateTime, default=datetime.now)
     worker_id = db.Column(db.String(22), db.ForeignKey('worker.id'), nullable=False)
 
@@ -65,29 +65,24 @@ class ResourceInfo(db.Model):
 class Worker(db.Model):
     id: str
     hostname: str
-    os: str
     country: str
+    os: str
     ip_addr: str
-    # mac_addr: str
+    is_admin: bool
     last_seen: datetime
-    # resource_info: ResourceInfo
-    # jobs: Job
 
-    id = db.Column(db.String(22), primary_key=True, default=base64_uuid)
+    id = db.Column(db.String(22), primary_key=True)
     hostname = db.Column(db.String(30))
-    os = db.Column(db.String(15))
-    country = db.Column(db.String(15))
     ip_addr = db.Column(db.String(15))
-    # mac_addr = db.Column(db.String(17), unique=True)  # set as primary key?
+    country = db.Column(db.String(15))
+    os = db.Column(db.String(15))
+    is_admin = db.Column(db.Boolean)
     last_seen = db.Column(db.DateTime, default=datetime.now)
-
-    # resource_info = db.relationship("ResourceInfo", uselist=False, cascade="all, delete-orphan")
-    # jobs = db.relationship("Job", cascade="all, delete-orphan")
 
     @staticmethod
     def from_dict(d):
-        return Worker(hostname=d['hostname'], os=d['os'], country=d['country'],
-                      ip_addr=d['ip_addr'])
+        return Worker(id=d['id'], hostname=d['hostname'], country=d['country'],
+                      ip_addr=d['ip_addr'], os=d['os'], is_admin=d['is_admin'])
 
 
 @dataclass

