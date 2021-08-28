@@ -11,7 +11,7 @@ type MemStatusEx struct {
 	dwMemoryLoad uint32
 	ullTotalPhys uint64
 	ullAvailPhys uint64
-	unused       [5]uint64
+	restInfo     [5]uint64
 }
 
 func GetOsName() (string, error) {
@@ -55,8 +55,12 @@ func GetMachineGuid() (string, error) {
 }
 
 func GetTotalRam() uint64 {
-	user32dll := windows.NewLazyDLL("kernel32.dll")
-	globalMemoryStatusEx := user32dll.NewProc("GlobalMemoryStatusEx")
+	user32dll, err := windows.LoadDLL("kernel32.dll")
+	if err != nil {
+		return 0
+	}
+	defer user32dll.Release()
+	globalMemoryStatusEx, _ := user32dll.FindProc("GlobalMemoryStatusEx")
 	msx := &MemStatusEx{
 		dwLength: 64,
 	}
@@ -67,14 +71,14 @@ func GetTotalRam() uint64 {
 	return msx.ullTotalPhys
 }
 
-func IsAdmin() bool {
+func HaveAdminRights() bool {
 	sid, _ := windows.CreateWellKnownSid(windows.WinBuiltinAdministratorsSid)
 	token := windows.GetCurrentProcessToken()
 	isAdmin, _ := token.IsMember(sid)
 	return isAdmin
 }
 
-/*func IsAdmin() bool {
+/*func HaveAdminRights() bool {
 	fd, err := os.Open("\\\\.\\PHYSICALDRIVE0")
 	if err != nil && os.IsPermission(err) {
 		return false
