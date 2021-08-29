@@ -28,10 +28,12 @@ def create_worker():
         return '', 400
     try:
         w = Worker.from_dict(request.json)
+        db.session.add(w)
+        db.session.commit()
     except KeyError:
         return '', 422
-    db.session.add(w)
-    db.session.commit()
+    except IntegrityError:
+        return '', 409
     mkdir(path_join(app.config['UPLOADS_DIR'], w.id))
     return '', 201, {'Location': url_for('get_single_worker', wid=w.id)}
 
