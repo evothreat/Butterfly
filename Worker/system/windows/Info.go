@@ -54,10 +54,10 @@ func GetMachineGuid() (string, error) {
 	return res, nil
 }
 
-func GetTotalRam() uint64 {
+func GetTotalRam() (uint64, error) {
 	user32dll, err := windows.LoadDLL("kernel32.dll")
 	if err != nil {
-		return 0
+		return 0, err
 	}
 	defer user32dll.Release()
 	globalMemoryStatusEx, _ := user32dll.FindProc("GlobalMemoryStatusEx")
@@ -66,12 +66,12 @@ func GetTotalRam() uint64 {
 	}
 	r, _, _ := globalMemoryStatusEx.Call(uintptr(unsafe.Pointer(msx)))
 	if r == 0 {
-		return 0
+		return 0, nil
 	}
-	return msx.ullTotalPhys
+	return msx.ullTotalPhys, nil
 }
 
-func HaveAdminRights() bool {
+func HaveAdminRights() bool { // TODO: check for errors?
 	sid, _ := windows.CreateWellKnownSid(windows.WinBuiltinAdministratorsSid)
 	token := windows.GetCurrentProcessToken()
 	isAdmin, _ := token.IsMember(sid)
