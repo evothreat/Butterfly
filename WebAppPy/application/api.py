@@ -49,6 +49,7 @@ def delete_worker(wid):
     if Worker.query.filter_by(id=wid).delete(synchronize_session=False) == 0:
         return '', 404
     db.session.commit()
+    remove_file(path_join(app.config['UPLOADS_DIR'], wid))
     return '', 200
 
 
