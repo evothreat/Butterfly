@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/google/uuid"
+	"math/rand"
 	"net/http"
 	"strings"
 )
@@ -47,6 +48,10 @@ func GuidStrToBase64Str(guidStr string) (string, error) {
 	}
 	guidBytes, _ := guid.MarshalBinary()
 	return base64.RawURLEncoding.EncodeToString(guidBytes), nil
+}
+
+func RandomInt(min, max int) int {
+	return rand.Intn(max-min) + min
 }
 
 func GetMyIpCountry() (string, string) {
