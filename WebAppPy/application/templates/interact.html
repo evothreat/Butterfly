@@ -1,5 +1,12 @@
 {% extends 'layout.html' %}
 {% block content %}
+    <div class="labeled-toggle">
+        <p>Boost Mode</p>
+        <label class="toggle">
+            <input type="checkbox"/>
+            <span class="slider"></span>
+        </label>
+    </div>
     <div class="tabs">
         <button class="active-tab" id="history-tab" aria-controls="history-body">History</button>
         <button id="uploads-tab" aria-controls="uploads-body">Uploads</button>

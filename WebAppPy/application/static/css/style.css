@@ -224,3 +224,48 @@ button {
 .terminal {
     --size: 1.2;
 }
+
+/* The toggle */
+.toggle input { display: none; }
+
+.toggle {
+  position: relative;
+  display: inline-block;
+  width: 65px;
+  height: 25px;
+}
+
+.slider {
+  position: absolute;
+  top: 0; bottom: 0;
+  left: 0; right: 0;
+  cursor: pointer;
+  border: 2px solid gray;
+  background-color: gray;
+}
+
+.slider::before {
+  content: "";
+  width: 50%;
+  height: 100%;
+  position: absolute;
+  top: 0; left: 0;
+  background-color: white;
+}
+
+.slider, .slider::before { transition: all 0.2s; }
+
+.toggle input:checked + .slider {
+  border: 2px solid limegreen;
+  background-color: lime;
+}
+
+.toggle input:checked + .slider::before { left: 50%; }
+
+.labeled-toggle {
+    display: flex;
+    align-items: center;
+}
+.labeled-toggle p {
+    margin-right: 7px;
+}
