@@ -45,7 +45,8 @@
                 $('#terminal-body').terminal({                          // TODO: export to global variable!
                     sysinfo: function () {
                         var term = this;
-                        createJobApi({todo: 'cmd sysinfo'}, job => {
+                        term.pause()
+                        createJobApi({todo: 'cmd systeminfo'}, job => {
                             retrieveReport(job.id, rep => {
                                 term.echo(rep);
                                 term.resume();
@@ -57,10 +58,7 @@
                     }
                 }, {
                     greetings: 'Welcome to butterfly!',
-                    height: 600,
-                    onBeforeCommand: function () {
-                        this.pause();
-                    }
+                    height: 600
                 });
             });
             $('.active-tab').trigger('click');      // TODO: call active tab funcs without one()
