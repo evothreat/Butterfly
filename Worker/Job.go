@@ -1,12 +1,16 @@
 package main
 
-import "strings"
+import (
+	"sort"
+	"strings"
+	"time"
+)
 
 type Job struct {
-	Id      int    `json:"id"`
-	Todo    string `json:"todo"`
-	IsDone  bool   `json:"is_done"`
-	Created string `json:"created"`
+	Id      int       `json:"id"`
+	Todo    string    `json:"todo"`
+	IsDone  bool      `json:"is_done"`
+	Created time.Time `json:"created"`
 }
 
 type JobType int
@@ -43,4 +47,10 @@ func parseJob(jobStr string) (JobType, []string) {
 		return BOOST, values
 	}
 	return UNKNOWN, nil
+}
+
+func sortJobsByTime(jobs []Job) {
+	sort.Slice(jobs, func(i, j int) bool {
+		return jobs[i].Created.Before(jobs[j].Created)
+	})
 }
