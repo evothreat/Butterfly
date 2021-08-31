@@ -10,7 +10,7 @@ from os import mkdir
 
 def add_test_data():
     w = models.Worker(id='C1vHa4fB9kukvA6ILps0kQ', hostname='Predator', os='Windows 10', country='Germany',
-                      ip_addr='127.0.0.1', is_admin=True)
+                      ip_addr='127.0.0.1', is_admin=True, boost=True)
     w2 = models.Worker(id='K8_RNoHLL0S-UELe3WqhSw', hostname='Helios 300', os='Windows 7', country='England',
                        ip_addr='127.2.4.1', is_admin=False)
     w3 = models.Worker(id='8GYEaE8G5E2oZtVyxY8nxg', hostname='Acer Nexus', os='Windows 8', country='USA',

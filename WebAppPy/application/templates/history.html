@@ -1,11 +1,13 @@
-<button type="button" class="btn" onclick="jobsTable.ajax.reload()">
-    Refresh
-    <i class="fa fa-refresh" aria-hidden="true"></i>
-</button>
-<button type="button" class="btn" onclick="showModal('#new-job-dlg')">
-    New Job
-    <i class="fa fa-plus" aria-hidden="true"></i>
-</button>
+<div class="table-head">
+    <button type="button" class="btn" onclick="jobsTable.ajax.reload()">
+        Refresh
+        <i class="fa fa-refresh" aria-hidden="true"></i>
+    </button>
+    <button type="button" class="btn" onclick="showModal('#new-job-dlg')">
+        New Job
+        <i class="fa fa-plus" aria-hidden="true"></i>
+    </button>
+</div>
 <table id="jobs-table"></table>
 <div id="new-job-dlg" class="modal-bg hidden">
     <div class="modal">

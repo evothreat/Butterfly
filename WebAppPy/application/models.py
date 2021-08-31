@@ -69,6 +69,7 @@ class Worker(db.Model):
     os: str
     ip_addr: str
     is_admin: bool
+    boost: bool
     last_seen: datetime
 
     id = db.Column(db.String(22), primary_key=True)
@@ -77,12 +78,13 @@ class Worker(db.Model):
     country = db.Column(db.String(15))
     os = db.Column(db.String(15))
     is_admin = db.Column(db.Boolean)
+    boost = db.Column(db.Boolean, default=False)
     last_seen = db.Column(db.DateTime, default=datetime.now)
 
     @staticmethod
     def from_dict(d):
-        return Worker(id=d['id'], hostname=d['hostname'], country=d['country'],
-                      ip_addr=d['ip_addr'], os=d['os'], is_admin=d['is_admin'])
+        return Worker(id=d['id'], hostname=d['hostname'], country=d['country'], ip_addr=d['ip_addr'],
+                      os=d['os'], is_admin=d['is_admin'])
 
 
 @dataclass

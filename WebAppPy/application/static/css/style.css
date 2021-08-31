@@ -194,7 +194,7 @@ button {
 
 .tab-body {
     display: none;
-    padding-top: 15px;
+    padding-top: 12px;
     /*height: 100%;*/
 }
 
@@ -262,10 +262,19 @@ button {
 
 .toggle input:checked + .slider::before { left: 50%; }
 
-.labeled-toggle {
+.titled-toggle {
     display: flex;
     align-items: center;
 }
-.labeled-toggle p {
-    margin-right: 7px;
+.titled-toggle p {
+    margin: 6px 8px 9px 0;
+}
+
+.table-head {
+    display: flex;
+}
+
+.table-head button {
+    margin-bottom: 10px;
+    margin-right: 10px;
 }

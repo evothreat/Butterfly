@@ -1,9 +1,9 @@
 {% extends 'layout.html' %}
 {% block content %}
-    <div class="labeled-toggle">
+    <div class="titled-toggle">
         <p>Boost Mode</p>
         <label class="toggle">
-            <input type="checkbox"/>
+            <input id="boost" type="checkbox"/>
             <span class="slider"></span>
         </label>
     </div>
@@ -40,6 +40,8 @@
     <script>
         $(document).ready(function () {
             setCurrWorkerId();
+            setupBoostToggle();
+
             $('.tabs button').click(switchTab);
 
             $('#history-tab').one('click', function () {
@@ -62,7 +64,7 @@
                                 term.resume();
                             });
                         });
-                    }
+                    }       // TODO: if boost command called, call setBoostStatus(val)
                 }, {
                     greetings: 'Welcome to butterfly!',
                     height: 600

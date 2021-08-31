@@ -84,7 +84,7 @@ function createWorkersTable() {
                     }
                 },
                 {data: 'hostname', title: 'Hostname'},
-                {data: 'ip_addr', title: 'IP-Addr'},
+                {data: 'ip_addr', title: 'IP-Address'},
                 {data: 'country', title: 'Country'},
                 {data: 'os', title: 'OS'},
                 {
@@ -93,6 +93,16 @@ function createWorkersTable() {
                     render: function (data, type) {
                         if (type === 'display' || type === 'filter') {
                             return data ? 'yes' : 'no';
+                        }
+                        return data;
+                    }
+                },
+                {
+                    data: "boost",
+                    title: "Boost",
+                    render: function (data, type) {
+                        if (type === 'display' || type === 'filter') {
+                            return data ? 'on' : 'off';
                         }
                         return data;
                     }
@@ -117,7 +127,7 @@ function createWorkersTable() {
                     render: function (data, type, row) {
                         if (type === 'display') {
                             return `<button type="button" class="action-btn" 
-                                            onclick="document.location.href='/workers/${row.id}'">
+                                            onclick="document.location.href='/workers/${row.id}?boost=${row.boost}'">
                                         <i class="fa fa-pencil-square-o" aria-hidden="true"></i>
                                     </button>
                                     <button type="button" class="action-btn" onclick="showResourceInfo('${row.id}')">
@@ -132,14 +142,14 @@ function createWorkersTable() {
                 {
                     searchable: false,
                     orderable: false,
-                    targets: [0, 7]
+                    targets: [0, 8]
                 },
                 {
                     className: 'dt-body-center',
                     targets: [0]
                 }
             ],
-            order: [[6, 'asc']]
+            order: [[7, 'asc']]
         }
     );
 }
@@ -364,5 +374,17 @@ function retrieveReport(jobId, funSucc, funcErr, n = 10) {
                 funcErr(xhr, stat, error);
             }
         }
+    })
+}
+
+function setupBoostToggle() {
+    let urlSearch = new URLSearchParams(window.location.search);
+    let boost = $('#boost');
+
+    boost.prop('checked', urlSearch.get('boost') === 'true');
+    boost.change(function () {
+        createJobApi({                                          // TODO: call directly createJob() and pass job?
+            todo: 'boost ' + ($(this).is(':checked') ? 'on' : 'off')
+        }, null);
     })
 }
