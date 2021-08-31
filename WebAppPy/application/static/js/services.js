@@ -114,7 +114,7 @@ function createWorkersTable() {
                         if (type === 'display') {
                             let diff = new Date() - new Date(data);
                             if (diff > 60000) {
-                                return data;
+                                return data.slice(0, 19).replace('T', ' ');
                             }
                             return 'Online';
                         }
@@ -193,7 +193,16 @@ function createJobsTable() {
                         return data;
                     }
             },
-            {data: 'created', title: 'Created'},
+            {
+                data: 'created',
+                title: 'Created',
+                render: function (data, type) {
+                        if (type === 'display') {
+                                return data.slice(0, 19).replace('T', ' ');
+                        }
+                        return data;
+                    }
+            },
             {
                 data: null,
                 title: 'Action',
@@ -301,7 +310,16 @@ function createUploadsTable() {
                     return data;
                 }
             },
-            {data: 'created', title: 'Created'},
+            {
+                data: 'created',
+                title: 'Created',
+                render: function (data, type) {
+                        if (type === 'display') {
+                                return data.slice(0, 19).replace('T', ' ');
+                        }
+                        return data;
+                    }
+            },
             {
                 data: null,
                 title: 'Action',

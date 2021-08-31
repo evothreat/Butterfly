@@ -35,7 +35,6 @@ def create_worker():
     except IntegrityError:
         return '', 409
     mkdir(path_join(app.config['UPLOADS_DIR'], w.id))
-    mkdir(path_join(app.config['REPORTS_DIR'], w.id))
     return '', 201, {'Location': url_for('get_single_worker', wid=w.id)}
 
 

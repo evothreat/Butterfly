@@ -9,7 +9,7 @@ from flask_login import LoginManager
 class JsonEncoder(JSONEncoder):         # TODO: export this class?
     def default(self, obj):
         if isinstance(obj, date):
-            return obj.strftime('%a, %e %b %Y %H:%M:%S')
+            return obj.astimezone().isoformat()
         return super().default(obj)
 
 
