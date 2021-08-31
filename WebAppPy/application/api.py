@@ -4,6 +4,7 @@ from flask import jsonify, request, send_file, url_for
 from re import match
 from os import mkdir, remove as remove_file
 from os.path import join as path_join, getsize, getctime, splitext
+
 from application import *
 from application.models import *
 
@@ -38,10 +39,19 @@ def create_worker():
     return '', 201, {'Location': url_for('get_single_worker', wid=w.id)}
 
 
-@app.route('/api/workers/<wid>', methods=['GET'])
+@app.route('/api/workers/<wid>', methods=['GET'])   # TODO: add specific fields
 def get_single_worker(wid):
     w = Worker.query.get(wid)
-    return (jsonify(w), 200) if w else ('', 404)  # TODO: use get_or_404 instead?
+    if not w:
+        return '', 404
+    props = request.args.get('props')
+    if props:
+        try:
+            data = {v: getattr(w, v) for v in props.split(',')}        # query string can contain whitespaces
+        except AttributeError:
+            return '', 422
+        return jsonify(data), 200
+    return jsonify(w), 200
 
 
 @app.route('/api/workers/<wid>', methods=['DELETE'])
@@ -53,8 +63,24 @@ def delete_worker(wid):
     return '', 200
 
 
-# JOBS -----------------------------------------------------------------------
+@app.route('/api/workers/<wid>', methods=['PATCH'])
+def update_worker(wid):
+    if not request.is_json or not request.json:
+        return '', 400
+    # if Worker.query.filter_by(id=wid).update(request.json, synchronize_session=False) == 0:
+    #    return '', 404
+    w = Worker.query.get(wid)
+    if not w:
+        return '', 404
+    # # w.ip_addr = request.json.get('ip_addr', w.ip_addr)
+    # # w.country = request.json.get('country', w.country)
+    # # w.is_admin = request.json.get('is_admin', w.is_admin)
+    w.boost = request.json.get('boost', w.boost)
+    db.session.commit()
+    return '', 200
 
+
+# JOBS -----------------------------------------------------------------------
 @app.route('/api/workers/<wid>/jobs', methods=['GET'])
 def get_jobs(wid):
     if not obj_exists(Worker.id == wid):
@@ -97,23 +123,6 @@ def get_single_job(wid, jid):
 def delete_job(wid, jid):
     if Job.query.filter_by(id=jid, worker_id=wid).delete(synchronize_session=False) == 0:
         return '', 404
-    db.session.commit()
-    return '', 200
-
-
-@app.route('/api/workers/<wid>/jobs/<int:jid>', methods=['PATCH'])
-def update_job(wid, jid):
-    if not request.is_json:
-        return '', 400
-    job = Job.query.filter_by(id=jid, worker_id=wid).first()
-    if not job:
-        return '', 404
-    # job.id = request.json.get('id', job.id)
-    # job.todo = request.json.get('todo', job.todo)
-    job.is_done = request.json.get('is_done', job.is_done)
-    # job.created = request.json.get('created', job.created)
-    # job.report_type = request.json.get('report_type', job.report_type)
-    # job.worker_id = request.json.get('worker_id', job.worker_id)
     db.session.commit()
     return '', 200
 

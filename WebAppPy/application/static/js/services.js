@@ -114,6 +114,7 @@ function createWorkersTable() {
                         if (type === 'display') {
                             let diff = new Date() - new Date(data);
                             if (diff > 60000) {
+                                // TODO: turn off boost mode! call updateBoostMode(worker_id, value)
                                 return data.slice(0, 19).replace('T', ' ');
                             }
                             return 'Online';
@@ -127,7 +128,7 @@ function createWorkersTable() {
                     render: function (data, type, row) {
                         if (type === 'display') {
                             return `<button type="button" class="action-btn" 
-                                            onclick="document.location.href='/workers/${row.id}?boost=${row.boost}'">
+                                            onclick="document.location.href='/workers/${row.id}'">
                                         <i class="fa fa-pencil-square-o" aria-hidden="true"></i>
                                     </button>
                                     <button type="button" class="action-btn" onclick="showResourceInfo('${row.id}')">
@@ -395,14 +396,42 @@ function retrieveReport(jobId, funSucc, funcErr, n = 10) {
     })
 }
 
+function updateBoostMode(val) {
+    $.ajax({
+        url: `/api/workers/${currWorkerId}`,
+        type: 'PATCH',
+        data: JSON.stringify({boost: val}),
+        contentType: 'application/json',
+        error: function () {
+            alert('Failed to update boost mode!');
+        }
+    });
+}
+
+function getBoostMode(func) {
+    $.ajax({
+        url: `/api/workers/${currWorkerId}?props=boost`,
+        type: 'GET',
+        dataType: 'json',
+        success: func,
+        error: function () {
+            alert('Failed to get boost mode!');
+        }
+    });
+}
+
 function setupBoostToggle() {
-    let urlSearch = new URLSearchParams(window.location.search);
     let boost = $('#boost');
 
-    boost.prop('checked', urlSearch.get('boost') === 'true');
+    getBoostMode(function (data) {
+        boost.prop('checked', data.boost);
+    });
     boost.change(function () {
+        let val = $(this).is(':checked');
         createJobApi({                                          // TODO: call directly createJob() and pass job?
-            todo: 'boost ' + ($(this).is(':checked') ? 'on' : 'off')
-        }, null);
+            todo: 'boost ' + (val ? 'on' : 'off')
+        }, function () {
+            updateBoostMode(val);
+        });
     })
 }
