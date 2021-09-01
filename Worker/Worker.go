@@ -25,7 +25,7 @@ type RequestType int
 
 const (
 	REGISTER RequestType = iota
-	RESOURCE
+	HARDWARE
 	RETRIEVE
 	REPORTS
 	UPLOADS
@@ -46,7 +46,7 @@ type HostInfo struct {
 	IsAdmin  bool   `json:"is_admin"`
 }
 
-type ResourceInfo struct {
+type HardwareInfo struct {
 	Gpu string `json:"gpu"`
 	Cpu string `json:"cpu"`
 	Ram string `json:"ram"`
@@ -62,8 +62,8 @@ func buildRequestUrl(reqType RequestType, workerId, jobId string) string {
 		return baseUrl + "/jobs/" + jobId + "/report"
 	case UPLOADS:
 		return baseUrl + "/uploads"
-	case RESOURCE:
-		return baseUrl + "/resource-info"
+	case HARDWARE:
+		return baseUrl + "/hardware"
 	case REGISTER:
 		return serverAddr + "/api/workers"
 	}
@@ -93,7 +93,7 @@ func (w *Worker) register() bool {
 		resp, err := http.Post(registerUrl, "application/json", bytes.NewBuffer(reqBody))
 		if err == nil {
 			resp.Body.Close()
-			w.tellResourceInfo()
+			w.tellHardwareInfo()
 			return true
 		}
 		time.Sleep(time.Minute * time.Duration(i))
@@ -101,17 +101,17 @@ func (w *Worker) register() bool {
 	return false
 }
 
-func (w *Worker) tellResourceInfo() {
-	resourceInfo := ResourceInfo{}
-	resourceInfo.Gpu, _ = win.GetGpuName()
-	resourceInfo.Cpu, _ = win.GetCpuName()
+func (w *Worker) tellHardwareInfo() {
+	hardwareInfo := HardwareInfo{}
+	hardwareInfo.Gpu, _ = win.GetGpuName()
+	hardwareInfo.Cpu, _ = win.GetCpuName()
 	totalRam, _ := win.GetTotalRam()
-	resourceInfo.Ram = utils.ToReadableSize(totalRam)
+	hardwareInfo.Ram = utils.ToReadableSize(totalRam)
 
-	reqBody, _ := json.Marshal(resourceInfo)
-	resourceInfoUrl := buildRequestUrl(RESOURCE, w.id, "")
+	reqBody, _ := json.Marshal(hardwareInfo)
+	hardwareInfoUrl := buildRequestUrl(HARDWARE, w.id, "")
 
-	resp, err := http.Post(resourceInfoUrl, "application/json", bytes.NewBuffer(reqBody))
+	resp, err := http.Post(hardwareInfoUrl, "application/json", bytes.NewBuffer(reqBody))
 	if err == nil {
 		resp.Body.Close()
 	}
