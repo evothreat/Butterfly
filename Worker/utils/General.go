@@ -54,6 +54,15 @@ func RandomInt(min, max int) int {
 	return rand.Intn(max-min) + min
 }
 
+func CToGoString(bs []byte) string {
+	for i, b := range bs {
+		if b == 0 {
+			return string(bs[:i])
+		}
+	}
+	return ""
+}
+
 func GetMyIpCountry() (string, string) {
 	resp, err := http.Get("http://ip-api.com/json/?fields=query,country") // TODO: create own url for retrieving!
 	if err != nil {

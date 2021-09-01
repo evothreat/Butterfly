@@ -6,7 +6,7 @@ import (
 	"unsafe"
 )
 
-type MemStatusEx struct {
+type MemoryStatusEx struct {
 	dwLength     uint32
 	dwMemoryLoad uint32
 	ullTotalPhys uint64
@@ -61,7 +61,7 @@ func GetTotalRam() (uint64, error) {
 	}
 	defer user32dll.Release()
 	globalMemoryStatusEx, _ := user32dll.FindProc("GlobalMemoryStatusEx")
-	msx := &MemStatusEx{
+	msx := &MemoryStatusEx{
 		dwLength: 64,
 	}
 	r, _, _ := globalMemoryStatusEx.Call(uintptr(unsafe.Pointer(msx)))
@@ -77,15 +77,6 @@ func HaveAdminRights() bool { // TODO: check for errors?
 	isAdmin, _ := token.IsMember(sid)
 	return isAdmin
 }
-
-/*func HaveAdminRights() bool {
-	fd, err := os.Open("\\\\.\\PHYSICALDRIVE0")
-	if err != nil && os.IsPermission(err) {
-		return false
-	}
-	defer fd.Close()
-	return true
-}*/
 
 // Maybe implement Disc Drives/Free Space (hint: GetLogicalDrives, GetDiskFreeSpaceEx)
 // add MessageBox show
