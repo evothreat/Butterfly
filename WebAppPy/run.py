@@ -31,16 +31,16 @@ def add_test_data():
     j = models.Job(todo='upload test.exe', worker_id=w.id, is_done=True)
     j2 = models.Job(todo='ddos fbi.gov', worker_id=w.id)
 
-    ri = models.ResourceInfo(cpu='Intel(R) Core(TM) i7-8750H CPU @ 2.20GHz 2.21 GHz',
+    ri = models.HardwareInfo(cpu='Intel(R) Core(TM) i7-8750H CPU @ 2.20GHz 2.21 GHz',
                              gpu='NVIDIA GeForce GTX 1060',
                              ram='8,0 GB', worker_id=w.id)
-    ri2 = models.ResourceInfo(cpu='Intel Core i9-10900K Processor',
+    ri2 = models.HardwareInfo(cpu='Intel Core i9-10900K Processor',
                               gpu='AMD Radeon RX 5600 XT',
                               ram='4,0 GB', worker_id=w2.id)
-    ri3 = models.ResourceInfo(cpu='AMD Ryzen 9 5900X',
+    ri3 = models.HardwareInfo(cpu='AMD Ryzen 9 5900X',
                               gpu='Nvidia GeForce RTX 3080',
                               ram='12,0 GB', worker_id=w3.id)
-    ri4 = models.ResourceInfo(cpu='Intel Core i9-10980XE Extreme Edition Processor',
+    ri4 = models.HardwareInfo(cpu='Intel Core i9-10980XE Extreme Edition Processor',
                               gpu='Intel(R) UHD Graphics 630',
                               ram='32,0 GB', worker_id=w4.id)
 

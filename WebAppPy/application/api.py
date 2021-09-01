@@ -128,14 +128,14 @@ def delete_job(wid, jid):
 
 
 # RESOURCE INFO --------------------------------------------------------------------
-@app.route('/api/workers/<wid>/resource-info', methods=['POST'])
-def create_resource_info(wid):
+@app.route('/api/workers/<wid>/hardware', methods=['POST'])
+def create_hardware_info(wid):
     if not request.is_json:
         return '', 400
     if not obj_exists(Worker.id == wid):
         return '', 404
     try:
-        ri = ResourceInfo.from_dict(request.json)
+        ri = HardwareInfo.from_dict(request.json)
         ri.worker_id = wid
         db.session.add(ri)
         db.session.commit()
@@ -144,14 +144,14 @@ def create_resource_info(wid):
     except IntegrityError:
         db.session.rollback()
         return '', 409
-    return '', 201, {'Location': url_for('get_resource_info', wid=wid)}
+    return '', 201, {'Location': url_for('get_hardware_info', wid=wid)}
 
 
-@app.route('/api/workers/<wid>/resource-info', methods=['GET'])  # TODO: add new path /workers/resource-info
-def get_resource_info(wid):
+@app.route('/api/workers/<wid>/hardware', methods=['GET'])  # TODO: add new path /workers/hardware
+def get_hardware_info(wid):
     if wid == '-':
-        return jsonify(ResourceInfo.query.all()), 200
-    ri = ResourceInfo.query.get(wid)
+        return jsonify(HardwareInfo.query.all()), 200
+    ri = HardwareInfo.query.get(wid)
     return (jsonify(ri), 200) if ri else ('', 404)
 
 

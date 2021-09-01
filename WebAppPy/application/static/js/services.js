@@ -4,6 +4,7 @@ let workersTable,
     uploadsTable;
 
 // BYTES TO HUMAN-READABLE
+// TODO: find faster alternative or store strings instead of integers
 function formatBytes(bytes, decimals = 2) {
     if (bytes === 0) return '0 Bytes';
     const k = 1024;
@@ -23,12 +24,12 @@ function hideModal(modalId) {
 }
 
 // RESOURCE INFO
-function showResourceInfo(wid) {
-    $.getJSON(`/api/workers/${wid}/resource-info`, function (res) {
+function showHardwareInfo(wid) {
+    $.getJSON(`/api/workers/${wid}/hardware`, function (res) {
         $('#cpu-info').html(res.cpu);
         $('#gpu-info').html(res.gpu);
         $('#ram-info').html(res.ram);
-        showModal('#resource-dlg');
+        showModal('#hardware-dlg');
     });
     // TODO: check for errors!
 }
@@ -135,7 +136,7 @@ function createWorkersTable() {
                                             onclick="document.location.href='/workers/${row.id}'">
                                         <i class="fa fa-pencil-square-o" aria-hidden="true"></i>
                                     </button>
-                                    <button type="button" class="action-btn" onclick="showResourceInfo('${row.id}')">
+                                    <button type="button" class="action-btn" onclick="showHardwareInfo('${row.id}')">
                                         <i class="fa fa-info-circle" aria-hidden="true"></i>
                                     </button>`;
                         }

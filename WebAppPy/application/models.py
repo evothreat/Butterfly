@@ -45,7 +45,7 @@ class Job(db.Model):
 
 
 @dataclass
-class ResourceInfo(db.Model):
+class HardwareInfo(db.Model):
     gpu: str
     cpu: str
     ram: str
@@ -58,7 +58,7 @@ class ResourceInfo(db.Model):
 
     @staticmethod
     def from_dict(d):
-        return ResourceInfo(gpu=d['gpu'], cpu=d['cpu'], ram=d['ram'])
+        return HardwareInfo(gpu=d['gpu'], cpu=d['cpu'], ram=d['ram'])
 
 
 @dataclass

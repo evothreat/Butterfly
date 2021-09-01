@@ -27,7 +27,7 @@ function createWorkerTable() {
                     title: 'Action',
                     render: function (data, type, row) {
                         return `<button type="button" class="btn action-btn"><i class="bi bi-box-arrow-up-left"></i></button>
-                                <button type="button" class="btn action-btn" onclick="showResourceInfo(${row.id})"><i class="bi bi-info-circle-fill"></i></button>`;
+                                <button type="button" class="btn action-btn" onclick="showHardwareInfo(${row.id})"><i class="bi bi-info-circle-fill"></i></button>`;
                     }
                 }
             ]
