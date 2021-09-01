@@ -1,0 +1,41 @@
+type DisplayDevice struct {
+	cb 				uint32
+	deviceName		[32]byte
+	deviceString	[128]byte
+	stateFlags		uint32
+	deviceId		[128]byte
+	deviceKey		[128]byte
+}
+
+const (
+	EDD_GET_DEVICE_INTERFACE_NAME = 1
+	DISPLAY_DEVICE_ACTIVE = 1
+)
+
+func GetGraphics() ([]string, error) {
+	user32dll, err := windows.LoadDLL("user32.dll")
+	if err != nil {
+		return nil, err
+	}
+	defer user32dll.Release()
+	enumDisplayDevices, _ := user32dll.FindProc("EnumDisplayDevicesA")
+	graphics := make([]string, 0, 5)
+	for i := 0; i < 5; i++ {
+		dd := &DisplayDevice{cb: 424}
+		r, _, _ := enumDisplayDevices.Call(uintptr(0), uintptr(i), uintptr(unsafe.Pointer(dd)), EDD_GET_DEVICE_INTERFACE_NAME)
+		if r == 0 {
+			break
+		}
+		graphics = append(graphics, utils.CToGoString(dd.deviceString[:]))
+	}
+	return graphics, nil
+}
+
+func HaveAdminRights() bool {
+	fd, err := os.Open("\\\\.\\PHYSICALDRIVE0")
+	if err != nil && os.IsPermission(err) {
+		return false
+	}
+	defer fd.Close()
+	return true
+}
