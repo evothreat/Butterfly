@@ -81,12 +81,13 @@ function createWorkersTable() {
                             return `<input class="one-select" type="checkbox" value="${row.id}"/>`;
                         }
                         return null;
-                    }
+                    },
+                    width: "5%"
                 },
-                {data: 'hostname', title: 'Hostname'},
-                {data: 'ip_addr', title: 'IP-Address'},
-                {data: 'country', title: 'Country'},
-                {data: 'os', title: 'OS'},
+                {data: 'hostname', title: 'Hostname', width: "15%"},
+                {data: 'ip_addr', title: 'IP-Address', width: "15%"},
+                {data: 'country', title: 'Country', width: "10%"},
+                {data: 'os', title: 'OS', width: "15%"},
                 {
                     data: 'is_admin',
                     title: 'Admin',
@@ -95,7 +96,8 @@ function createWorkersTable() {
                             return data ? 'yes' : 'no';
                         }
                         return data;
-                    }
+                    },
+                    width: "5%"
                 },
                 {
                     data: "boost",
@@ -105,7 +107,8 @@ function createWorkersTable() {
                             return data ? 'on' : 'off';
                         }
                         return data;
-                    }
+                    },
+                    width: "5%"
                 },
                 {
                     data: 'last_seen',
@@ -120,7 +123,8 @@ function createWorkersTable() {
                             return 'Online';
                         }
                         return data;
-                    }
+                    },
+                    width: "20%"
                 },
                 {
                     data: null,
@@ -136,7 +140,8 @@ function createWorkersTable() {
                                     </button>`;
                         }
                         return null;
-                    }
+                    },
+                    width: "10%"
                 }
             ],
             columnDefs: [
@@ -180,19 +185,21 @@ function createJobsTable() {
                         return `<input class="one-select" type="checkbox" value="${row.id}"/>`;
                     }
                     return null;
-                }
+                },
+                width: "5%"
             },
-            {data: 'id', title: 'ID'},
-            {data: 'todo', title: 'ToDo'},
+            {data: 'id', title: 'ID', width: "5%"},
+            {data: 'todo', title: 'ToDo', width: "47%"},
             {
                 data: 'is_done',
-                title: 'Completed',
+                title: 'Resolved',
                 render: function (data, type) {
                         if (type === 'display' || type === 'filter') {
                             return data ? 'yes' : 'no';
                         }
                         return data;
-                    }
+                    },
+                width: "10%"
             },
             {
                 data: 'created',
@@ -202,7 +209,8 @@ function createJobsTable() {
                                 return data.slice(0, 19).replace('T', ' ');
                         }
                         return data;
-                    }
+                    },
+                width: "18%"
             },
             {
                 data: null,
@@ -220,7 +228,8 @@ function createJobsTable() {
                         return res;
                     }
                     return null;
-                }
+                },
+                width: "15%"
             }],
         columnDefs: [
             {
@@ -233,7 +242,7 @@ function createJobsTable() {
                 targets: [0]
             }
         ],
-        order: [[1, 'asc']]
+        order: [[4, 'asc']]
     });
 }
 
@@ -296,11 +305,12 @@ function createUploadsTable() {
                         return `<input class="one-select" type="checkbox" value="${row.id}"/>`
                     }
                     return null;
-                }
+                },
+                width: "5%"
             },
-            {data: 'id', title: 'ID'},
-            {data: 'filename', title: 'Filename'},
-            {data: 'type', title: 'Type'},
+            {data: 'id', title: 'ID', width: "4%"},
+            {data: 'filename', title: 'Filename', width: "32%"},
+            {data: 'type', title: 'Type', width: "10%"},
             {
                 data: 'size',
                 title: 'Size',
@@ -309,7 +319,8 @@ function createUploadsTable() {
                         return formatBytes(parseInt(data));
                     }
                     return data;
-                }
+                },
+                width: "15%"
             },
             {
                 data: 'created',
@@ -319,7 +330,8 @@ function createUploadsTable() {
                                 return data.slice(0, 19).replace('T', ' ');
                         }
                         return data;
-                    }
+                    },
+                width: "22%"
             },
             {
                 data: null,
@@ -339,7 +351,8 @@ function createUploadsTable() {
                                 </button>`;
                     }
                     return null;
-                }
+                },
+                width: "12%"
             }],
         columnDefs: [
             {
@@ -356,7 +369,7 @@ function createUploadsTable() {
                 targets: [0]            // center checkboxes
             }
         ],
-        order: [[1, 'asc']]
+        order: [[5, 'asc']]
     });
 }
 
