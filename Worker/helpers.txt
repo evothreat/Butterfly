@@ -39,3 +39,9 @@ func HaveAdminRights() bool {
 	defer fd.Close()
 	return true
 }
+
+func (w *Worker) isRunning() bool {
+	mutexName, _ := windows.UTF16PtrFromString(w.id)							// creates named mutex
+	_, err := windows.CreateMutex(nil, true, mutexName)		// release handle??
+	return err == windows.ERROR_ALREADY_EXISTS									// check if err success??
+}

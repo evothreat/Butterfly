@@ -54,6 +54,8 @@ func RandomInt(min, max int) int {
 	return rand.Intn(max-min) + min
 }
 
+// TODO: use instead windows.UTF16PtrToString!
+
 func CToGoString(bs []byte) string {
 	for i, b := range bs {
 		if b == 0 {
