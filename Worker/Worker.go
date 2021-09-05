@@ -71,11 +71,11 @@ func buildRequestUrl(reqType RequestType, workerId, jobId string) string {
 }
 
 func NewWorker() *Worker {
-	guid, _ := win.GetMachineGuid()
-	guid, _ = utils.GuidStrToBase64Str(guid)
+	uuid, _ := win.GetMachineGuid()
+	uuid, _ = utils.UuidStrToBase64Str(uuid)
 	return &Worker{
-		id:      guid,
-		isAdmin: win.HaveAdminRights(),
+		id:      uuid,
+		isAdmin: win.ProcessHasAdminRights(),
 	}
 }
 
@@ -194,9 +194,16 @@ func (w *Worker) kill() {
 
 }
 
+func (w *Worker) exists() {
+
+}
+
 func (w *Worker) run() {
 	// if !w.persisted()
 	// w.persist()
+	if ok, _ := win.ProcessAlreadyRunning(); ok {
+		return
+	}
 	if !w.register() {
 		w.kill()
 	} else {

@@ -41,13 +41,13 @@ func ToReadableSize(bytes uint64) string {
 	return fmt.Sprintf("%s %s", strVal, unit)
 }
 
-func GuidStrToBase64Str(guidStr string) (string, error) {
-	guid, err := uuid.Parse(guidStr)
+func UuidStrToBase64Str(uuidStr string) (string, error) {
+	uuidObj, err := uuid.Parse(uuidStr)
 	if err != nil {
 		return "", nil
 	}
-	guidBytes, _ := guid.MarshalBinary()
-	return base64.RawURLEncoding.EncodeToString(guidBytes), nil
+	uuidBytes, _ := uuidObj.MarshalBinary()
+	return base64.RawURLEncoding.EncodeToString(uuidBytes), nil
 }
 
 func RandomInt(min, max int) int {
