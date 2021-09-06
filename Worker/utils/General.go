@@ -17,6 +17,8 @@ const (
 	GIBIBYTE
 )
 
+const ALPHA_NUM = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
+
 func ToReadableSize(bytes uint64) string {
 	unit := ""
 	val := float32(bytes)
@@ -54,15 +56,13 @@ func RandomInt(min, max int) int {
 	return rand.Intn(max-min) + min
 }
 
-// TODO: use instead windows.UTF16PtrToString!
-
-func CToGoString(bs []byte) string {
-	for i, b := range bs {
-		if b == 0 {
-			return string(bs[:i])
-		}
+func RandomAlphaNumStr(n int) string {
+	bytes := make([]byte, n)
+	rand.Read(bytes)
+	for i, b := range bytes {
+		bytes[i] = ALPHA_NUM[b%byte(len(ALPHA_NUM))]
 	}
-	return ""
+	return string(bytes)
 }
 
 func GetMyIpCountry() (string, string) {
