@@ -1,7 +1,7 @@
 {% extends 'layout.html' %}
 
 {% block content %}
-    <button type="button" class="btn" onclick="workersTable.ajax.reload()">
+    <button type="button" class="btn" onclick="workersTable.ajax.reload(null, false)">
         Refresh
         <i class="fa fa-refresh" aria-hidden="true"></i>
     </button>
