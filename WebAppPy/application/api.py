@@ -3,7 +3,8 @@ from sqlalchemy.exc import IntegrityError
 from flask import jsonify, request, send_file, url_for
 from re import match
 from os import mkdir, remove as remove_file
-from os.path import join as path_join, getsize, getctime, splitext
+from os.path import join as path_join, exists as file_exists, getsize, getctime, splitext, dirname
+from time import time
 
 from application import *
 from application.models import *
@@ -160,17 +161,20 @@ def get_hardware_info(wid):
 def create_upload(wid):
     if not obj_exists(Worker.id == wid):
         return '', 404
-    file = request.files.get('file')  # name attribute in upload html
+    file = request.files.get('file')                                            # name attribute in upload html
     if not file or not valid_filename(file.filename):
         return '', 422
     filename = file.filename
-    _, ext = splitext(filename)
-    ext = ext[1:].upper() if ext else 'NONE'
+    name, ext = splitext(filename)
+    filetype = ext[1:].upper() if ext else 'NONE'
     path = path_join(app.config['UPLOADS_DIR'], wid, filename)
-    file.save(path)  # TODO: handle failed to save
+    if file_exists(path):
+        filename = name + '_' + str(int(time())) + ext
+        path = path_join(dirname(path), filename)                               # TODO: repeat line 170
+    file.save(path)                                                             # TODO: handle failed to save
     file.close()
     up = Upload(filename=filename, size=getsize(path),
-                type=ext, created=datetime.fromtimestamp(getctime(path)),
+                type=filetype, created=datetime.fromtimestamp(getctime(path)),       # TODO: use datetime.now()
                 worker_id=wid)
     db.session.add(up)
     db.session.commit()
