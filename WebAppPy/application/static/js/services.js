@@ -262,7 +262,7 @@ function removeJob(jobId) {
     removeJobApi(jobId, function () {
         jobsTable.rows(function (ix, data) {
             return jobId === data.id;
-        }).remove().draw();
+        }).remove().draw(false);
     });
 }
 
@@ -280,11 +280,16 @@ function createJobApi(job, func) {
     });
 }
 
-function createJob() {
+function addJobToTable(job) {
+    jobsTable.row.add(job).draw(false);
+}
+
+function submitNewJobDlg() {
     let job = {todo: $('#todo').val()};
     createJobApi(job, function (data) {
-        jobsTable.row.add(data).draw();
-    })
+        addJobToTable(data);
+    });
+    hideModal('#new-job-dlg');
 }
 
 // UPLOADS
@@ -389,7 +394,7 @@ function removeUpload(uploadId) {
     removeUploadApi(uploadId, function () {
         uploadsTable.rows(function (ix, data) {
             return uploadId === data.id;
-        }).remove().draw();
+        }).remove().draw(false);
     });
 }
 
@@ -442,10 +447,11 @@ function setupBoostToggle() {
     });
     boost.change(function () {
         let val = $(this).is(':checked');
-        createJobApi({                                          // TODO: call directly createJob() and pass job?
+        createJobApi({
             todo: 'boost ' + (val ? 'on' : 'off')
-        }, function () {
+        }, function (data) {
             updateBoostMode(val);
+            addJobToTable(data);
         });
     })
 }
