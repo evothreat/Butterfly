@@ -7,7 +7,7 @@ import (
 )
 
 func GetWorkers(c echo.Context) error {
-	workers, err := models.GetAllWorkers()
+	workers, err := models.ListWorkers()
 	if err != nil {
 		return err
 	}

@@ -37,7 +37,7 @@ func (w *Worker) Load(id string) error {
 	return row.Scan(&w.Id, &w.Hostname, &w.Country, &w.IpAddr, &w.Os, &w.IsAdmin, &w.Boost, &w.LastSeen)
 }
 
-func GetAllWorkers() ([]Worker, error) {
+func ListWorkers() ([]Worker, error) {
 	rows, err := db.Query("SELECT * FROM workers")
 	if err != nil {
 		return nil, err
