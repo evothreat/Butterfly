@@ -36,7 +36,10 @@ func CreateWorker(c echo.Context) error {
 }
 
 func DeleteWorker(c echo.Context) error {
-	return models.DeleteWorker(c.Param("wid"))
+	if err := models.DeleteWorker(c.Param("wid")); err != nil {
+		return err
+	}
+	return c.JSONBlob(http.StatusOK, []byte(`{"msg": "worker deleted"}`))
 }
 
 func UpdateWorker(c echo.Context) error {
