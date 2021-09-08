@@ -1,7 +1,28 @@
-package api
+const insertQuery1 = "INSERT INTO workers VALUES(:id, :hostname, :country, :ip_addr, :os, :is_admin, :boost, :last_seen)"
 
-import "time"
+	db.NamedExec(insertQuery1, w1)
+	db.NamedExec(insertQuery1, w2)
+	db.NamedExec(insertQuery1, w3)
+	db.NamedExec(insertQuery1, w4)
 
+const insertQuery2 = "INSERT INTO hardware_infos VALUES(:gpu, :cpu, :ram, :worker_id)"
+
+	db.NamedExec(insertQuery2, hw1)
+	db.NamedExec(insertQuery2, hw2)
+	db.NamedExec(insertQuery2, hw3)
+	db.NamedExec(insertQuery2, hw4)
+
+hw5 := HardwareInfo{
+		Gpu: "Intel Core i9-10980XE Extreme Edition Processor",
+		Cpu: "Intel(R) UHD Graphics 630",
+		Ram: "32,0 GB",
+		WorkerId: "wfwofhwfwhfiuwh",
+	}
+	if _, err := db.NamedExec(insertQuery2, hw5); err != nil {
+		fmt.Println(err)
+	}
+
+------------------------------------------------------------------------------------------
 type Worker struct {
 	Id       string    `json:"id" db:"id"`
 	Hostname string    `json:"hostname" db:"hostname"`
@@ -20,13 +41,7 @@ type HardwareInfo struct {
 	WorkerId string `json:"worker_id" db:"worker_id"`
 }
 
-type Job struct {
-	Id       string    `json:"id" db:"id"`
-	Todo     string    `json:"todo" db:"todo"`
-	IsDone   bool      `json:"is_done" db:"is_done"`
-	Created  time.Time `json:"created" db:"created"`
-	WorkerId string    `json:"worker_id" db:"worker_id"`
-}
+
 
 type JobReport struct {
 	JobId  int    `json:"job_id" db:"job_id"`
