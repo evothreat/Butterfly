@@ -36,7 +36,7 @@ func CreateWorker(c echo.Context) error {
 }
 
 func DeleteWorker(c echo.Context) error {
-	return nil
+	return models.DeleteWorker(c.Param("wid"))
 }
 
 func UpdateWorker(c echo.Context) error {
