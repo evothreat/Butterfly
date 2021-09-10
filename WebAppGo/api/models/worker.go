@@ -31,13 +31,13 @@ type Worker struct {
 	LastSeen time.Time `json:"last_seen" db:"last_seen"`
 }
 
-func (w *Worker) IsFilled() bool {
-	return w.Id != "" && w.Hostname != "" && w.Country != "" && w.IpAddr != "" &&
-		w.Os != "" && w.IsAdmin.Valid && w.Boost.Valid
+func (w *Worker) hasEmptyFields() bool {
+	return w.Id == "" || w.Hostname == "" || w.Country == "" || w.IpAddr == "" ||
+		w.Os == "" || !w.IsAdmin.Valid || !w.Boost.Valid
 }
 
 func (w *Worker) Save() error {
-	if !w.IsFilled() {
+	if w.hasEmptyFields() {
 		return errors.New("not all fields are set")
 	}
 	const stmt = "INSERT INTO workers(id,hostname,country,ip_addr,os,is_admin,boost,last_seen) VALUES(?,?,?,?,?,?,?,?)"
