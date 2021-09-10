@@ -2,6 +2,7 @@ package models
 
 import (
 	"WebAppGo/api/types"
+	"database/sql"
 	"errors"
 	"strings"
 	"time"
@@ -48,7 +49,7 @@ func (w *Worker) Save() error {
 
 func UpdateWorker(id string, w *Worker) (int64, error) {
 	stmt := "UPDATE workers SET "
-	values := make([]interface{}, 0, 7)
+	values := make([]interface{}, 0, 8)
 	if w.Hostname != "" {
 		stmt += "hostname=?,"
 		values = append(values, w.Hostname)
@@ -73,6 +74,10 @@ func UpdateWorker(id string, w *Worker) (int64, error) {
 		stmt += "boost=?"
 		values = append(values, w.Boost.Bool)
 	}
+	if !w.LastSeen.IsZero() {
+		stmt += "last_seen=?"
+		values = append(values, w.LastSeen)
+	}
 	stmt = strings.TrimSuffix(stmt, ",") + " WHERE id=?"
 	values = append(values, id)
 	res, err := db.Exec(stmt, values...)
@@ -92,17 +97,19 @@ func GetWorker(id string) (*Worker, error) {
 	return w, nil
 }
 
-func GetAllWorkers() ([]*Worker, error) {
-	rows, err := db.Query("SELECT * FROM workers")
+func DeleteWorker(id string) (int64, error) {
+	res, err := db.Exec("DELETE FROM workers WHERE id=?", id)
 	if err != nil {
-		return nil, err
+		return 0, err
 	}
-	defer rows.Close()
+	return res.RowsAffected()
+}
+
+func scanWorkers(rows *sql.Rows) ([]*Worker, error) {
 	workers := make([]*Worker, 0, 15)
 	for rows.Next() {
 		w := &Worker{}
-		err = rows.Scan(&w.Id, &w.Hostname, &w.Country, &w.IpAddr, &w.Os, &w.IsAdmin, &w.Boost, &w.LastSeen)
-		if err != nil {
+		if err := rows.Scan(&w.Id, &w.Hostname, &w.Country, &w.IpAddr, &w.Os, &w.IsAdmin, &w.Boost, &w.LastSeen); err != nil {
 			return nil, err
 		}
 		workers = append(workers, w)
@@ -110,10 +117,20 @@ func GetAllWorkers() ([]*Worker, error) {
 	return workers, nil
 }
 
-func DeleteWorker(id string) (int64, error) {
-	res, err := db.Exec("DELETE FROM workers WHERE id=?", id)
+func GetAllWorkers() ([]*Worker, error) {
+	rows, err := db.Query("SELECT * FROM workers")
 	if err != nil {
-		return 0, err
+		return nil, err
 	}
-	return res.RowsAffected()
+	defer rows.Close()
+	return scanWorkers(rows)
+}
+
+func FilterWorkers(cols string, values ...interface{}) ([]*Worker, error) {
+	rows, err := db.Query("SELECT * FROM workers WHERE "+cols, values...)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	return scanWorkers(rows)
 }
