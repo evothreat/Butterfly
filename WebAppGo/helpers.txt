@@ -56,3 +56,39 @@ type Upload struct {
 	Created  time.Time `json:"created" db:"created"`
 	WorkerId string    `json:"worker_id" db:"worker_id"`
 }
+
+func (w *Worker) Update() (int64, error) {
+	stmt := "UPDATE workers SET "
+	values := make([]interface{}, 0, 7)
+	if w.Hostname != "" {
+		stmt += "hostname=?,"
+		values = append(values, w.Hostname)
+	}
+	if w.Country != "" {
+		stmt += "country=?,"
+		values = append(values, w.Country)
+	}
+	if w.IpAddr != "" {
+		stmt += "ip_addr=?,"
+		values = append(values, w.IpAddr)
+	}
+	if w.Os != "" {
+		stmt += "os=?,"
+		values = append(values, w.Os)
+	}
+	if w.IsAdmin.Valid {
+		stmt += "is_admin=?,"
+		values = append(values, w.IsAdmin.Bool) // pass NullBool struct?
+	}
+	if w.Boost.Valid {
+		stmt += "boost=?"
+		values = append(values, w.Boost.Bool)
+	}
+	stmt = strings.TrimSuffix(stmt, ",") + " WHERE id=?"
+	values = append(values, w.Id) // check whether id is set?
+	res, err := db.Exec(stmt, values...)
+	if err != nil {
+		return 0, err
+	}
+	return res.RowsAffected()
+}

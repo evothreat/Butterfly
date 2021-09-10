@@ -62,8 +62,7 @@ func UpdateWorker(c echo.Context) error {
 	if (&echo.DefaultBinder{}).BindBody(c, &worker) != nil {
 		return c.NoContent(http.StatusUnprocessableEntity)
 	}
-	worker.Id = c.Param("wid")
-	n, err := worker.Update()
+	n, err := models.UpdateWorker(c.Param("wid"), &worker)
 	if err != nil {
 		return err
 	}

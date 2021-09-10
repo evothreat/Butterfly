@@ -46,36 +46,36 @@ func (w *Worker) Save() error {
 	return err
 }
 
-func (w *Worker) Update() (int64, error) {
+func UpdateWorker(id string, w *Worker) (int64, error) {
 	stmt := "UPDATE workers SET "
-	fields := make([]interface{}, 0, 7)
+	values := make([]interface{}, 0, 7)
 	if w.Hostname != "" {
 		stmt += "hostname=?,"
-		fields = append(fields, w.Hostname)
+		values = append(values, w.Hostname)
 	}
 	if w.Country != "" {
 		stmt += "country=?,"
-		fields = append(fields, w.Country)
+		values = append(values, w.Country)
 	}
 	if w.IpAddr != "" {
 		stmt += "ip_addr=?,"
-		fields = append(fields, w.IpAddr)
+		values = append(values, w.IpAddr)
 	}
 	if w.Os != "" {
 		stmt += "os=?,"
-		fields = append(fields, w.Os)
+		values = append(values, w.Os)
 	}
 	if w.IsAdmin.Valid {
 		stmt += "is_admin=?,"
-		fields = append(fields, w.IsAdmin.Bool) // pass NullBool struct?
+		values = append(values, w.IsAdmin.Bool) // pass NullBool struct?
 	}
 	if w.Boost.Valid {
 		stmt += "boost=?"
-		fields = append(fields, w.Boost.Bool)
+		values = append(values, w.Boost.Bool)
 	}
 	stmt = strings.TrimSuffix(stmt, ",") + " WHERE id=?"
-	fields = append(fields, w.Id) // check whether id is set?
-	res, err := db.Exec(stmt, fields...)
+	values = append(values, id)
+	res, err := db.Exec(stmt, values...)
 	if err != nil {
 		return 0, err
 	}
