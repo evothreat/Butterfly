@@ -90,7 +90,7 @@ func GetAllWorkers() ([]*Worker, error) {
 	defer rows.Close()
 	workers := make([]*Worker, 0, 15)
 	for rows.Next() {
-		w := &Worker{} // TODO: use pointer?
+		w := &Worker{}
 		err = rows.Scan(&w.Id, &w.Hostname, &w.Country, &w.IpAddr, &w.Os, &w.IsAdmin, &w.Boost, &w.LastSeen)
 		if err != nil {
 			return nil, err

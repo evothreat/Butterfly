@@ -10,7 +10,7 @@ import (
 	"path/filepath"
 )
 
-// TODO: instead of returning error, return status code!
+// TODO: add default error handler!
 
 func GetAllWorkers(c echo.Context) error {
 	workers, err := models.GetAllWorkers()
@@ -24,21 +24,24 @@ func GetWorker(c echo.Context) error {
 	worker, err := models.GetWorker(c.Param("wid"))
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return echo.NewHTTPError(http.StatusNotFound)
+			return c.NoContent(http.StatusNotFound)
 		}
 		return err
 	}
 	return c.JSON(http.StatusOK, worker)
 }
 
+// TODO: check if all fields are filled!
+// TODO: check for error type?
+// TODO: handle os.Mkdir error?
+
 func CreateWorker(c echo.Context) error {
 	var worker models.Worker
-	binder := &echo.DefaultBinder{}
-	if binder.BindBody(c, &worker) != nil || worker.Save() != nil { // TODO: check for error type?
-		return echo.NewHTTPError(http.StatusUnprocessableEntity)
+	if (&echo.DefaultBinder{}).BindBody(c, &worker) != nil || worker.Save() != nil {
+		return c.NoContent(http.StatusUnprocessableEntity)
 	}
-	os.Mkdir(filepath.Join(api.UPLOADS_DIR, worker.Id), os.ModePerm) // TODO: handle error?
-	return c.JSONBlob(http.StatusCreated, []byte(`{"msg": "worker created"}`))
+	os.Mkdir(filepath.Join(api.UPLOADS_DIR, worker.Id), os.ModePerm)
+	return c.NoContent(http.StatusCreated)
 }
 
 func DeleteWorker(c echo.Context) error {
@@ -48,17 +51,16 @@ func DeleteWorker(c echo.Context) error {
 		return err
 	}
 	if n == 0 {
-		return echo.NewHTTPError(http.StatusNotFound)
+		return c.NoContent(http.StatusNotFound)
 	}
 	os.Remove(filepath.Join(api.UPLOADS_DIR, workerId))
-	return c.JSONBlob(http.StatusOK, []byte(`{"msg": "worker deleted"}`))
+	return c.NoContent(http.StatusOK)
 }
 
 func UpdateWorker(c echo.Context) error {
 	var worker models.Worker
-	binder := &echo.DefaultBinder{}
-	if binder.BindBody(c, &worker) != nil {
-		return echo.NewHTTPError(http.StatusUnprocessableEntity)
+	if (&echo.DefaultBinder{}).BindBody(c, &worker) != nil {
+		return c.NoContent(http.StatusUnprocessableEntity)
 	}
 	worker.Id = c.Param("wid")
 	n, err := worker.Update()
@@ -66,7 +68,7 @@ func UpdateWorker(c echo.Context) error {
 		return err
 	}
 	if n == 0 {
-		return echo.NewHTTPError(http.StatusNotFound)
+		return c.NoContent(http.StatusNotFound)
 	}
-	return nil
+	return c.NoContent(http.StatusOK)
 }
