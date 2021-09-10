@@ -1,6 +1,7 @@
 package models
 
 import (
+	"WebAppGo/api/types"
 	"errors"
 	"strings"
 	"time"
@@ -21,14 +22,14 @@ const WorkerSchema = `CREATE TABLE IF NOT EXISTS workers
   );`
 
 type Worker struct {
-	Id       string    `json:"id" db:"id"`
-	Hostname string    `json:"hostname" db:"hostname"`
-	Country  string    `json:"country" db:"country"`
-	IpAddr   string    `json:"ip_addr" db:"ip_addr"`
-	Os       string    `json:"os" db:"os"`
-	IsAdmin  NullBool  `json:"is_admin" db:"is_admin"`
-	Boost    NullBool  `json:"boost" db:"boost"`
-	LastSeen time.Time `json:"last_seen" db:"last_seen"`
+	Id       string         `json:"id" db:"id"`
+	Hostname string         `json:"hostname" db:"hostname"`
+	Country  string         `json:"country" db:"country"`
+	IpAddr   string         `json:"ip_addr" db:"ip_addr"`
+	Os       string         `json:"os" db:"os"`
+	IsAdmin  types.NullBool `json:"is_admin" db:"is_admin"`
+	Boost    types.NullBool `json:"boost" db:"boost"`
+	LastSeen time.Time      `json:"last_seen" db:"last_seen"`
 }
 
 func (w *Worker) hasEmptyFields() bool {
