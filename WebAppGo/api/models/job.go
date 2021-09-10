@@ -1,6 +1,8 @@
 package models
 
-import "time"
+import (
+	"time"
+)
 
 const JobSchema = `CREATE TABLE IF NOT EXISTS jobs
   (
@@ -15,7 +17,7 @@ const JobSchema = `CREATE TABLE IF NOT EXISTS jobs
 type Job struct {
 	Id       string    `json:"id" db:"id"`
 	Todo     string    `json:"todo" db:"todo"`
-	IsDone   bool      `json:"is_done" db:"is_done"`
+	IsDone   NullBool  `json:"is_done" db:"is_done"`
 	Created  time.Time `json:"created" db:"created"`
 	WorkerId string    `json:"worker_id" db:"worker_id"`
 }
