@@ -47,7 +47,7 @@ func (w *Worker) Save() error {
 	return err
 }
 
-type WorkerWhereStmt types.WhereStmt
+type WorkerFilter types.WhereStmt
 
 func scanWorkers(rows *sql.Rows) ([]*Worker, error) {
 	workers := make([]*Worker, 0, 15)
@@ -61,15 +61,15 @@ func scanWorkers(rows *sql.Rows) ([]*Worker, error) {
 	return workers, nil
 }
 
-func FilterWorkers(cols string, values ...interface{}) *WorkerWhereStmt {
-	return &WorkerWhereStmt{
+func FilterWorkers(cols string, values ...interface{}) *WorkerFilter {
+	return &WorkerFilter{
 		Cols:   cols,
 		Values: values,
 	}
 }
 
-func (wws *WorkerWhereStmt) Get() ([]*Worker, error) {
-	rows, err := db.Query("SELECT * FROM workers WHERE "+wws.Cols, wws.Values...)
+func (wf *WorkerFilter) Get() ([]*Worker, error) {
+	rows, err := db.Query("SELECT * FROM workers WHERE "+wf.Cols, wf.Values...)
 	if err != nil {
 		return nil, err
 	}
@@ -77,26 +77,26 @@ func (wws *WorkerWhereStmt) Get() ([]*Worker, error) {
 	return scanWorkers(rows)
 }
 
-func (wws *WorkerWhereStmt) GetFirst() (*Worker, error) {
+func (wf *WorkerFilter) GetFirst() (*Worker, error) {
 	w := &Worker{}
-	row := db.QueryRow("SELECT * FROM workers WHERE "+wws.Cols+" LIMIT 1", wws.Values...)
+	row := db.QueryRow("SELECT * FROM workers WHERE "+wf.Cols+" LIMIT 1", wf.Values...)
 	if err := row.Scan(&w.Id, &w.Hostname, &w.Country, &w.IpAddr, &w.Os, &w.IsAdmin, &w.Boost, &w.LastSeen); err != nil {
 		return nil, err
 	}
 	return w, nil
 }
 
-func (wws *WorkerWhereStmt) Delete() (int64, error) {
-	res, err := db.Exec("DELETE FROM workers WHERE "+wws.Cols, wws.Values...)
+func (wf *WorkerFilter) Delete() (int64, error) {
+	res, err := db.Exec("DELETE FROM workers WHERE "+wf.Cols, wf.Values...)
 	if err != nil {
 		return 0, err
 	}
 	return res.RowsAffected()
 }
 
-func (wws *WorkerWhereStmt) Update(w *Worker) (int64, error) {
+func (wf *WorkerFilter) Update(w *Worker) (int64, error) {
 	stmt := "UPDATE workers SET "
-	values := make([]interface{}, 0, 8+len(wws.Values))
+	values := make([]interface{}, 0, 8+len(wf.Values))
 	if w.Hostname != "" {
 		stmt += "hostname=?,"
 		values = append(values, w.Hostname)
@@ -125,8 +125,8 @@ func (wws *WorkerWhereStmt) Update(w *Worker) (int64, error) {
 		stmt += "last_seen=?"
 		values = append(values, w.LastSeen)
 	}
-	stmt = strings.TrimSuffix(stmt, ",") + " WHERE " + wws.Cols
-	values = append(values, wws.Values...)
+	stmt = strings.TrimSuffix(stmt, ",") + " WHERE " + wf.Cols
+	values = append(values, wf.Values...)
 	res, err := db.Exec(stmt, values...)
 	if err != nil {
 		return 0, err
