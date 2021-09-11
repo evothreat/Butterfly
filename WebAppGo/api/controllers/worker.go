@@ -21,7 +21,7 @@ func GetAllWorkers(c echo.Context) error {
 }
 
 func GetWorker(c echo.Context) error {
-	worker, err := models.GetWorker(c.Param("wid"))
+	worker, err := models.FilterWorkers("id=?", c.Param("wid")).GetFirst()
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return c.NoContent(http.StatusNotFound)
@@ -46,7 +46,7 @@ func CreateWorker(c echo.Context) error {
 
 func DeleteWorker(c echo.Context) error {
 	workerId := c.Param("wid")
-	n, err := models.DeleteWorker(workerId)
+	n, err := models.FilterWorkers("id=?", workerId).Delete()
 	if err != nil {
 		return err
 	}
@@ -62,7 +62,7 @@ func UpdateWorker(c echo.Context) error {
 	if (&echo.DefaultBinder{}).BindBody(c, &worker) != nil {
 		return c.NoContent(http.StatusUnprocessableEntity)
 	}
-	n, err := models.UpdateWorker(c.Param("wid"), &worker)
+	n, err := models.FilterWorkers("id=?", c.Param("wid")).Update(&worker)
 	if err != nil {
 		return err
 	}

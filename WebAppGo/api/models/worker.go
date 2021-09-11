@@ -42,14 +42,61 @@ func (w *Worker) Save() error {
 	if w.hasEmptyFields() {
 		return errors.New("not all fields are set")
 	}
-	const stmt = "INSERT INTO workers(id,hostname,country,ip_addr,os,is_admin,boost,last_seen) VALUES(?,?,?,?,?,?,?,?)"
-	_, err := db.Exec(stmt, w.Id, w.Hostname, w.Country, w.IpAddr, w.Os, w.IsAdmin, w.Boost, time.Now())
+	_, err := db.Exec("INSERT INTO workers VALUES(?,?,?,?,?,?,?,?)",
+		w.Id, w.Hostname, w.Country, w.IpAddr, w.Os, w.IsAdmin, w.Boost, time.Now())
 	return err
 }
 
-func UpdateWorker(id string, w *Worker) (int64, error) {
+type WorkerWhereStmt types.WhereStmt
+
+func scanWorkers(rows *sql.Rows) ([]*Worker, error) {
+	workers := make([]*Worker, 0, 15)
+	for rows.Next() {
+		w := &Worker{}
+		if err := rows.Scan(&w.Id, &w.Hostname, &w.Country, &w.IpAddr, &w.Os, &w.IsAdmin, &w.Boost, &w.LastSeen); err != nil {
+			return nil, err
+		}
+		workers = append(workers, w)
+	}
+	return workers, nil
+}
+
+func FilterWorkers(cols string, values ...interface{}) *WorkerWhereStmt {
+	return &WorkerWhereStmt{
+		Cols:   cols,
+		Values: values,
+	}
+}
+
+func (wws *WorkerWhereStmt) Get() ([]*Worker, error) {
+	rows, err := db.Query("SELECT * FROM workers WHERE "+wws.Cols, wws.Values...)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	return scanWorkers(rows)
+}
+
+func (wws *WorkerWhereStmt) GetFirst() (*Worker, error) {
+	w := &Worker{}
+	row := db.QueryRow("SELECT * FROM workers WHERE "+wws.Cols+" LIMIT 1", wws.Values...)
+	if err := row.Scan(&w.Id, &w.Hostname, &w.Country, &w.IpAddr, &w.Os, &w.IsAdmin, &w.Boost, &w.LastSeen); err != nil {
+		return nil, err
+	}
+	return w, nil
+}
+
+func (wws *WorkerWhereStmt) Delete() (int64, error) {
+	res, err := db.Exec("DELETE FROM workers WHERE "+wws.Cols, wws.Values...)
+	if err != nil {
+		return 0, err
+	}
+	return res.RowsAffected()
+}
+
+func (wws *WorkerWhereStmt) Update(w *Worker) (int64, error) {
 	stmt := "UPDATE workers SET "
-	values := make([]interface{}, 0, 8)
+	values := make([]interface{}, 0, 8+len(wws.Values))
 	if w.Hostname != "" {
 		stmt += "hostname=?,"
 		values = append(values, w.Hostname)
@@ -78,8 +125,8 @@ func UpdateWorker(id string, w *Worker) (int64, error) {
 		stmt += "last_seen=?"
 		values = append(values, w.LastSeen)
 	}
-	stmt = strings.TrimSuffix(stmt, ",") + " WHERE id=?"
-	values = append(values, id)
+	stmt = strings.TrimSuffix(stmt, ",") + " WHERE " + wws.Cols
+	values = append(values, wws.Values...)
 	res, err := db.Exec(stmt, values...)
 	if err != nil {
 		return 0, err
@@ -87,47 +134,8 @@ func UpdateWorker(id string, w *Worker) (int64, error) {
 	return res.RowsAffected()
 }
 
-func GetWorker(id string) (*Worker, error) {
-	const stmt = "SELECT hostname,country,ip_addr,os,is_admin,boost,last_seen FROM workers WHERE id=?"
-	w := &Worker{Id: id}
-	err := db.QueryRow(stmt, id).Scan(&w.Hostname, &w.Country, &w.IpAddr, &w.Os, &w.IsAdmin, &w.Boost, &w.LastSeen)
-	if err != nil {
-		return nil, err
-	}
-	return w, nil
-}
-
-func DeleteWorker(id string) (int64, error) {
-	res, err := db.Exec("DELETE FROM workers WHERE id=?", id)
-	if err != nil {
-		return 0, err
-	}
-	return res.RowsAffected()
-}
-
-func scanWorkers(rows *sql.Rows) ([]*Worker, error) {
-	workers := make([]*Worker, 0, 15)
-	for rows.Next() {
-		w := &Worker{}
-		if err := rows.Scan(&w.Id, &w.Hostname, &w.Country, &w.IpAddr, &w.Os, &w.IsAdmin, &w.Boost, &w.LastSeen); err != nil {
-			return nil, err
-		}
-		workers = append(workers, w)
-	}
-	return workers, nil
-}
-
 func GetAllWorkers() ([]*Worker, error) {
 	rows, err := db.Query("SELECT * FROM workers")
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	return scanWorkers(rows)
-}
-
-func FilterWorkers(cols string, values ...interface{}) ([]*Worker, error) {
-	rows, err := db.Query("SELECT * FROM workers WHERE "+cols, values...)
 	if err != nil {
 		return nil, err
 	}
