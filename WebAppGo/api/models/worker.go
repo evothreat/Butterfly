@@ -2,9 +2,6 @@ package models
 
 import (
 	"WebAppGo/api/types"
-	"database/sql"
-	"errors"
-	"strings"
 	"time"
 )
 
@@ -33,112 +30,11 @@ type Worker struct {
 	LastSeen time.Time      `json:"last_seen" db:"last_seen"`
 }
 
-func (w *Worker) hasEmptyFields() bool {
+func (w *Worker) HasEmptyFields() bool {
 	return w.Id == "" || w.Hostname == "" || w.Country == "" || w.IpAddr == "" ||
 		w.Os == "" || !w.IsAdmin.Valid || !w.Boost.Valid
 }
 
-func (w *Worker) Save() error {
-	if w.hasEmptyFields() {
-		return errors.New("not all fields are set")
-	}
-	_, err := db.Exec("INSERT INTO workers VALUES(?,?,?,?,?,?,?,?)",
-		w.Id, w.Hostname, w.Country, w.IpAddr, w.Os, w.IsAdmin, w.Boost, time.Now())
-	return err
-}
-
-type WorkerFilter types.WhereStmt
-
-func scanWorkers(rows *sql.Rows) ([]*Worker, error) {
-	workers := make([]*Worker, 0, 15)
-	for rows.Next() {
-		w := &Worker{}
-		if err := rows.Scan(&w.Id, &w.Hostname, &w.Country, &w.IpAddr, &w.Os, &w.IsAdmin, &w.Boost, &w.LastSeen); err != nil {
-			return nil, err
-		}
-		workers = append(workers, w)
-	}
-	return workers, nil
-}
-
-func FilterWorkers(cols string, values ...interface{}) *WorkerFilter {
-	return &WorkerFilter{
-		Cols:   cols,
-		Values: values,
-	}
-}
-
-func (wf *WorkerFilter) Get() ([]*Worker, error) {
-	rows, err := db.Query("SELECT * FROM workers WHERE "+wf.Cols, wf.Values...)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	return scanWorkers(rows)
-}
-
-func (wf *WorkerFilter) GetFirst() (*Worker, error) {
-	w := &Worker{}
-	row := db.QueryRow("SELECT * FROM workers WHERE "+wf.Cols+" LIMIT 1", wf.Values...)
-	if err := row.Scan(&w.Id, &w.Hostname, &w.Country, &w.IpAddr, &w.Os, &w.IsAdmin, &w.Boost, &w.LastSeen); err != nil {
-		return nil, err
-	}
-	return w, nil
-}
-
-func (wf *WorkerFilter) Delete() (int64, error) {
-	res, err := db.Exec("DELETE FROM workers WHERE "+wf.Cols, wf.Values...)
-	if err != nil {
-		return 0, err
-	}
-	return res.RowsAffected()
-}
-
-func (wf *WorkerFilter) Update(w *Worker) (int64, error) {
-	stmt := "UPDATE workers SET "
-	values := make([]interface{}, 0, 8+len(wf.Values))
-	if w.Hostname != "" {
-		stmt += "hostname=?,"
-		values = append(values, w.Hostname)
-	}
-	if w.Country != "" {
-		stmt += "country=?,"
-		values = append(values, w.Country)
-	}
-	if w.IpAddr != "" {
-		stmt += "ip_addr=?,"
-		values = append(values, w.IpAddr)
-	}
-	if w.Os != "" {
-		stmt += "os=?,"
-		values = append(values, w.Os)
-	}
-	if w.IsAdmin.Valid {
-		stmt += "is_admin=?,"
-		values = append(values, w.IsAdmin.Bool) // pass NullBool struct?
-	}
-	if w.Boost.Valid {
-		stmt += "boost=?"
-		values = append(values, w.Boost.Bool)
-	}
-	if !w.LastSeen.IsZero() {
-		stmt += "last_seen=?"
-		values = append(values, w.LastSeen)
-	}
-	stmt = strings.TrimSuffix(stmt, ",") + " WHERE " + wf.Cols
-	values = append(values, wf.Values...)
-	res, err := db.Exec(stmt, values...)
-	if err != nil {
-		return 0, err
-	}
-	return res.RowsAffected()
-}
-
-func GetAllWorkers() ([]*Worker, error) {
-	rows, err := db.Query("SELECT * FROM workers")
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	return scanWorkers(rows)
+func (w *Worker) Scan(r types.Row) error {
+	return r.Scan(&w.Id, &w.Hostname, &w.Country, &w.IpAddr, &w.Os, &w.IsAdmin, &w.Boost, &w.LastSeen)
 }

@@ -8,65 +8,78 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"time"
 )
 
 // TODO: add default error handler!
 
 func GetAllWorkers(c echo.Context) error {
-	workers, err := models.GetAllWorkers()
+	rows, err := db.Query("SELECT * FROM workers")
 	if err != nil {
 		return err
 	}
-	return c.JSON(http.StatusOK, workers)
+	defer rows.Close()
+	workers := make([]*models.Worker, 0, 15)
+	for rows.Next() {
+		w := &models.Worker{}
+		if err := w.Scan(rows); err != nil {
+			return err
+		}
+		workers = append(workers, w)
+	}
+	return c.JSON(http.StatusOK, &workers)
 }
 
 func GetWorker(c echo.Context) error {
-	worker, err := models.FilterWorkers("id=?", c.Param("wid")).GetFirst()
-	if err != nil {
+	worker := models.Worker{}
+	row := db.QueryRow("SELECT * FROM workers WHERE id=?", c.Param("wid"))
+	if err := worker.Scan(row); err != nil {
 		if err == sql.ErrNoRows {
 			return c.NoContent(http.StatusNotFound)
 		}
 		return err
 	}
-	return c.JSON(http.StatusOK, worker)
+	return c.JSON(http.StatusOK, &worker)
 }
 
-// TODO: check if all fields are filled!
-// TODO: check for error type?
-// TODO: handle os.Mkdir error?
-
 func CreateWorker(c echo.Context) error {
-	var worker models.Worker
-	if (&echo.DefaultBinder{}).BindBody(c, &worker) != nil || worker.Save() != nil {
+	var w models.Worker
+	if (&echo.DefaultBinder{}).BindBody(c, &w) != nil || w.HasEmptyFields() {
 		return c.NoContent(http.StatusUnprocessableEntity)
 	}
-	os.Mkdir(filepath.Join(api.UPLOADS_DIR, worker.Id), os.ModePerm)
+	_, err := db.Exec("INSERT INTO workers VALUES(?,?,?,?,?,?,?,?)",
+		w.Id, w.Hostname, w.Country, w.IpAddr, w.Os, w.IsAdmin, w.Boost, time.Now())
+	if err != nil {
+		return err
+	}
+	os.Mkdir(filepath.Join(api.UPLOADS_DIR, w.Id), os.ModePerm)
 	return c.NoContent(http.StatusCreated)
 }
 
 func DeleteWorker(c echo.Context) error {
-	workerId := c.Param("wid")
-	n, err := models.FilterWorkers("id=?", workerId).Delete()
+	res, err := db.Exec("DELETE FROM workers WHERE id=?", c.Param("wid"))
 	if err != nil {
 		return err
 	}
-	if n == 0 {
+	if n, _ := res.RowsAffected(); n == 0 {
 		return c.NoContent(http.StatusNotFound)
 	}
-	os.Remove(filepath.Join(api.UPLOADS_DIR, workerId))
+	os.Remove(filepath.Join(api.UPLOADS_DIR, c.Param("wid")))
 	return c.NoContent(http.StatusOK)
 }
 
 func UpdateWorker(c echo.Context) error {
-	var worker models.Worker
-	if (&echo.DefaultBinder{}).BindBody(c, &worker) != nil {
+	valuesDict := echo.Map{}
+	if (&echo.DefaultBinder{}).BindBody(c, &valuesDict) != nil {
 		return c.NoContent(http.StatusUnprocessableEntity)
 	}
-	n, err := models.FilterWorkers("id=?", c.Param("wid")).Update(&worker)
+	cols, vals := ValuesDictToWhere(valuesDict)
+	vals = append(vals, c.Param("wid"))
+	res, err := db.Exec("UPDATE workers SET "+cols+" WHERE id=?", vals...) // very bad security..., test with regex
 	if err != nil {
 		return err
 	}
-	if n == 0 {
+	if n, _ := res.RowsAffected(); n == 0 {
 		return c.NoContent(http.StatusNotFound)
 	}
 	return c.NoContent(http.StatusOK)

