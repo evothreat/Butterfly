@@ -32,15 +32,15 @@ func GetAllWorkers(c echo.Context) error {
 }
 
 func GetWorker(c echo.Context) error {
+	worker := models.Worker{}
 	if cols := c.QueryParam("props"); cols != "" && utils.IsValidListString(cols) { // TODO: change to "fields"
 		row := db.QueryRow("SELECT "+cols+" FROM workers WHERE id=?", c.Param("wid"))
-		data, err := (&models.Worker{}).ScanColumns(row, cols)
+		data, err := worker.ScanColumns(row, cols) // use (&models.Worker).ScanColumns()?
 		if err != nil {
 			return c.NoContent(http.StatusUnprocessableEntity)
 		}
 		return c.JSON(http.StatusOK, &data)
 	}
-	worker := models.Worker{}
 	row := db.QueryRow("SELECT * FROM workers WHERE id=?", c.Param("wid"))
 	if err := worker.Scan(row); err != nil {
 		if err == sql.ErrNoRows {
