@@ -1,17 +1,16 @@
-package controllers
+package utils
 
 import (
-	"github.com/labstack/echo/v4"
 	"regexp"
 	"strings"
 )
 
 var listStringRegex = regexp.MustCompile(`^(\w+)(,\s*\w+)*$`)
 
-func ValuesDictToWhere(dict echo.Map) (string, []interface{}) {
+func ValuesMapToWhere(valuesMap map[string]interface{}) (string, []interface{}) {
 	cols := ""
 	vals := make([]interface{}, 0, 15)
-	for k, v := range dict {
+	for k, v := range valuesMap {
 		cols += k + "=?,"
 		vals = append(vals, v)
 	}

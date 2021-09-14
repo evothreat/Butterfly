@@ -2,6 +2,7 @@ package models
 
 import (
 	"WebAppGo/api/types"
+	"strings"
 	"time"
 )
 
@@ -37,4 +38,43 @@ func (w *Worker) HasEmptyFields() bool {
 
 func (w *Worker) Scan(r types.Row) error {
 	return r.Scan(&w.Id, &w.Hostname, &w.Country, &w.IpAddr, &w.Os, &w.IsAdmin, &w.Boost, &w.LastSeen)
+}
+
+func (w *Worker) ScanColumns(r types.Row, colsStr string) (map[string]interface{}, error) {
+	valuesMap := make(map[string]interface{})
+	for _, c := range strings.Split(colsStr, ",") {
+		valuesMap[c] = nil
+	}
+	values := make([]interface{}, len(valuesMap))
+	i := 0
+	if _, ok := valuesMap["id"]; ok {
+		values[i] = &w.Hostname // try valuesMap["id"] = values[i]?
+		valuesMap["id"] = &w.Hostname
+		i++
+	}
+	if _, ok := valuesMap["country"]; ok {
+		values[i] = &w.Country
+		valuesMap["country"] = &w.Country
+		i++
+	}
+	if _, ok := valuesMap["ip_addr"]; ok {
+		values[i] = &w.IpAddr
+		valuesMap["ip_addr"] = &w.IpAddr
+		i++
+	}
+	if _, ok := valuesMap["os"]; ok {
+		values[i] = &w.Os
+		valuesMap["os"] = &w.Os
+		i++
+	}
+	if _, ok := valuesMap["is_admin"]; ok {
+		values[i] = &w.IsAdmin
+		valuesMap["is_admin"] = &w.IsAdmin
+		i++
+	}
+	if _, ok := valuesMap["boost"]; ok {
+		values[i] = &w.Boost
+		valuesMap["boost"] = &w.Boost
+	}
+	return valuesMap, r.Scan(values...)
 }

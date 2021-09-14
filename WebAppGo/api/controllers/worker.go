@@ -3,6 +3,7 @@ package controllers
 import (
 	"WebAppGo/api"
 	"WebAppGo/api/models"
+	"WebAppGo/utils"
 	"database/sql"
 	"github.com/labstack/echo/v4"
 	"net/http"
@@ -18,7 +19,7 @@ func GetAllWorkers(c echo.Context) error {
 	if err != nil {
 		return err
 	}
-	defer rows.Close()
+	//defer rows.Close()
 	workers := make([]*models.Worker, 0, 15)
 	for rows.Next() {
 		w := &models.Worker{}
@@ -31,6 +32,14 @@ func GetAllWorkers(c echo.Context) error {
 }
 
 func GetWorker(c echo.Context) error {
+	if cols := c.QueryParam("props"); cols != "" && utils.IsValidListString(cols) { // TODO: change to "fields"
+		row := db.QueryRow("SELECT "+cols+" FROM workers WHERE id=?", c.Param("wid"))
+		data, err := (&models.Worker{}).ScanColumns(row, cols)
+		if err != nil {
+			return c.NoContent(http.StatusUnprocessableEntity)
+		}
+		return c.JSON(http.StatusOK, &data)
+	}
 	worker := models.Worker{}
 	row := db.QueryRow("SELECT * FROM workers WHERE id=?", c.Param("wid"))
 	if err := worker.Scan(row); err != nil {
@@ -69,13 +78,13 @@ func DeleteWorker(c echo.Context) error {
 }
 
 func UpdateWorker(c echo.Context) error {
-	valuesDict := echo.Map{}
-	if (&echo.DefaultBinder{}).BindBody(c, &valuesDict) != nil {
+	valuesMap := map[string]interface{}{}
+	if (&echo.DefaultBinder{}).BindBody(c, &valuesMap) != nil {
 		return c.NoContent(http.StatusUnprocessableEntity)
 	}
-	cols, vals := ValuesDictToWhere(valuesDict)
+	cols, vals := utils.ValuesMapToWhere(valuesMap)
 	vals = append(vals, c.Param("wid"))
-	res, err := db.Exec("UPDATE workers SET "+cols+" WHERE id=?", vals...) // very bad security..., test with regex
+	res, err := db.Exec("UPDATE workers SET "+cols+" WHERE id=?", vals...) // very bad security...
 	if err != nil {
 		return err
 	}

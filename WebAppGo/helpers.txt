@@ -126,3 +126,74 @@ func ExecQuery(query string, args ...interface{}) (int64, error) {
 	}
 	return res.RowsAffected()
 }
+
+
+func RowToDict(r types.Row, colsStr string) (map[string]string, error) {
+	cols := strings.Split(colsStr, ",")
+	n := len(cols)
+	values := make([][]byte, n)
+	valuesPtr := make([]interface{}, n)
+	for i := 0; i < n; i++ {
+		valuesPtr[i] = &values[i]
+	}
+	if err := r.Scan(valuesPtr...); err != nil {
+		return nil, err
+	}
+	dict := make(map[string]string)
+	for i, c := range cols {
+		fmt.Println(values[i])
+		dict[c] = string(values[i])			// cant convert all values to string
+	}
+	fmt.Println(dict)
+	return dict, nil
+}
+
+func RowToDict(r types.Row, colsStr string) ([]byte, error) {
+	cols := strings.Split(colsStr, ",")
+	n := len(cols)
+	values := make([][]byte, n)
+	valuesPtr := make([]interface{}, n)
+	for i := 0; i < n; i++ {
+		valuesPtr[i] = &values[i]
+	}
+	if err := r.Scan(valuesPtr...); err != nil {
+		return nil, err
+	}
+	totalN := n * 4 - 1
+	for _, c := range cols {
+		totalN += len(c)
+	}
+	data := make([]byte, 0, totalN)
+	data = append(data, '{')
+	for i := 0; i < n; i++ {
+		data = append(data, '"')
+		data = append(data, cols[i]...)
+		data = append(data, []byte{'"', ':'}...)
+		data = append(data, values[i]...)
+		if i != n-1 {
+			data = append(data, ',')
+		}
+	}
+	data = append(data, '}')
+	return data, nil
+}
+
+func RowToDict(r types.Row, colsStr string) (map[string]interface{}, error) {
+	cols := strings.Split(colsStr, ",")
+	n := len(cols)
+
+	values := make([]interface{}, n)
+	valuesPtr := make([]interface{}, n)
+	for i, _ := range values {
+		valuesPtr[i] = &values[i]
+	}
+	if err := r.Scan(valuesPtr...); err != nil {
+		return nil, err
+	}
+	dict := make(map[string]interface{})
+	for i, c := range cols {
+		dict[c] = values[i]
+	}
+	fmt.Println(dict)
+	return dict, nil
+}
