@@ -48,8 +48,13 @@ func (w *Worker) ScanColumns(r types.Row, colsStr string) (map[string]interface{
 	values := make([]interface{}, len(valuesMap))
 	i := 0
 	if _, ok := valuesMap["id"]; ok {
+		values[i] = &w.Id // is valuesMap["id"] = values[i] faster?
+		valuesMap["id"] = &w.Id
+		i++
+	}
+	if _, ok := valuesMap["hostname"]; ok {
 		values[i] = &w.Hostname // try valuesMap["id"] = values[i]?
-		valuesMap["id"] = &w.Hostname
+		valuesMap["hostname"] = &w.Hostname
 		i++
 	}
 	if _, ok := valuesMap["country"]; ok {
@@ -76,5 +81,43 @@ func (w *Worker) ScanColumns(r types.Row, colsStr string) (map[string]interface{
 		values[i] = &w.Boost
 		valuesMap["boost"] = &w.Boost
 	}
+	if _, ok := valuesMap["last_seen"]; ok {
+		values[i] = &w.LastSeen
+		valuesMap["last_seen"] = &w.LastSeen
+	}
 	return valuesMap, r.Scan(values...)
+}
+
+func (w *Worker) AsStmt() (string, []interface{}) {
+	stmt := ""
+	values := make([]interface{}, 0, 8)
+	if w.Id != "" {
+		stmt += "id=?,"
+		values = append(values, &w.Id)
+	}
+	if w.Hostname != "" {
+		stmt += "hostname=?,"
+		values = append(values, &w.Hostname)
+	}
+	if w.Country != "" {
+		stmt += "country=?,"
+		values = append(values, &w.Country)
+	}
+	if w.IpAddr != "" {
+		stmt += "ip_addr=?,"
+		values = append(values, &w.IpAddr)
+	}
+	if w.Os != "" {
+		stmt += "os=?,"
+		values = append(values, &w.Os)
+	}
+	if w.IsAdmin.Valid {
+		stmt += "is_admin=?,"
+		values = append(values, &w.IsAdmin.Bool) // pass NullBool struct?
+	}
+	if w.Boost.Valid {
+		stmt += "boost=?"
+		values = append(values, &w.Boost.Bool)
+	}
+	return strings.TrimSuffix(stmt, ","), values
 }

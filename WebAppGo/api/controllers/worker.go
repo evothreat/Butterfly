@@ -32,23 +32,23 @@ func GetAllWorkers(c echo.Context) error {
 }
 
 func GetWorker(c echo.Context) error {
-	worker := models.Worker{}
+	var w models.Worker
 	if cols := c.QueryParam("props"); cols != "" && utils.IsValidListString(cols) { // TODO: change to "fields"
 		row := db.QueryRow("SELECT "+cols+" FROM workers WHERE id=?", c.Param("wid"))
-		data, err := worker.ScanColumns(row, cols) // use (&models.Worker).ScanColumns()?
+		data, err := w.ScanColumns(row, cols) // use (&models.Worker).ScanColumns()?
 		if err != nil {
 			return c.NoContent(http.StatusUnprocessableEntity)
 		}
 		return c.JSON(http.StatusOK, &data)
 	}
 	row := db.QueryRow("SELECT * FROM workers WHERE id=?", c.Param("wid"))
-	if err := worker.Scan(row); err != nil {
+	if err := w.Scan(row); err != nil {
 		if err == sql.ErrNoRows {
 			return c.NoContent(http.StatusNotFound)
 		}
 		return err
 	}
-	return c.JSON(http.StatusOK, &worker)
+	return c.JSON(http.StatusOK, &w)
 }
 
 func CreateWorker(c echo.Context) error {
@@ -78,11 +78,11 @@ func DeleteWorker(c echo.Context) error {
 }
 
 func UpdateWorker(c echo.Context) error {
-	valuesMap := map[string]interface{}{}
-	if (&echo.DefaultBinder{}).BindBody(c, &valuesMap) != nil {
+	var w models.Worker
+	if (&echo.DefaultBinder{}).BindBody(c, &w) != nil {
 		return c.NoContent(http.StatusUnprocessableEntity)
 	}
-	cols, vals := utils.ValuesMapToWhere(valuesMap)
+	cols, vals := w.AsStmt()
 	vals = append(vals, c.Param("wid"))
 	res, err := db.Exec("UPDATE workers SET "+cols+" WHERE id=?", vals...) // very bad security...
 	if err != nil {
