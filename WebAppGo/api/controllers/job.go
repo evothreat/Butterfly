@@ -14,7 +14,7 @@ func GetAllJobs(c echo.Context) error {
 		return err
 	}
 	//defer rows.Close()
-	jobs := make([]*models.Job, 0, 15)
+	jobs := make([]*models.Job, 0, 10)
 	for rows.Next() {
 		job := &models.Job{}
 		if err := job.Scan(rows); err != nil {
@@ -31,7 +31,7 @@ func GetUndoneJobs(c echo.Context) error {
 		return err // TODO: first check if worker exist? Also select worker_id??
 	}
 	//defer rows.Close()
-	jobs := make([]*models.Job, 0, 15)
+	jobs := make([]*models.Job, 0, 10)
 	for rows.Next() {
 		job := &models.Job{}
 		if err := job.Scan(rows); err != nil {

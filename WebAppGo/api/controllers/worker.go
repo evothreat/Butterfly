@@ -20,7 +20,7 @@ func GetAllWorkers(c echo.Context) error {
 		return err
 	}
 	//defer rows.Close()
-	workers := make([]*models.Worker, 0, 15)
+	workers := make([]*models.Worker, 0, 10) // TODO: examine the number of rows first!
 	for rows.Next() {
 		w := &models.Worker{}
 		if err := w.Scan(rows); err != nil {
