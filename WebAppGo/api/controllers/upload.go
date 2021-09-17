@@ -103,7 +103,7 @@ func GetUploadInfo(c echo.Context) error {
 		if err != nil {
 			return err
 		}
-		uploads := make([]*models.Upload, 0, 10) // TODO: examine the number of rows first!
+		uploads := make([]*models.Upload, 0, api.MIN_LIST_CAP) // TODO: examine the number of rows first!
 		for rows.Next() {
 			u := &models.Upload{}
 			if err := u.Scan(rows); err != nil {
