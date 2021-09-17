@@ -73,13 +73,23 @@ func GetUpload(c echo.Context) error {
 }
 
 func DeleteUpload(c echo.Context) error {
-	res, err := db.Exec("DELETE FROM uploads WHERE worker_id=? AND id=?", c.Param("wid"), c.Param("uid"))
+	uploadId, err := strconv.Atoi(c.Param("uid"))
+	if err != nil {
+		return c.NoContent(http.StatusNotFound)
+	}
+	var upload models.Upload
+	row := db.QueryRow("SELECT * FROM uploads WHERE worker_id=? AND id=?", c.Param("wid"), uploadId)
+	if err := upload.Scan(row); err != nil {
+		if err == sql.ErrNoRows {
+			return c.NoContent(http.StatusNotFound)
+		}
+		return err
+	}
+	_, err = db.Exec("DELETE FROM uploads WHERE worker_id=? AND id=?", c.Param("wid"), uploadId)
 	if err != nil {
 		return err
 	}
-	if n, _ := res.RowsAffected(); n == 0 {
-		return c.NoContent(http.StatusNotFound)
-	}
+	os.Remove(filepath.Join(api.UPLOADS_DIR, c.Param("wid"), upload.Filename)) // TODO: check for error?
 	return c.NoContent(http.StatusOK)
 }
 
