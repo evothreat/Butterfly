@@ -28,5 +28,10 @@ func main() {
 	e.POST("/api/workers/:wid/hardware", controllers.CreateHardwareInfo)
 	e.GET("/api/workers/:wid/hardware", controllers.GetHardwareInfo)
 
+	e.POST("/api/workers/:wid/uploads", controllers.CreateUpload)
+	e.GET("/api/workers/:wid/uploads/:uid", controllers.GetUpload)
+	e.DELETE("/api/workers/:wid/uploads/:uid", controllers.DeleteUpload)
+	e.GET("/api/workers/:wid/uploads/:uid/info", controllers.GetUploadInfo)
+
 	e.Start("localhost:8080")
 }

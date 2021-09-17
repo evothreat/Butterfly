@@ -1,6 +1,9 @@
 package models
 
-import "time"
+import (
+	"WebAppGo/api/types"
+	"time"
+)
 
 const UploadSchema = `CREATE TABLE IF NOT EXISTS uploads
   (
@@ -20,4 +23,8 @@ type Upload struct {
 	Size     uint64    `json:"size" db:"size"`
 	Created  time.Time `json:"created" db:"created"`
 	WorkerId string    `json:"worker_id" db:"worker_id"`
+}
+
+func (u *Upload) Scan(r types.Row) error {
+	return r.Scan(&u.Id, &u.Filename, &u.Type, &u.Size, &u.Created, &u.WorkerId)
 }
