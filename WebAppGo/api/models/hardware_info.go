@@ -1,5 +1,7 @@
 package models
 
+import "WebAppGo/api/types"
+
 const HardwareInfoSchema = `CREATE TABLE IF NOT EXISTS hardware_infos
   (
      gpu       VARCHAR(50),
@@ -14,4 +16,12 @@ type HardwareInfo struct {
 	Cpu      string `json:"cpu" db:"cpu"`
 	Ram      string `json:"ram" db:"ram"`
 	WorkerId string `json:"worker_id" db:"worker_id"`
+}
+
+func (hwi *HardwareInfo) HasEmptyFields() bool {
+	return hwi.Gpu == "" || hwi.Cpu == "" || hwi.Ram == "" || hwi.WorkerId == ""
+}
+
+func (hwi *HardwareInfo) Scan(r types.Row) error {
+	return r.Scan(&hwi.Gpu, &hwi.Cpu, &hwi.Ram, &hwi.WorkerId)
 }

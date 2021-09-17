@@ -25,5 +25,8 @@ func main() {
 	e.GET("/api/workers/:wid/jobs/:jid", controllers.GetJob)
 	e.DELETE("/api/workers/:wid/jobs/:jid", controllers.DeleteJob)
 
+	e.POST("/api/workers/:wid/hardware", controllers.CreateHardwareInfo)
+	e.GET("/api/workers/:wid/hardware", controllers.GetHardwareInfo)
+
 	e.Start("localhost:8080")
 }
