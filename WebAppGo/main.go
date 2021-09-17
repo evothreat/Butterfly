@@ -11,7 +11,8 @@ func main() {
 	e := echo.New()
 	e.Debug = true
 
-	controllers.SetupRoutes(e)
+	apiGroup := e.Group("/api")
+	controllers.SetupRoutes(apiGroup)
 
 	e.Start("localhost:8080")
 }

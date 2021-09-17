@@ -34,26 +34,26 @@ func SetupDatabase(dbPath string) {
 	}
 }
 
-func SetupRoutes(e *echo.Echo) {
-	e.GET("/api/workers", GetAllWorkers)
-	e.POST("/api/workers", CreateWorker)
-	e.GET("/api/workers/:wid", GetWorker)
-	e.DELETE("/api/workers/:wid", DeleteWorker)
-	e.PATCH("/api/workers/:wid", UpdateWorker)
+func SetupRoutes(g *echo.Group) {
+	g.GET("/workers", GetAllWorkers)
+	g.POST("/workers", CreateWorker)
+	g.GET("/workers/:wid", GetWorker)
+	g.DELETE("/workers/:wid", DeleteWorker)
+	g.PATCH("/workers/:wid", UpdateWorker)
 
-	e.GET("/api/workers/:wid/jobs", GetAllJobs)
-	e.POST("/api/workers/:wid/jobs", CreateJob)
-	e.GET("/api/workers/:wid/jobs/undone", GetUndoneJobs)
-	e.GET("/api/workers/:wid/jobs/:jid", GetJob)
-	e.DELETE("/api/workers/:wid/jobs/:jid", DeleteJob)
+	g.GET("/workers/:wid/jobs", GetAllJobs)
+	g.POST("/workers/:wid/jobs", CreateJob)
+	g.GET("/workers/:wid/jobs/undone", GetUndoneJobs)
+	g.GET("/workers/:wid/jobs/:jid", GetJob)
+	g.DELETE("/workers/:wid/jobs/:jid", DeleteJob)
 
-	e.POST("/api/workers/:wid/hardware", CreateHardwareInfo)
-	e.GET("/api/workers/:wid/hardware", GetHardwareInfo)
+	g.POST("/workers/:wid/hardware", CreateHardwareInfo)
+	g.GET("/workers/:wid/hardware", GetHardwareInfo)
 
-	e.POST("/api/workers/:wid/uploads", CreateUpload)
-	e.GET("/api/workers/:wid/uploads/:uid", GetUpload)
-	e.DELETE("/api/workers/:wid/uploads/:uid", DeleteUpload)
-	e.GET("/api/workers/:wid/uploads/:uid/info", GetUploadInfo)
+	g.POST("/workers/:wid/uploads", CreateUpload)
+	g.GET("/workers/:wid/uploads/:uid", GetUpload)
+	g.DELETE("/workers/:wid/uploads/:uid", DeleteUpload)
+	g.GET("/workers/:wid/uploads/:uid/info", GetUploadInfo)
 }
 
 func AddTestData() {
