@@ -5,33 +5,55 @@ import (
 	"WebAppGo/api/types"
 	"database/sql"
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/labstack/echo/v4"
 	"time"
 )
 
 var db *sql.DB
 
-func SetupDatabase(dbPath string) error {
+func SetupDatabase(dbPath string) {
 	var err error
 	db, err = sql.Open("mysql", dbPath)
 	if err != nil {
-		return err
+		panic(err)
 	}
 	if _, err = db.Exec(models.WorkerSchema); err != nil {
-		return err
+		panic(err)
 	}
 	if _, err = db.Exec(models.JobSchema); err != nil {
-		return err
+		panic(err)
 	}
 	if _, err = db.Exec(models.JobReportSchema); err != nil {
-		return err
+		panic(err)
 	}
 	if _, err = db.Exec(models.HardwareInfoSchema); err != nil {
-		return err
+		panic(err)
 	}
 	if _, err = db.Exec(models.UploadSchema); err != nil {
-		return err
+		panic(err)
 	}
-	return nil
+}
+
+func SetupRoutes(e *echo.Echo) {
+	e.GET("/api/workers", GetAllWorkers)
+	e.POST("/api/workers", CreateWorker)
+	e.GET("/api/workers/:wid", GetWorker)
+	e.DELETE("/api/workers/:wid", DeleteWorker)
+	e.PATCH("/api/workers/:wid", UpdateWorker)
+
+	e.GET("/api/workers/:wid/jobs", GetAllJobs)
+	e.POST("/api/workers/:wid/jobs", CreateJob)
+	e.GET("/api/workers/:wid/jobs/undone", GetUndoneJobs)
+	e.GET("/api/workers/:wid/jobs/:jid", GetJob)
+	e.DELETE("/api/workers/:wid/jobs/:jid", DeleteJob)
+
+	e.POST("/api/workers/:wid/hardware", CreateHardwareInfo)
+	e.GET("/api/workers/:wid/hardware", GetHardwareInfo)
+
+	e.POST("/api/workers/:wid/uploads", CreateUpload)
+	e.GET("/api/workers/:wid/uploads/:uid", GetUpload)
+	e.DELETE("/api/workers/:wid/uploads/:uid", DeleteUpload)
+	e.GET("/api/workers/:wid/uploads/:uid/info", GetUploadInfo)
 }
 
 func AddTestData() {
