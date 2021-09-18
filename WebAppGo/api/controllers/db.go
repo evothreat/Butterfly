@@ -4,8 +4,8 @@ import (
 	"WebAppGo/api/models"
 	"WebAppGo/api/types"
 	"database/sql"
-	_ "github.com/go-sql-driver/mysql"
-	"github.com/labstack/echo/v4"
+	"fmt"
+	"github.com/go-sql-driver/mysql"
 	"time"
 )
 
@@ -34,26 +34,21 @@ func SetupDatabase(dbPath string) {
 	}
 }
 
-func SetupRoutes(g *echo.Group) {
-	g.GET("/workers", GetAllWorkers)
-	g.POST("/workers", CreateWorker)
-	g.GET("/workers/:wid", GetWorker)
-	g.DELETE("/workers/:wid", DeleteWorker)
-	g.PATCH("/workers/:wid", UpdateWorker)
+// works only for mysql
 
-	g.GET("/workers/:wid/jobs", GetAllJobs)
-	g.POST("/workers/:wid/jobs", CreateJob)
-	g.GET("/workers/:wid/jobs/undone", GetUndoneJobs)
-	g.GET("/workers/:wid/jobs/:jid", GetJob)
-	g.DELETE("/workers/:wid/jobs/:jid", DeleteJob)
+func IsDuplicateEntry(err error) bool {
+	me, ok := err.(*mysql.MySQLError)
+	return ok && me.Number == 1062
+}
 
-	g.POST("/workers/:wid/hardware", CreateHardwareInfo)
-	g.GET("/workers/:wid/hardware", GetHardwareInfo)
-
-	g.POST("/workers/:wid/uploads", CreateUpload)
-	g.GET("/workers/:wid/uploads/:uid", GetUpload)
-	g.DELETE("/workers/:wid/uploads/:uid", DeleteUpload)
-	g.GET("/workers/:wid/uploads/:uid/info", GetUploadInfo)
+func rowExists(query string, args ...interface{}) bool {
+	var exists bool
+	query = fmt.Sprintf("SELECT exists (%s)", query)
+	err := db.QueryRow(query, args...).Scan(&exists)
+	if err != nil && err != sql.ErrNoRows {
+		panic(err)	// or return error??
+	}
+	return exists
 }
 
 func AddTestData() {

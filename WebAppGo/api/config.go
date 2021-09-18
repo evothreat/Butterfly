@@ -1,5 +1,9 @@
 package api
 
-const UPLOADS_DIR = "D:/tmp/workers"
+const (
+	UPLOADS_DIR = "D:/tmp/workers"
 
-const MIN_LIST_CAP = 10
+	MAX_REPORT_LEN = 5000
+
+	MIN_LIST_CAP = 10
+)

@@ -19,7 +19,7 @@ type HardwareInfo struct {
 }
 
 func (hwi *HardwareInfo) HasEmptyFields() bool {
-	return hwi.Gpu == "" || hwi.Cpu == "" || hwi.Ram == "" || hwi.WorkerId == ""
+	return hwi.Gpu == "" || hwi.Cpu == "" || hwi.Ram == ""
 }
 
 func (hwi *HardwareInfo) Scan(r types.Row) error {

@@ -12,9 +12,12 @@ func CreateHardwareInfo(c echo.Context) error {
 	if (&echo.DefaultBinder{}).BindBody(c, &hwi) != nil || hwi.HasEmptyFields() {
 		return c.NoContent(http.StatusUnprocessableEntity)
 	}
-	_, err := db.Exec("INSERT INTO hardware_infos(gpu,cpu,ram,worker_id) VALUES(?,?,?,?)", // TODO: catch constraint violation!
-		hwi.Gpu, hwi.Cpu, hwi.Ram, hwi.WorkerId)
+	_, err := db.Exec("INSERT INTO hardware_infos(gpu,cpu,ram,worker_id) VALUES(?,?,?,?)",
+		hwi.Gpu, hwi.Cpu, hwi.Ram, c.Param("wid"))
 	if err != nil {
+		if IsDuplicateEntry(err) {
+			return c.NoContent(http.StatusConflict)
+		}
 		return err
 	}
 	return c.NoContent(http.StatusCreated)

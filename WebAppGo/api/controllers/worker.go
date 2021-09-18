@@ -19,7 +19,6 @@ func GetAllWorkers(c echo.Context) error {
 	if err != nil {
 		return err
 	}
-	//defer rows.Close()
 	workers := make([]*models.Worker, 0, api.MIN_LIST_CAP) // TODO: examine the number of rows first!
 	for rows.Next() {
 		w := &models.Worker{}
@@ -41,7 +40,7 @@ func GetWorker(c echo.Context) error {
 		}
 		return c.JSON(http.StatusOK, &data)
 	}
-	row := db.QueryRow("SELECT * FROM workers WHERE id=?", c.Param("wid"))
+	row := db.QueryRow("SELECT * FROM workers WHERE id=?", c.Param("wid"))		// TODO: ???
 	if err := w.Scan(row); err != nil {
 		if err == sql.ErrNoRows {
 			return c.NoContent(http.StatusNotFound)
