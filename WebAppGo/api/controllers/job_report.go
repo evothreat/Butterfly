@@ -9,8 +9,6 @@ import (
 	"strconv"
 )
 
-// TODO: handle errors
-
 func CreateReport(c echo.Context) error {
 	jobId, _ := strconv.Atoi(c.Param("jid"))
 	report, err := io.ReadAll(io.LimitReader(c.Request().Body, api.MAX_REPORT_LEN))
@@ -22,9 +20,12 @@ func CreateReport(c echo.Context) error {
 	}
 	_, err = db.Exec("INSERT INTO job_reports(job_id, report) VALUES(?,?)", jobId, report)
 	if err != nil {
+		if IsNoReferencedRowErr(err) {
+			return c.NoContent(http.StatusNotFound)
+		}
 		return err
 	}
-	_, err = db.Exec("UPDATE jobs SET is_done=1 WHERE id=?", jobId)	// TODO: check if job already done?
+	_, err = db.Exec("UPDATE jobs SET is_done=1 WHERE worker_id=? AND id=?", c.Param("wid"), jobId) // TODO: check if job already done?
 	if err != nil {
 		return err
 	}

@@ -3,6 +3,7 @@ package controllers
 import (
 	"WebAppGo/api"
 	"WebAppGo/api/models"
+	"database/sql"
 	"github.com/labstack/echo/v4"
 	"net/http"
 	"strconv"
@@ -30,7 +31,6 @@ func GetUndoneJobs(c echo.Context) error {
 	if err != nil {
 		return err
 	}
-	//defer rows.Close()
 	jobs := make([]*models.Job, 0, api.MIN_LIST_CAP)
 	for rows.Next() {
 		job := &models.Job{}
@@ -49,8 +49,11 @@ func GetUndoneJobs(c echo.Context) error {
 func GetJob(c echo.Context) error {
 	jobId, _ := strconv.Atoi(c.Param("jid"))
 	var job models.Job
-	row := db.QueryRow("SELECT * FROM jobs WHERE id=?", jobId)	// middleware checks for us...
+	row := db.QueryRow("SELECT * FROM jobs WHERE worker_id=? AND id=?", c.Param("wid"), jobId)
 	if err := job.Scan(row); err != nil {
+		if err == sql.ErrNoRows {
+			return c.NoContent(http.StatusNotFound)
+		}
 		return err
 	}
 	return c.JSON(http.StatusOK, &job)
@@ -62,7 +65,7 @@ func CreateJob(c echo.Context) error {
 		return c.NoContent(http.StatusUnprocessableEntity)
 	}
 	_, err := db.Exec("INSERT INTO jobs(todo,is_done,created,worker_id) VALUES(?,?,?,?)",
-		job.Todo, job.IsDone, time.Now(), job.WorkerId) // TODO: add is_done in js files!
+		job.Todo, job.IsDone, time.Now(), c.Param("wid")) // TODO: add is_done in js files!
 	if err != nil {
 		return err
 	}
@@ -70,8 +73,8 @@ func CreateJob(c echo.Context) error {
 }
 
 func DeleteJob(c echo.Context) error {
-	jobId, _ := strconv.Atoi(c.Param("jid"))							// TODO: inside middleware check if number
-	if _, err := db.Exec("DELETE FROM jobs WHERE id=?", jobId); err != nil {
+	jobId, _ := strconv.Atoi(c.Param("jid")) // TODO: inside middleware check if number?
+	if _, err := db.Exec("DELETE FROM jobs WHERE worker_id=? AND id=?", c.Param("wid"), jobId); err != nil {
 		return err
 	}
 	return c.NoContent(http.StatusOK)

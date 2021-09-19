@@ -41,12 +41,22 @@ func IsDuplicateEntry(err error) bool {
 	return ok && me.Number == 1062
 }
 
+func IsBadFieldErr(err error) bool {
+	me, ok := err.(*mysql.MySQLError)
+	return ok && me.Number == 1054
+}
+
+func IsNoReferencedRowErr(err error) bool {
+	me, ok := err.(*mysql.MySQLError)
+	return ok && me.Number == 1451 || me.Number == 1452
+}
+
 func rowExists(query string, args ...interface{}) bool {
 	var exists bool
 	query = fmt.Sprintf("SELECT exists (%s)", query)
 	err := db.QueryRow(query, args...).Scan(&exists)
 	if err != nil && err != sql.ErrNoRows {
-		panic(err)	// or return error??
+		panic(err) // or return error??
 	}
 	return exists
 }

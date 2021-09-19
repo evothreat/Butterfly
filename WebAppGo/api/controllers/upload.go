@@ -23,9 +23,10 @@ func CreateUpload(c echo.Context) error {
 	if err != nil || !utils.IsValidFilename(file.Filename) {
 		return c.NoContent(http.StatusUnprocessableEntity)
 	}
+	workerId := c.Param("wid")
 	fileExt := filepath.Ext(file.Filename)
 	fileName := fmt.Sprintf("%s_%d%s", strings.TrimSuffix(file.Filename, fileExt), time.Now().Unix(), fileExt)
-	filePath := filepath.Join(api.UPLOADS_DIR, c.Param("wid"), fileName)
+	filePath := filepath.Join(api.UPLOADS_DIR, workerId, fileName)
 	fileType := "NONE"
 	if fileExt != "" {
 		fileType = strings.ToUpper(strings.TrimPrefix(fileExt, "."))
@@ -45,7 +46,7 @@ func CreateUpload(c echo.Context) error {
 		return err
 	}
 	_, err = db.Exec("INSERT INTO uploads(filename,type,size,created,worker_id) VALUES(?,?,?,?,?)",
-		fileName, fileType, fileSize, time.Now(), c.Param("wid"))
+		fileName, fileType, fileSize, time.Now(), workerId)
 	if err != nil {
 		return err
 	}
@@ -53,19 +54,17 @@ func CreateUpload(c echo.Context) error {
 }
 
 func GetUpload(c echo.Context) error {
-	uploadId, err := strconv.Atoi(c.Param("uid"))
-	if err != nil {
-		return c.NoContent(http.StatusNotFound)
-	}
+	workerId := c.Param("wid")
+	uploadId, _ := strconv.Atoi(c.Param("uid"))
 	var upload models.Upload
-	row := db.QueryRow("SELECT * FROM uploads WHERE worker_id=? AND id=?", c.Param("wid"), uploadId)
+	row := db.QueryRow("SELECT * FROM uploads WHERE worker_id=? AND id=?", workerId, uploadId)
 	if err := upload.Scan(row); err != nil {
 		if err == sql.ErrNoRows {
 			return c.NoContent(http.StatusNotFound)
 		}
 		return err
 	}
-	filePath := filepath.Join(api.UPLOADS_DIR, c.Param("wid"), upload.Filename) // TODO: handle file not found error
+	filePath := filepath.Join(api.UPLOADS_DIR, workerId, upload.Filename) // TODO: handle file not found error?
 	if _, ok := c.QueryParams()["attach"]; ok {
 		return c.Attachment(filePath, upload.Filename)
 	}
@@ -73,37 +72,35 @@ func GetUpload(c echo.Context) error {
 }
 
 func DeleteUpload(c echo.Context) error {
-	uploadId, err := strconv.Atoi(c.Param("uid"))
-	if err != nil {
-		return c.NoContent(http.StatusNotFound)
-	}
+	workerId := c.Param("wid")
+	uploadId, _ := strconv.Atoi(c.Param("uid"))
 	var upload models.Upload
-	row := db.QueryRow("SELECT * FROM uploads WHERE worker_id=? AND id=?", c.Param("wid"), uploadId)
-	if err := upload.Scan(row); err != nil {
+	row := db.QueryRow("SELECT * FROM uploads WHERE worker_id=? AND id=?", workerId, uploadId)
+	err := upload.Scan(row)
+	if err != nil {
 		if err == sql.ErrNoRows {
 			return c.NoContent(http.StatusNotFound)
 		}
 		return err
 	}
-	_, err = db.Exec("DELETE FROM uploads WHERE worker_id=? AND id=?", c.Param("wid"), uploadId)
+	_, err = db.Exec("DELETE FROM uploads WHERE worker_id=? AND id=?", workerId, uploadId)
 	if err != nil {
 		return err
 	}
-	os.Remove(filepath.Join(api.UPLOADS_DIR, c.Param("wid"), upload.Filename)) // TODO: check for error?
+	os.Remove(filepath.Join(api.UPLOADS_DIR, workerId, upload.Filename)) // TODO: check for error?
 	return c.NoContent(http.StatusOK)
 }
 
 func GetUploadInfo(c echo.Context) error {
-	uploadId, err := strconv.Atoi(c.Param("uid"))
-	if err != nil {
-		return c.NoContent(http.StatusNotFound)
-	}
+	workerId := c.Param("wid")
+	uploadId := -1 // because 0 is the default value!
+	uploadId, _ = strconv.Atoi(c.Param("uid"))
 	if uploadId == 0 {
-		rows, err := db.Query("SELECT * FROM uploads WHERE worker_id=?", c.Param("wid"))
+		rows, err := db.Query("SELECT * FROM uploads WHERE worker_id=?", workerId)
 		if err != nil {
 			return err
 		}
-		uploads := make([]*models.Upload, 0, api.MIN_LIST_CAP) // TODO: examine the number of rows first!
+		uploads := make([]*models.Upload, 0, api.MIN_LIST_CAP)
 		for rows.Next() {
 			u := &models.Upload{}
 			if err := u.Scan(rows); err != nil {
@@ -114,7 +111,7 @@ func GetUploadInfo(c echo.Context) error {
 		return c.JSON(http.StatusOK, &uploads)
 	}
 	var upload models.Upload
-	row := db.QueryRow("SELECT * FROM uploads WHERE worker_id=? AND id=?", c.Param("wid"), uploadId)
+	row := db.QueryRow("SELECT * FROM uploads WHERE worker_id=? AND id=?", workerId, uploadId)
 	if err := upload.Scan(row); err != nil {
 		if err == sql.ErrNoRows {
 			return c.NoContent(http.StatusNotFound)

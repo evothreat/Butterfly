@@ -34,13 +34,19 @@ func GetWorker(c echo.Context) error {
 	var w models.Worker
 	if cols := c.QueryParam("props"); cols != "" && utils.IsValidListString(cols) { // TODO: change to "fields"
 		row := db.QueryRow("SELECT "+cols+" FROM workers WHERE id=?", c.Param("wid"))
-		data, err := w.ScanColumns(row, cols) // use (&models.Worker).ScanColumns()?
+		data, err := w.ScanColumns(row, cols)
 		if err != nil {
-			return c.NoContent(http.StatusUnprocessableEntity)
+			if err == sql.ErrNoRows {
+				return c.NoContent(http.StatusNotFound)
+			}
+			if IsBadFieldErr(err) {
+				return c.NoContent(http.StatusUnprocessableEntity)
+			}
+			return err
 		}
 		return c.JSON(http.StatusOK, &data)
 	}
-	row := db.QueryRow("SELECT * FROM workers WHERE id=?", c.Param("wid"))		// TODO: ???
+	row := db.QueryRow("SELECT * FROM workers WHERE id=?", c.Param("wid"))
 	if err := w.Scan(row); err != nil {
 		if err == sql.ErrNoRows {
 			return c.NoContent(http.StatusNotFound)
@@ -83,7 +89,7 @@ func UpdateWorker(c echo.Context) error {
 	}
 	cols, vals := w.AsStmt()
 	vals = append(vals, c.Param("wid"))
-	res, err := db.Exec("UPDATE workers SET "+cols+" WHERE id=?", vals...) // very bad security...
+	res, err := db.Exec("UPDATE workers SET "+cols+" WHERE id=?", vals...)
 	if err != nil {
 		return err
 	}
