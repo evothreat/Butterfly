@@ -11,9 +11,6 @@ import (
 
 func CreateReport(c echo.Context) error {
 	jobId, _ := strconv.Atoi(c.Param("jid"))
-	if !rowExists("SELECT id FROM jobs WHERE worker_id=? AND id=? AND is_done=0", c.Param("wid"), jobId) {
-		return c.NoContent(http.StatusNotFound)
-	}
 	report, err := io.ReadAll(io.LimitReader(c.Request().Body, api.MAX_REPORT_LEN))
 	if err != nil {
 		return err
@@ -28,12 +25,22 @@ func CreateReport(c echo.Context) error {
 	_, err = tx.Exec("INSERT INTO job_reports(job_id, report) VALUES(?,?)", jobId, report)
 	if err != nil {
 		tx.Rollback()
+		if isDuplicateEntry(err) {
+			return c.NoContent(http.StatusConflict)
+		}
+		if isNoReferencedRowErr(err) {
+			return c.NoContent(http.StatusNotFound)
+		}
 		return err
 	}
-	_, err = tx.Exec("UPDATE jobs SET is_done=1 WHERE worker_id=? AND id=?", c.Param("wid"), jobId)
+	res, err := tx.Exec("UPDATE jobs SET is_done=1 WHERE worker_id=? AND id=?", c.Param("wid"), jobId)
 	if err != nil {
 		tx.Rollback()
 		return err
+	}
+	if n, _ := res.RowsAffected(); n == 0 {
+		tx.Rollback()
+		return c.NoContent(http.StatusNotFound)
 	}
 	err = tx.Commit()
 	if err != nil {
