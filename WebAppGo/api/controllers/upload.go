@@ -17,13 +17,14 @@ import (
 )
 
 // TODO: before creating and copying the file check whether worker exists!
+// TODO: use transactions for multiple "change" operations!
 
 func CreateUpload(c echo.Context) error {
+	workerId := c.Param("wid")
 	file, err := c.FormFile("file")
 	if err != nil || !utils.IsValidFilename(file.Filename) {
 		return c.NoContent(http.StatusUnprocessableEntity)
 	}
-	workerId := c.Param("wid")
 	fileExt := filepath.Ext(file.Filename)
 	fileName := fmt.Sprintf("%s_%d%s", strings.TrimSuffix(file.Filename, fileExt), time.Now().Unix(), fileExt)
 	filePath := filepath.Join(api.UPLOADS_DIR, workerId, fileName)
@@ -48,6 +49,10 @@ func CreateUpload(c echo.Context) error {
 	_, err = db.Exec("INSERT INTO uploads(filename,type,size,created,worker_id) VALUES(?,?,?,?,?)",
 		fileName, fileType, fileSize, time.Now(), workerId)
 	if err != nil {
+		if isNoReferencedRowErr(err) {
+			// would be good if we check this at begin
+			return c.NoContent(http.StatusNotFound)
+		}
 		return err
 	}
 	return c.NoContent(http.StatusCreated)
@@ -64,7 +69,7 @@ func GetUpload(c echo.Context) error {
 		}
 		return err
 	}
-	filePath := filepath.Join(api.UPLOADS_DIR, workerId, upload.Filename) // TODO: handle file not found error?
+	filePath := filepath.Join(api.UPLOADS_DIR, workerId, upload.Filename) // handle file not found error?
 	if _, ok := c.QueryParams()["attach"]; ok {
 		return c.Attachment(filePath, upload.Filename)
 	}
@@ -92,26 +97,9 @@ func DeleteUpload(c echo.Context) error {
 }
 
 func GetUploadInfo(c echo.Context) error {
-	workerId := c.Param("wid")
-	uploadId := -1 // because 0 is the default value!
-	uploadId, _ = strconv.Atoi(c.Param("uid"))
-	if uploadId == 0 {
-		rows, err := db.Query("SELECT * FROM uploads WHERE worker_id=?", workerId)
-		if err != nil {
-			return err
-		}
-		uploads := make([]*models.Upload, 0, api.MIN_LIST_CAP)
-		for rows.Next() {
-			u := &models.Upload{}
-			if err := u.Scan(rows); err != nil {
-				return err
-			}
-			uploads = append(uploads, u)
-		}
-		return c.JSON(http.StatusOK, &uploads)
-	}
+	uploadId, _ := strconv.Atoi(c.Param("uid"))
 	var upload models.Upload
-	row := db.QueryRow("SELECT * FROM uploads WHERE worker_id=? AND id=?", workerId, uploadId)
+	row := db.QueryRow("SELECT * FROM uploads WHERE worker_id=? AND id=?", c.Param("wid"), uploadId)
 	if err := upload.Scan(row); err != nil {
 		if err == sql.ErrNoRows {
 			return c.NoContent(http.StatusNotFound)
@@ -119,4 +107,20 @@ func GetUploadInfo(c echo.Context) error {
 		return err
 	}
 	return c.JSON(http.StatusOK, &upload)
+}
+
+func GetAllUploadsInfo(c echo.Context) error {
+	rows, err := db.Query("SELECT * FROM uploads WHERE worker_id=?", c.Param("wid"))
+	if err != nil {
+		return err
+	}
+	uploads := make([]*models.Upload, 0, api.MIN_LIST_CAP)
+	for rows.Next() {
+		u := &models.Upload{}
+		if err := u.Scan(rows); err != nil {
+			return err
+		}
+		uploads = append(uploads, u)
+	}
+	return c.JSON(http.StatusOK, &uploads)
 }

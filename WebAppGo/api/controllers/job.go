@@ -11,11 +11,17 @@ import (
 )
 
 func GetAllJobs(c echo.Context) error {
+	workerId := c.Param("wid")
 	stmt := "SELECT * FROM jobs WHERE worker_id=?"
+
 	if _, ok := c.QueryParams()["undone"]; ok {
-		stmt += " AND is_done=0" // or assign new statement
+		stmt += " AND is_done=0" // or assign new statement?
+		_, err := db.Exec("UPDATE workers SET last_seen=? WHERE id=?", time.Now(), workerId)
+		if err != nil {
+			return err
+		}
 	}
-	rows, err := db.Query(stmt, c.Param("wid"))
+	rows, err := db.Query(stmt, workerId)
 	if err != nil {
 		return err
 	}
@@ -51,6 +57,9 @@ func CreateJob(c echo.Context) error {
 	_, err := db.Exec("INSERT INTO jobs(todo,is_done,created,worker_id) VALUES(?,?,?,?)",
 		job.Todo, job.IsDone, time.Now(), c.Param("wid")) // TODO: add is_done in js files!
 	if err != nil {
+		if isNoReferencedRowErr(err) {
+			return c.NoContent(http.StatusNotFound)
+		}
 		return err
 	}
 	return c.NoContent(http.StatusCreated)
@@ -58,9 +67,12 @@ func CreateJob(c echo.Context) error {
 
 func DeleteJob(c echo.Context) error {
 	jobId, _ := strconv.Atoi(c.Param("jid")) // default id value will be 0
-	_, err := db.Exec("DELETE FROM jobs WHERE worker_id=? AND id=?", c.Param("wid"), jobId)
+	res, err := db.Exec("DELETE FROM jobs WHERE worker_id=? AND id=?", c.Param("wid"), jobId)
 	if err != nil {
 		return err
+	}
+	if n, _ := res.RowsAffected(); n == 0 {
+		return c.NoContent(http.StatusNotFound)
 	}
 	return c.NoContent(http.StatusOK)
 }

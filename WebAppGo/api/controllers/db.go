@@ -46,7 +46,7 @@ func isBadFieldErr(err error) bool {
 
 func isNoReferencedRowErr(err error) bool {
 	me, ok := err.(*mysql.MySQLError)
-	return ok && me.Number == 1451 || me.Number == 1452
+	return ok && me.Number == 1452
 }
 
 func rowExists(query string, args ...interface{}) bool {

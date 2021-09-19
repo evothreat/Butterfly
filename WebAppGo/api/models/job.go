@@ -24,7 +24,7 @@ type Job struct {
 }
 
 func (j *Job) HasEmptyFields() bool {
-	return j.Todo == "" || !j.IsDone.Valid || j.WorkerId == ""
+	return j.Todo == "" || !j.IsDone.Valid
 }
 
 func (j *Job) Scan(r types.Row) error {
