@@ -15,7 +15,6 @@ func SetupRoutes(g *echo.Group) {
 	g.Use(WorkerExists)
 
 	g.GET("/workers/:wid/jobs", GetAllJobs)
-	g.GET("/workers/:wid/jobs/undone", GetUndoneJobs)
 	g.POST("/workers/:wid/jobs", CreateJob)        // OK
 	g.GET("/workers/:wid/jobs/:jid", GetJob)       // OK
 	g.DELETE("/workers/:wid/jobs/:jid", DeleteJob) // OK

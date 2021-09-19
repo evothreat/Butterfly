@@ -11,7 +11,11 @@ import (
 )
 
 func GetAllJobs(c echo.Context) error {
-	rows, err := db.Query("SELECT * FROM jobs WHERE worker_id=?", c.Param("wid"))
+	stmt := "SELECT * FROM jobs WHERE worker_id=?"
+	if _, ok := c.QueryParams()["undone"]; ok {
+		stmt += " AND is_done=0" // or assign new statement
+	}
+	rows, err := db.Query(stmt, c.Param("wid"))
 	if err != nil {
 		return err
 	}
@@ -22,27 +26,6 @@ func GetAllJobs(c echo.Context) error {
 			return err
 		}
 		jobs = append(jobs, job)
-	}
-	return c.JSON(http.StatusOK, &jobs)
-}
-
-func GetUndoneJobs(c echo.Context) error {
-	workerId := c.Param("wid")
-	rows, err := db.Query("SELECT * FROM jobs WHERE worker_id=? AND is_done=0", workerId)
-	if err != nil {
-		return err
-	}
-	jobs := make([]*models.Job, 0, api.MIN_LIST_CAP)
-	for rows.Next() {
-		job := &models.Job{}
-		if err := job.Scan(rows); err != nil {
-			return err
-		}
-		jobs = append(jobs, job)
-	}
-	_, err = db.Exec("UPDATE workers SET last_seen=? WHERE id=?", time.Now(), workerId)
-	if err != nil {
-		return err
 	}
 	return c.JSON(http.StatusOK, &jobs)
 }
@@ -74,7 +57,7 @@ func CreateJob(c echo.Context) error {
 }
 
 func DeleteJob(c echo.Context) error {
-	jobId, _ := strconv.Atoi(c.Param("jid")) // TODO: inside middleware check if number?
+	jobId, _ := strconv.Atoi(c.Param("jid")) // default id value will be 0
 	_, err := db.Exec("DELETE FROM jobs WHERE worker_id=? AND id=?", c.Param("wid"), jobId)
 	if err != nil {
 		return err
