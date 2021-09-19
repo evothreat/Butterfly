@@ -45,7 +45,8 @@ func CreateReport(c echo.Context) error {
 func GetReport(c echo.Context) error {
 	jobId, _ := strconv.Atoi(c.Param("jid"))
 	var report string
-	row := db.QueryRow("SELECT job_reports.report FROM job_reports INNER JOIN jobs ON job_reports.job_id=jobs.id WHERE jobs.worker_id=? AND job_reports.job_id=?", c.Param("wid"), jobId)
+	row := db.QueryRow("SELECT job_reports.report FROM job_reports INNER JOIN jobs ON job_reports.job_id=jobs.id WHERE jobs.worker_id=? AND job_reports.job_id=?",
+		c.Param("wid"), jobId)
 	if err := row.Scan(&report); err != nil {
 		if err == sql.ErrNoRows {
 			return c.NoContent(http.StatusNotFound)
