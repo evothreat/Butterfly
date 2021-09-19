@@ -39,7 +39,7 @@ func GetWorker(c echo.Context) error {
 			if err == sql.ErrNoRows {
 				return c.NoContent(http.StatusNotFound)
 			}
-			if IsBadFieldErr(err) {
+			if isBadFieldErr(err) {
 				return c.NoContent(http.StatusUnprocessableEntity)
 			}
 			return err

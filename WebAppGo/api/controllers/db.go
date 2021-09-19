@@ -34,19 +34,17 @@ func SetupDatabase(dbPath string) {
 	}
 }
 
-// works only for mysql
-
-func IsDuplicateEntry(err error) bool {
+func isDuplicateEntry(err error) bool {
 	me, ok := err.(*mysql.MySQLError)
 	return ok && me.Number == 1062
 }
 
-func IsBadFieldErr(err error) bool {
+func isBadFieldErr(err error) bool {
 	me, ok := err.(*mysql.MySQLError)
 	return ok && me.Number == 1054
 }
 
-func IsNoReferencedRowErr(err error) bool {
+func isNoReferencedRowErr(err error) bool {
 	me, ok := err.(*mysql.MySQLError)
 	return ok && me.Number == 1451 || me.Number == 1452
 }

@@ -20,7 +20,7 @@ func CreateReport(c echo.Context) error {
 	}
 	_, err = db.Exec("INSERT INTO job_reports(job_id, report) VALUES(?,?)", jobId, report)
 	if err != nil {
-		if IsNoReferencedRowErr(err) {
+		if isNoReferencedRowErr(err) {
 			return c.NoContent(http.StatusNotFound)
 		}
 		return err

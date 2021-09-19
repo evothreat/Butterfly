@@ -15,7 +15,7 @@ func CreateHardwareInfo(c echo.Context) error {
 	_, err := db.Exec("INSERT INTO hardware_infos(gpu,cpu,ram,worker_id) VALUES(?,?,?,?)",
 		hwi.Gpu, hwi.Cpu, hwi.Ram, c.Param("wid"))
 	if err != nil {
-		if IsDuplicateEntry(err) {
+		if isDuplicateEntry(err) {
 			return c.NoContent(http.StatusConflict)
 		}
 		return err
