@@ -44,7 +44,10 @@ func GetReport(c echo.Context) error {
 
 func DeleteReport(c echo.Context) error {
 	jobId, _ := strconv.Atoi(c.Param("jid"))
-	if _, err := db.Exec("DELETE FROM jobs WHERE id=?", jobId); err != nil {
+	if !rowExists("SELECT id FROM jobs WHERE id=? AND worker_id=?", c.Param("wid"), jobId) {
+		return c.NoContent(http.StatusNotFound)
+	}
+	if _, err := db.Exec("DELETE FROM job_reports WHERE job_id=?", jobId); err != nil {
 		return err
 	}
 	return c.NoContent(http.StatusOK)

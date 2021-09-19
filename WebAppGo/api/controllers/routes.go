@@ -6,29 +6,31 @@ import (
 )
 
 func SetupRoutes(g *echo.Group) {
-	g.GET("/workers", GetAllWorkers)
-	g.POST("/workers", CreateWorker)
-	g.GET("/workers/:wid", GetWorker)
-	g.DELETE("/workers/:wid", DeleteWorker)
-	g.PATCH("/workers/:wid", UpdateWorker)
+	g.GET("/workers", GetAllWorkers)        // OK
+	g.POST("/workers", CreateWorker)        // OK
+	g.GET("/workers/:wid", GetWorker)       // OK
+	g.DELETE("/workers/:wid", DeleteWorker) // OK
+	g.PATCH("/workers/:wid", UpdateWorker)  // OK
 
 	g.Use(WorkerExists)
 
 	g.GET("/workers/:wid/jobs", GetAllJobs)
-	g.POST("/workers/:wid/jobs", CreateJob)
 	g.GET("/workers/:wid/jobs/undone", GetUndoneJobs)
-	g.GET("/workers/:wid/jobs/:jid", GetJob)
-	g.DELETE("/workers/:wid/jobs/:jid", DeleteJob)
+	g.POST("/workers/:wid/jobs", CreateJob)        // OK
+	g.GET("/workers/:wid/jobs/:jid", GetJob)       // OK
+	g.DELETE("/workers/:wid/jobs/:jid", DeleteJob) // OK
 
-	g.POST("/workers/:wid/hardware", CreateHardwareInfo)
-	g.GET("/workers/:wid/hardware", GetHardwareInfo)
+	g.POST("/workers/:wid/hardware", CreateHardwareInfo) // OK
+	g.GET("/workers/:wid/hardware", GetHardwareInfo)     // OK
 
-	g.POST("/workers/:wid/uploads", CreateUpload)
-	g.GET("/workers/:wid/uploads/:uid", GetUpload)
-	g.DELETE("/workers/:wid/uploads/:uid", DeleteUpload)
-	g.GET("/workers/:wid/uploads/:uid/info", GetUploadInfo)
+	g.POST("/workers/:wid/uploads", CreateUpload)           // OK
+	g.GET("/workers/:wid/uploads/:uid", GetUpload)          // OK
+	g.DELETE("/workers/:wid/uploads/:uid", DeleteUpload)    // OK
+	g.GET("/workers/:wid/uploads/:uid/info", GetUploadInfo) // OK
 
-	g.POST("/workers/:wid/jobs/:jid/report", CreateReport)
+	g.POST("/workers/:wid/jobs/:jid/report", CreateReport) // USE SQL JOINS!
+	g.GET("/workers/:wid/jobs/:jid/report", GetReport)
+	g.DELETE("/workers/:wid/jobs/:jid/report", DeleteReport)
 }
 
 func WorkerExists(handler echo.HandlerFunc) echo.HandlerFunc {
