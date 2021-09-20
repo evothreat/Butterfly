@@ -1,7 +1,6 @@
-package controllers
+package api
 
 import (
-	"WebAppGo/api"
 	"WebAppGo/api/models"
 	"WebAppGo/utils"
 	"database/sql"
@@ -27,7 +26,7 @@ func CreateUpload(c echo.Context) error {
 	}
 	fileExt := filepath.Ext(file.Filename)
 	fileName := fmt.Sprintf("%s_%d%s", strings.TrimSuffix(file.Filename, fileExt), time.Now().Unix(), fileExt)
-	filePath := filepath.Join(api.UPLOADS_DIR, workerId, fileName)
+	filePath := filepath.Join(UPLOADS_DIR, workerId, fileName)
 	fileType := "NONE"
 	if fileExt != "" {
 		fileType = strings.ToUpper(strings.TrimPrefix(fileExt, "."))
@@ -69,7 +68,7 @@ func GetUpload(c echo.Context) error {
 		}
 		return err
 	}
-	filePath := filepath.Join(api.UPLOADS_DIR, workerId, upload.Filename) // handle file not found error?
+	filePath := filepath.Join(UPLOADS_DIR, workerId, upload.Filename) // handle file not found error?
 	if _, ok := c.QueryParams()["attach"]; ok {
 		return c.Attachment(filePath, upload.Filename)
 	}
@@ -92,7 +91,7 @@ func DeleteUpload(c echo.Context) error {
 	if err != nil {
 		return err
 	}
-	os.Remove(filepath.Join(api.UPLOADS_DIR, workerId, upload.Filename)) // TODO: check for error?
+	os.Remove(filepath.Join(UPLOADS_DIR, workerId, upload.Filename)) // TODO: check for error?
 	return c.NoContent(http.StatusOK)
 }
 
@@ -114,7 +113,7 @@ func GetAllUploadsInfo(c echo.Context) error {
 	if err != nil {
 		return err
 	}
-	uploads := make([]*models.Upload, 0, api.MIN_LIST_CAP)
+	uploads := make([]*models.Upload, 0, MIN_LIST_CAP)
 	for rows.Next() {
 		u := &models.Upload{}
 		if err := u.Scan(rows); err != nil {

@@ -1,0 +1,43 @@
+{{template "layout.html"}}
+
+{{define "content"}}
+    <button type="button" class="btn" onclick="workersTable.ajax.reload(null, false)">
+        Refresh
+        <i class="fa fa-refresh" aria-hidden="true"></i>
+    </button>
+    <table id="workers-table"></table>
+    <div id="hardware-dlg" class="modal-bg hidden">
+        <div class="modal">
+            <div class="modal-head">
+                <p class="modal-title">Hardware Info</p>
+                <button class="modal-close" type="button" onclick="hideModal('#hardware-dlg')">
+                    <i class="fa fa-window-close" aria-hidden="true"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <table class="ver-table">
+                    <tbody>
+                    <tr>
+                        <th>CPU</th>
+                        <td id="cpu-info"></td>
+                    </tr>
+                    <tr>
+                        <th>GPU</th>
+                        <td id="gpu-info"></td>
+                    </tr>
+                    <tr>
+                        <th>RAM</th>
+                        <td id="ram-info"></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function () {
+            createWorkersTable();
+        });
+    </script>
+{{end}}

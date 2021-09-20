@@ -1,7 +1,6 @@
-package controllers
+package api
 
 import (
-	"WebAppGo/api"
 	"WebAppGo/api/models"
 	"WebAppGo/utils"
 	"database/sql"
@@ -19,7 +18,7 @@ func GetAllWorkers(c echo.Context) error {
 	if err != nil {
 		return err
 	}
-	workers := make([]*models.Worker, 0, api.MIN_LIST_CAP) // TODO: examine the number of rows first!
+	workers := make([]*models.Worker, 0, MIN_LIST_CAP) // TODO: examine the number of rows first!
 	for rows.Next() {
 		w := &models.Worker{}
 		if err := w.Scan(rows); err != nil {
@@ -66,7 +65,7 @@ func CreateWorker(c echo.Context) error {
 	if err != nil {
 		return err
 	}
-	os.Mkdir(filepath.Join(api.UPLOADS_DIR, w.Id), os.ModePerm)
+	os.Mkdir(filepath.Join(UPLOADS_DIR, w.Id), os.ModePerm)
 	return c.NoContent(http.StatusCreated)
 }
 
@@ -78,7 +77,7 @@ func DeleteWorker(c echo.Context) error {
 	if n, _ := res.RowsAffected(); n == 0 {
 		return c.NoContent(http.StatusNotFound)
 	}
-	os.Remove(filepath.Join(api.UPLOADS_DIR, c.Param("wid")))
+	os.Remove(filepath.Join(UPLOADS_DIR, c.Param("wid")))
 	return c.NoContent(http.StatusOK)
 }
 

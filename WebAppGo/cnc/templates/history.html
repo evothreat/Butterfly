@@ -1,0 +1,36 @@
+<div class="table-head">
+    <button type="button" class="btn" onclick="jobsTable.ajax.reload(null, false)">
+        Refresh
+        <i class="fa fa-refresh" aria-hidden="true"></i>
+    </button>
+    <button type="button" class="btn" onclick="showModal('#new-job-dlg')">
+        New Job
+        <i class="fa fa-plus" aria-hidden="true"></i>
+    </button>
+</div>
+<table id="jobs-table"></table>
+<div id="new-job-dlg" class="modal-bg hidden">
+    <div class="modal">
+        <div class="modal-head">
+            <p class="modal-title">New job</p>
+            <button class="modal-close" type="button" onclick="hideModal('#new-job-dlg')">
+                <i class="fa fa-window-close" aria-hidden="true"></i>
+            </button>
+        </div>
+        <div class="modal-body">
+            <table class="ver-table">
+                <tbody>
+                <tr>
+                    <th>ToDo</th>
+                    <td><input id="todo" type="text"></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="modal-foot">
+            <button class="modal-submit" type="button" onclick="submitNewJobDlg()">
+                Create <i class="fa fa-check" aria-hidden="true"></i>
+            </button>
+        </div>
+    </div>
+</div>

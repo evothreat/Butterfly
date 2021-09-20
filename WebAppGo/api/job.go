@@ -1,7 +1,6 @@
-package controllers
+package api
 
 import (
-	"WebAppGo/api"
 	"WebAppGo/api/models"
 	"database/sql"
 	"github.com/labstack/echo/v4"
@@ -25,7 +24,7 @@ func GetAllJobs(c echo.Context) error {
 	if err != nil {
 		return err
 	}
-	jobs := make([]*models.Job, 0, api.MIN_LIST_CAP)
+	jobs := make([]*models.Job, 0, MIN_LIST_CAP)
 	for rows.Next() {
 		job := &models.Job{}
 		if err := job.Scan(rows); err != nil {

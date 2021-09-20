@@ -1,4 +1,4 @@
-package controllers
+package api
 
 import (
 	"WebAppGo/api/models"

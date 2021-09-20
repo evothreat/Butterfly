@@ -1,7 +1,7 @@
 package utils
 
 import (
-	"os"
+	"crypto/rand"
 	"regexp"
 )
 
@@ -16,7 +16,8 @@ func IsValidFilename(str string) bool {
 	return fileNameRegex.MatchString(str)
 }
 
-func FileExists(filePath string) bool {
-	_, err := os.Stat(filePath)
-	return !os.IsNotExist(err)
+func GetRandomBytes(n int) []byte {
+	bs := make([]byte, n)
+	rand.Read(bs)
+	return bs
 }

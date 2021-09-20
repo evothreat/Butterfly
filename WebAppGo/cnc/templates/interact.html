@@ -1,0 +1,77 @@
+{% extends 'layout.html' %}
+{% block content %}
+    <div class="titled-toggle">
+        <p>Boost Mode</p>
+        <label class="toggle">
+            <input id="boost" type="checkbox"/>
+            <span class="slider"></span>
+        </label>
+    </div>
+    <div class="tabs">
+        <button class="active-tab" id="history-tab" aria-controls="history-body">History</button>
+        <button id="uploads-tab" aria-controls="uploads-body">Uploads</button>
+        <button id="manager-tab" aria-controls="manager-body">File manager</button>
+        <button id="terminal-tab" aria-controls="terminal-body">Terminal</button>
+        <button id="creds-tab" aria-controls="creds-body">Credentials</button>
+        <button id="cronjob-tab" aria-controls="cronjob-body">Cron-Job</button>
+        <button id="sniffer-tab" aria-controls="sniffer-body">Sniffer</button>
+    </div>
+    <div class="tab-body active-body" id="history-body">
+        {% include 'history.html' %}
+    </div>
+    <div class="tab-body" id="uploads-body">
+        {% include 'uploads.html' %}
+    </div>
+    <div class="tab-body" id="manager-body">
+
+    </div>
+    <div class="tab-body" id="terminal-body">
+
+    </div>
+    <div class="tab-body" id="creds-body">
+
+    </div>
+    <div class="tab-body" id="cronjob-body">
+
+    </div>
+    <div class="tab-body" id="sniffer-body">
+
+    </div>
+    <script>
+        $(document).ready(function () {
+            setCurrWorkerId();
+            setupBoostToggle();
+
+            $('.tabs button').click(switchTab);
+
+            $('#history-tab').one('click', function () {
+                createJobsTable();
+            });
+            $('#uploads-tab').one('click', function () {
+                createUploadsTable();
+            });
+            $('#terminal-tab').one('click', function () {
+                $('#terminal-body').terminal({                          // TODO: export to global variable!
+                    sysinfo: function () {
+                        var term = this;
+                        term.pause()
+                        createJobApi({todo: 'cmd systeminfo'}, job => {
+                            retrieveReport(job.id, rep => {
+                                term.echo(rep);
+                                term.resume();
+                            }, () => {
+                                term.error('Failed to retrieve report!');
+                                term.resume();
+                            });
+                            addJobToTable(job);
+                        });
+                    }       // TODO: if boost command called, call setBoostStatus(val)
+                }, {
+                    greetings: 'Welcome to butterfly!',
+                    height: 600
+                });
+            });
+            $('.active-tab').trigger('click');      // TODO: call active tab funcs without one()
+        });
+    </script>
+{% endblock %}

@@ -1,0 +1,280 @@
+html {
+    font-family: helvetica, serif;
+}
+
+body {
+    padding: 0;
+    margin: 0;
+}
+
+button {
+    cursor: pointer;
+}
+
+#body-content {
+    margin: auto;
+    width: 70%;
+    padding-top: 7px;
+}
+
+.action-btn {
+    padding: 0 2px 0 2px;
+    font-size: 1.2em;
+    background: none;
+    border: none;
+}
+
+.dataTable thead {
+    color: white !important;
+    background-color: #415A77 !important;
+}
+
+/* Navigation Bar */
+
+.navbar {
+    padding: 12px;
+    background-color: #0D1B2A;
+    display: flex;
+    align-items: baseline;
+}
+
+.navbar-logo {
+    color: white;
+    font-size: 1.3em;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.navbar-link {
+    color: white;
+}
+
+/*.navbar-link:hover {
+    color: white;
+}*/
+
+/* Table */
+
+.ver-table {
+    border-collapse: collapse;
+    /* remove width? */
+    width: 100%;
+}
+
+.ver-table td, .ver-table th {
+    /* change border style? */
+    border-bottom: 1px solid #ddd;
+    text-align: left;
+    vertical-align: top;
+    padding: 7px;
+}
+
+.ver-table th {
+    width: 20%;
+}
+
+.ver-table input {
+    margin: 0;
+    font-size: 1em;
+    padding: 2px;
+    width: 60%;
+}
+
+.ver-table input:focus {
+    outline: none;
+}
+
+/*
+.table tr:hover {
+    background-color: #ddd;
+}*/
+
+/* Modal Dialog */
+
+.modal-bg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    background-color: rgba(0, 0, 0, .5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal {
+    position: relative;
+    background-color: white;
+    width: 500px;
+    height: 320px;
+    overflow: hidden;
+    border-radius: 5px;
+    display: flex;
+    flex-direction: column;
+}
+
+.modal-head, .modal-foot {
+    padding: 0;
+    margin: 0;
+    display: flex;
+}
+
+.modal-body {
+    padding: 20px;
+    height: 70%;
+    overflow-y: auto;
+}
+
+.modal-head {
+    border-bottom-width: 1px;
+    border-bottom-color: silver;
+    border-bottom-style: solid;
+    height: 15%;
+}
+
+.modal-foot {
+    border-top-width: 1px;
+    border-top-color: silver;
+    border-top-style: solid;
+    height: 20%;
+    /*align-items: baseline;*/
+}
+
+.modal-title {
+    /*margin-right: auto;*/
+    padding: 0 0 0 20px;
+    font-size: 1.2em;
+}
+
+.modal-close {
+    color: #aaaaaa;
+    margin-left: auto;
+    padding: 0 12px 0 10px;
+    font-size: 1.5em;
+    border: none;
+    background: none;
+}
+
+.modal-close:hover {
+    color: black;
+}
+
+.modal-submit {
+    padding: 7px;
+    margin: 8px 12px 8px auto;
+    background-color: #415A77;
+    color: white;
+    border: none;
+}
+
+/* Tabs */
+.tabs {
+    display: flex;
+    padding: 0;
+}
+
+.tabs button {
+    border: none;
+    background-color: #1B263B;
+    color: darkgray;
+    flex-grow: 1;
+    margin: 0;
+    padding: 15px;
+    font-size: 1em;
+}
+
+.tabs button:hover {
+    color: white;
+}
+
+.active-tab {
+    color: white !important;
+}
+
+.tab-body {
+    display: none;
+    padding-top: 12px;
+    /*height: 100%;*/
+}
+
+.active-body {
+    display: block !important;
+}
+
+/* Other stuff */
+
+.one-select, .all-select {
+    transform: scale(1.2);
+}
+
+.btn {
+    padding: 5px 10px 5px 10px;
+    margin-bottom: 7px;
+    background-color: #415A77;
+    color: white;
+    border: none;
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* Terminal */
+.terminal {
+    --size: 1.2;
+}
+
+/* The toggle */
+.toggle input { display: none; }
+
+.toggle {
+  position: relative;
+  display: inline-block;
+  width: 65px;
+  height: 25px;
+}
+
+.slider {
+  position: absolute;
+  top: 0; bottom: 0;
+  left: 0; right: 0;
+  cursor: pointer;
+  border: 2px solid gray;
+  background-color: gray;
+}
+
+.slider::before {
+  content: "";
+  width: 50%;
+  height: 100%;
+  position: absolute;
+  top: 0; left: 0;
+  background-color: white;
+}
+
+.slider, .slider::before { transition: all 0.2s; }
+
+.toggle input:checked + .slider {
+  border: 2px solid limegreen;
+  background-color: lime;
+}
+
+.toggle input:checked + .slider::before { left: 50%; }
+
+.titled-toggle {
+    display: flex;
+    align-items: center;
+}
+.titled-toggle p {
+    margin: 6px 8px 9px 0;
+}
+
+.table-head {
+    display: flex;
+}
+
+.table-head button {
+    margin-bottom: 10px;
+    margin-right: 10px;
+}

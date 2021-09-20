@@ -1,7 +1,6 @@
-package controllers
+package api
 
 import (
-	"WebAppGo/api"
 	"database/sql"
 	"github.com/labstack/echo/v4"
 	"io"
@@ -11,7 +10,7 @@ import (
 
 func CreateReport(c echo.Context) error {
 	jobId, _ := strconv.Atoi(c.Param("jid"))
-	report, err := io.ReadAll(io.LimitReader(c.Request().Body, api.MAX_REPORT_LEN))
+	report, err := io.ReadAll(io.LimitReader(c.Request().Body, MAX_REPORT_LEN))
 	if err != nil {
 		return err
 	}
