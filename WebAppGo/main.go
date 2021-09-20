@@ -22,8 +22,8 @@ func main() {
 	cnc.SetupRoutes(cncGroup)
 
 	e.Renderer = &types.Template{
-		Templates: template.Must(template.ParseGlob("./cnc/templates/*.html")),
+		Templates: template.Must(template.ParseGlob("resources/templates/*.html")),
 	}
-	e.Static("/", "cnc/") // TODO: examine later...
+	e.Static("/", "resources")
 	e.Start("localhost:8080")
 }
