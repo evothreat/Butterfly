@@ -59,6 +59,8 @@ func rowExists(query string, args ...interface{}) bool {
 	return exists
 }
 
+// TODO: add rowCount(table string)
+
 func AddTestData() {
 	w1 := models.Worker{
 		Id:       "C1vHa4fB9kukvA6ILps0kQ",

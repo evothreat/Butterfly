@@ -24,6 +24,6 @@ func main() {
 	e.Renderer = &types.Template{
 		Templates: template.Must(template.ParseGlob("resources/templates/*.html")),
 	}
-	e.Static("/", "resources")
+	e.Static("/static", "resources/static")
 	e.Start("localhost:8080")
 }

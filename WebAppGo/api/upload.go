@@ -15,9 +15,6 @@ import (
 	"time"
 )
 
-// TODO: before creating and copying the file check whether worker exists!
-// TODO: use transactions for multiple "change" operations!
-
 func CreateUpload(c echo.Context) error {
 	workerId := c.Param("wid")
 	file, err := c.FormFile("file")
