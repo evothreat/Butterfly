@@ -6,6 +6,7 @@ import (
 	"github.com/labstack/echo/v4"
 	"golang.org/x/crypto/bcrypt"
 	"net/http"
+	"time"
 )
 
 const cookieName = "CNCSESSID"
@@ -15,7 +16,7 @@ var cookieStore = sessions.NewCookieStore(utils.GetRandomBytes(16))
 func Login(c echo.Context) error {
 	request := c.Request()
 	if request.Method == "GET" {
-		return c.Render(http.StatusOK, "login.html", "")
+		return c.Render(http.StatusOK, "login", nil)
 	}
 	// else POST
 	login := c.FormValue("username")
@@ -23,16 +24,14 @@ func Login(c echo.Context) error {
 
 	if login == ADMIN_LOGIN && bcrypt.CompareHashAndPassword([]byte(ADMIN_PASSWD), []byte(passwd)) == nil {
 		sess, _ := cookieStore.Get(request, cookieName)
-		if !sess.IsNew {
-			sess.Options.MaxAge = 86400 * 30 // extend to 1 month
-		}
-		sess.Values["authenticated"] = true
+		sess.Options.MaxAge = int(time.Hour)
+		sess.Values["expires"] = time.Now().Add(time.Hour)
 		if err := sess.Save(request, c.Response()); err != nil {
 			return err
 		}
 		return c.Redirect(http.StatusSeeOther, "/cnc/workers")
 	}
-	return c.Render(http.StatusUnauthorized, "login.html", "")
+	return c.Render(http.StatusUnauthorized, "login", nil)
 }
 
 func Logout(c echo.Context) error {
@@ -42,4 +41,19 @@ func Logout(c echo.Context) error {
 		return err
 	}
 	return c.Redirect(http.StatusSeeOther, "/cnc/login")
+}
+
+func AuthCheck(next echo.HandlerFunc) echo.HandlerFunc {
+	return func(c echo.Context) error {
+		sess, _ := cookieStore.Get(c.Request(), cookieName)
+		if sess.IsNew {
+			// should i delete session from registry??
+			return c.Redirect(http.StatusSeeOther, "/cnc/login")
+		}
+		t, ok := sess.Values["expires"].(time.Time)
+		if !ok || !time.Now().Before(t) {
+			return c.Redirect(http.StatusSeeOther, "/cnc/login")
+		}
+		return next(c)
+	}
 }

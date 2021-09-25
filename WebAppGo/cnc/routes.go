@@ -8,6 +8,8 @@ func SetupRoutes(g *echo.Group) {
 
 	g.POST("/logout", Logout)
 
+	g.Use(AuthCheck)
+
 	g.GET("/workers", GetAllWorkers)
 	g.GET("/workers/:wid", Interact)
 }

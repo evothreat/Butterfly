@@ -6,9 +6,9 @@ import (
 )
 
 func GetAllWorkers(c echo.Context) error {
-	return c.Render(http.StatusOK, "workers.html", nil)
+	return c.Render(http.StatusOK, "workers", nil)
 }
 
 func Interact(c echo.Context) error {
-	return c.Render(http.StatusOK, "interact.html", nil)
+	return c.Render(http.StatusOK, "interact", nil)
 }

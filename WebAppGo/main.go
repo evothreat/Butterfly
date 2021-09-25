@@ -3,7 +3,9 @@ package main
 import (
 	"WebAppGo/api"
 	"WebAppGo/cnc"
+	"encoding/gob"
 	"github.com/labstack/echo/v4"
+	"time"
 )
 
 func main() {
@@ -18,7 +20,7 @@ func main() {
 
 	cncGroup := e.Group("/cnc")
 	cnc.SetupRoutes(cncGroup)
-
+	gob.Register(time.Time{})
 	e.Renderer = cnc.ParseTemplates("resources/templates")
 	e.Static("/static", "resources/static")
 	e.Start("localhost:8080")
