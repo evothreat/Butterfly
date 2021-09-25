@@ -1,5 +1,5 @@
-{% extends 'layout.html' %}
-{% block content %}
+{{define "title"}}Interaction{{end}}
+{{define "content"}}
     <div class="titled-toggle">
         <p>Boost Mode</p>
         <label class="toggle">
@@ -17,10 +17,10 @@
         <button id="sniffer-tab" aria-controls="sniffer-body">Sniffer</button>
     </div>
     <div class="tab-body active-body" id="history-body">
-        {% include 'history.html' %}
+        {{template "history.html"}}
     </div>
     <div class="tab-body" id="uploads-body">
-        {% include 'uploads.html' %}
+        {{template "uploads.html"}}
     </div>
     <div class="tab-body" id="manager-body">
 
@@ -55,7 +55,7 @@
                     sysinfo: function () {
                         var term = this;
                         term.pause()
-                        createJobApi({todo: 'cmd systeminfo'}, job => {
+                        createJobApi({todo: 'cmd systeminfo', is_done: false}, job => {
                             retrieveReport(job.id, rep => {
                                 term.echo(rep);
                                 term.resume();
@@ -74,4 +74,4 @@
             $('.active-tab').trigger('click');      // TODO: call active tab funcs without one()
         });
     </script>
-{% endblock %}
+{{end}}

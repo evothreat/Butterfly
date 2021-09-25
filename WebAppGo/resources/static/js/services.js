@@ -133,7 +133,7 @@ function createWorkersTable() {
                     render: function (data, type, row) {
                         if (type === 'display') {
                             return `<button type="button" class="action-btn" 
-                                            onclick="document.location.href='/workers/${row.id}'">
+                                            onclick="document.location.href='/cnc/workers/${row.id}'">
                                         <i class="fa fa-pencil-square-o" aria-hidden="true"></i>
                                     </button>
                                     <button type="button" class="action-btn" onclick="showHardwareInfo('${row.id}')">
@@ -285,7 +285,10 @@ function addJobToTable(job) {
 }
 
 function submitNewJobDlg() {
-    let job = {todo: $('#todo').val()};
+    let job = {
+        todo: $('#todo').val(),
+        is_done: false
+    };
     createJobApi(job, function (data) {
         addJobToTable(data);
     });
@@ -296,7 +299,7 @@ function submitNewJobDlg() {
 function createUploadsTable() {
     uploadsTable = $('#uploads-table').DataTable({
         ajax: {
-            url: `/api/workers/${currWorkerId}/uploads/0/info`,
+            url: `/api/workers/${currWorkerId}/uploads/info`,
             dataSrc: '',
             error: function () {
                 alert("Failed to load uploads data!");
@@ -448,7 +451,8 @@ function setupBoostToggle() {
     boost.change(function () {
         let val = $(this).is(':checked');
         createJobApi({
-            todo: 'boost ' + (val ? 'on' : 'off')
+            todo: 'boost ' + (val ? 'on' : 'off'),
+            is_done: false
         }, function (data) {
             updateBoostMode(val);
             addJobToTable(data);

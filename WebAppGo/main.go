@@ -3,9 +3,7 @@ package main
 import (
 	"WebAppGo/api"
 	"WebAppGo/cnc"
-	"WebAppGo/cnc/types"
 	"github.com/labstack/echo/v4"
-	"html/template"
 )
 
 func main() {
@@ -21,9 +19,7 @@ func main() {
 	cncGroup := e.Group("/cnc")
 	cnc.SetupRoutes(cncGroup)
 
-	e.Renderer = &types.Template{
-		Templates: template.Must(template.ParseGlob("resources/templates/*.html")),
-	}
+	e.Renderer = cnc.ParseTemplates("resources/templates")
 	e.Static("/static", "resources/static")
 	e.Start("localhost:8080")
 }

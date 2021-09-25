@@ -53,7 +53,7 @@ func CreateJob(c echo.Context) error {
 	if (&echo.DefaultBinder{}).BindBody(c, &job) != nil || job.HasEmptyFields() {
 		return c.NoContent(http.StatusUnprocessableEntity)
 	}
-	_, err := db.Exec("INSERT INTO jobs(todo,is_done,created,worker_id) VALUES(?,?,?,?)",
+	res, err := db.Exec("INSERT INTO jobs(todo,is_done,created,worker_id) VALUES(?,?,?,?)",
 		job.Todo, job.IsDone, time.Now(), c.Param("wid")) // TODO: add is_done in js files!
 	if err != nil {
 		if isNoReferencedRowErr(err) {
@@ -61,7 +61,11 @@ func CreateJob(c echo.Context) error {
 		}
 		return err
 	}
-	return c.NoContent(http.StatusCreated)
+	id, _ := res.LastInsertId()
+	job.Id = int(id)
+	db.QueryRow("SELECT created,worker_id FROM jobs WHERE id=?", id).Scan(&job.Created, &job.WorkerId)
+	return c.JSON(http.StatusCreated, &job)
+	//return c.NoContent(http.StatusCreated)
 }
 
 func DeleteJob(c echo.Context) error {
