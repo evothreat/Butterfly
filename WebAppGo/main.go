@@ -15,13 +15,13 @@ func main() {
 	e := echo.New()
 	e.Debug = true
 
-	apiGroup := e.Group("/api")
-	api.SetupRoutes(apiGroup)
+	api.SetupRoutes(e)
+	cnc.SetupRoutes(e)
 
-	cncGroup := e.Group("/cnc")
-	cnc.SetupRoutes(cncGroup)
 	gob.Register(time.Time{})
+
 	e.Renderer = cnc.ParseTemplates("resources/templates")
 	e.Static("/static", "resources/static")
+
 	e.Start("localhost:8080")
 }
