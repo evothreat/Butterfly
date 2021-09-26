@@ -47,12 +47,11 @@ func AuthCheck(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		sess, _ := cookieStore.Get(c.Request(), cookieName)
 		if sess.IsNew {
-			// should i delete session from registry??
-			return c.Redirect(http.StatusSeeOther, "/cnc/login")
+			return Logout(c)
 		}
-		t, ok := sess.Values["expires"].(time.Time)
-		if !ok || !time.Now().Before(t) {
-			return c.Redirect(http.StatusSeeOther, "/cnc/login")
+		t, _ := sess.Values["expires"].(time.Time)
+		if !time.Now().Before(t) {
+			return Logout(c)
 		}
 		return next(c)
 	}
