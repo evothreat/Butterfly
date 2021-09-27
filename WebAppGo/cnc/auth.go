@@ -8,7 +8,11 @@ import (
 	"time"
 )
 
-const cookieName = "CNCSESSID"
+const (
+	cookieName   = "CNCSESSID"
+	cookiePath   = "/cnc"
+	cookieMaxAge = 3600 // 1 hour
+)
 
 var cookieDataStore = NewCookieDataStore()
 
@@ -34,15 +38,15 @@ func Login(c echo.Context) error {
 
 	if login == ADMIN_LOGIN && bcrypt.CompareHashAndPassword([]byte(ADMIN_PASSWD), []byte(passwd)) == nil {
 		data := NewCookieData()
-		data.Expires = time.Now().Add(time.Hour)
+		data.Expires = time.Now().Add(time.Second * cookieMaxAge)
 		key := utils.RandomHexString(16)
 		cookieDataStore.Put(key, data)
 
 		cookie := http.Cookie{
 			Name:   cookieName,
 			Value:  key,
-			Path:   "/cnc/",
-			MaxAge: int(time.Hour / time.Second),
+			Path:   cookiePath,
+			MaxAge: cookieMaxAge,
 		}
 		c.SetCookie(&cookie)
 		return c.Redirect(http.StatusSeeOther, "/cnc/workers")
@@ -57,10 +61,10 @@ func Logout(c echo.Context) error {
 	}
 	cookieDataStore.Delete(cookie.Value)
 	newCookie := http.Cookie{
-		Name:     cookieName,
-		Value:    "",
-		Path:     "/cnc/",
-		Expires:  time.Unix(0, 0),
+		Name:  cookieName,
+		Value: "",
+		Path:  cookiePath,
+		//Expires:  time.Unix(0, 0),
 		MaxAge:   -1,
 		HttpOnly: true,
 	}
