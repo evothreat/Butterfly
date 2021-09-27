@@ -1,4 +1,4 @@
-package cnc
+package types
 
 import (
 	"sync"

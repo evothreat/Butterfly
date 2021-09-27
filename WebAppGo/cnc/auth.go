@@ -1,6 +1,7 @@
 package cnc
 
 import (
+	"WebAppGo/cnc/types"
 	"WebAppGo/utils"
 	"github.com/labstack/echo/v4"
 	"golang.org/x/crypto/bcrypt"
@@ -14,7 +15,7 @@ const (
 	cookieMaxAge = 3600 // 1 hour
 )
 
-var cookieDataStore = NewCookieDataStore()
+var cookieDataStore = types.NewCookieDataStore()
 
 func hasValidCookie(c echo.Context) bool {
 	cookie, err := c.Cookie(cookieName)
@@ -37,7 +38,7 @@ func Login(c echo.Context) error {
 	passwd := c.FormValue("password")
 
 	if login == ADMIN_LOGIN && bcrypt.CompareHashAndPassword([]byte(ADMIN_PASSWD), []byte(passwd)) == nil {
-		data := NewCookieData()
+		data := types.NewCookieData()
 		data.Expires = time.Now().Add(time.Second * cookieMaxAge)
 		key := utils.RandomHexString(16)
 		cookieDataStore.Put(key, data)
