@@ -2,7 +2,6 @@ package cnc
 
 import (
 	"WebAppGo/utils"
-	"github.com/gorilla/sessions"
 	"github.com/labstack/echo/v4"
 	"golang.org/x/crypto/bcrypt"
 	"net/http"
@@ -11,48 +10,69 @@ import (
 
 const cookieName = "CNCSESSID"
 
-var cookieStore = sessions.NewCookieStore(utils.GetRandomBytes(16))
+var cookieDataStore = NewCookieDataStore()
+
+func hasValidCookie(c echo.Context) bool {
+	cookie, err := c.Cookie(cookieName)
+	if err == http.ErrNoCookie {
+		return false
+	}
+	data := cookieDataStore.Get(cookie.Value)
+	return data != nil && time.Now().Before(data.Expires)
+}
+
+func LoginPage(c echo.Context) error {
+	return c.Render(http.StatusOK, "login", nil)
+}
 
 func Login(c echo.Context) error {
-	request := c.Request()
-	if request.Method == "GET" {
-		return c.Render(http.StatusOK, "login", nil)
+	if hasValidCookie(c) {
+		return c.Redirect(http.StatusSeeOther, "/cnc/workers")
 	}
-	// else POST
 	login := c.FormValue("username")
 	passwd := c.FormValue("password")
 
 	if login == ADMIN_LOGIN && bcrypt.CompareHashAndPassword([]byte(ADMIN_PASSWD), []byte(passwd)) == nil {
-		sess, _ := cookieStore.Get(request, cookieName)
-		sess.Options.MaxAge = int(time.Hour)
-		sess.Values["expires"] = time.Now().Add(time.Hour)
-		if err := sess.Save(request, c.Response()); err != nil {
-			return err
+		data := NewCookieData()
+		data.Expires = time.Now().Add(time.Hour)
+		key := utils.RandomHexString(16)
+		cookieDataStore.Put(key, data)
+
+		cookie := http.Cookie{
+			Name:   cookieName,
+			Value:  key,
+			Path:   "/cnc/",
+			MaxAge: int(time.Hour / time.Second),
 		}
+		c.SetCookie(&cookie)
 		return c.Redirect(http.StatusSeeOther, "/cnc/workers")
 	}
 	return c.Render(http.StatusUnauthorized, "login", nil)
 }
 
 func Logout(c echo.Context) error {
-	sess, _ := cookieStore.Get(c.Request(), cookieName)
-	sess.Options.MaxAge = -1
-	if err := sess.Save(c.Request(), c.Response()); err != nil {
-		return err
+	cookie, err := c.Cookie(cookieName)
+	if err == http.ErrNoCookie {
+		return c.Redirect(http.StatusSeeOther, "/cnc/login")
 	}
+	cookieDataStore.Delete(cookie.Value)
+	newCookie := http.Cookie{
+		Name:     cookieName,
+		Value:    "",
+		Path:     "/cnc/",
+		Expires:  time.Unix(0, 0),
+		MaxAge:   -1,
+		HttpOnly: true,
+	}
+	c.SetCookie(&newCookie)
 	return c.Redirect(http.StatusSeeOther, "/cnc/login")
 }
 
 func AuthCheck(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(c echo.Context) error {
-		sess, _ := cookieStore.Get(c.Request(), cookieName)
-		if sess.IsNew {
-			return Logout(c)
+		if hasValidCookie(c) {
+			return next(c)
 		}
-		t, _ := sess.Values["expires"].(time.Time)
-		if !time.Now().Before(t) {
-			return Logout(c)
-		}
-		return next(c)
+		return Logout(c)
 	}
 }
