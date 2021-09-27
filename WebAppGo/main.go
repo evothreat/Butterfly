@@ -3,9 +3,8 @@ package main
 import (
 	"WebAppGo/api"
 	"WebAppGo/cnc"
-	"encoding/gob"
 	"github.com/labstack/echo/v4"
-	"time"
+	"github.com/labstack/echo/v4/middleware"
 )
 
 func main() {
@@ -15,13 +14,13 @@ func main() {
 	e := echo.New()
 	e.Debug = true
 
+	e.Use(middleware.LoggerWithConfig(middleware.LoggerConfig{
+		Format: "method=${method}, uri=${uri}, status=${status}\n",
+	}))
+
 	api.SetupRoutes(e)
-	cnc.SetupRoutes(e)
 
-	gob.Register(time.Time{})
-
-	e.Renderer = cnc.ParseTemplates("resources/templates")
-	e.Static("/static", "resources/static")
+	cnc.Setup(e)
 
 	e.Start("localhost:8080")
 }

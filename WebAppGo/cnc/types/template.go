@@ -7,14 +7,9 @@ import (
 	"io"
 )
 
-type Template struct {
-	Name string
-	Tmpl *template.Template
-	//Single	bool
-}
-
 type TemplateRegistry struct {
-	Templates map[string]Template
+	Templates  map[string]*template.Template
+	EntryPoint string
 }
 
 func (t *TemplateRegistry) Render(w io.Writer, name string, data interface{}, c echo.Context) error {
@@ -22,5 +17,5 @@ func (t *TemplateRegistry) Render(w io.Writer, name string, data interface{}, c 
 	if !ok {
 		return fmt.Errorf("template not found: %s", name)
 	}
-	return tmpl.Tmpl.ExecuteTemplate(w, tmpl.Name, data)
+	return tmpl.ExecuteTemplate(w, t.EntryPoint, data)
 }
