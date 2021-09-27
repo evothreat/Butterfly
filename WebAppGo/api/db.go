@@ -11,9 +11,9 @@ import (
 
 var db *sql.DB
 
-func SetupDatabase(dbPath string) {
+func setupDatabase() {
 	var err error
-	db, err = sql.Open("mysql", dbPath)
+	db, err = sql.Open("mysql", DB_URL)
 	if err != nil {
 		panic(err)
 	}
@@ -61,7 +61,7 @@ func rowExists(query string, args ...interface{}) bool {
 
 // TODO: add rowCount(table string)
 
-func AddTestData() {
+func addTestData() {
 	w1 := models.Worker{
 		Id:       "C1vHa4fB9kukvA6ILps0kQ",
 		Hostname: "Predator",

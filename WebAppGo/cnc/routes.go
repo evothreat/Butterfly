@@ -2,7 +2,7 @@ package cnc
 
 import "github.com/labstack/echo/v4"
 
-func SetupRoutes(e *echo.Echo) {
+func setupRoutes(e *echo.Echo) {
 	g := e.Group("/cnc")
 
 	g.GET("/login", Login)

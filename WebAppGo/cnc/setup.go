@@ -7,6 +7,6 @@ import (
 
 func Setup(e *echo.Echo) {
 	e.Static("/static", path.Join(RESOURCE_DIR, "/static"))
-	e.Renderer = ParseTemplates()
-	SetupRoutes(e)
+	e.Renderer = parseTemplates()
+	setupRoutes(e)
 }

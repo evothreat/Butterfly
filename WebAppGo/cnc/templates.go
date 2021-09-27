@@ -6,7 +6,7 @@ import (
 	"path"
 )
 
-func ParseTemplates() *types.TemplateRegistry {
+func parseTemplates() *types.TemplateRegistry {
 	tmplDir := path.Join(RESOURCE_DIR, "/templates") + "/"
 	templates := map[string]*template.Template{}
 	templates["login"] = template.Must(template.ParseFiles(tmplDir + "login.html"))

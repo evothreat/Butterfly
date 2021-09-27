@@ -8,9 +8,6 @@ import (
 )
 
 func main() {
-	api.SetupDatabase("root:root@tcp(localhost:3306)/data?parseTime=true")
-	//api.AddTestData()
-
 	e := echo.New()
 	e.Debug = true
 
@@ -18,8 +15,7 @@ func main() {
 		Format: "method=${method}, uri=${uri}, status=${status}\n",
 	}))
 
-	api.SetupRoutes(e)
-
+	api.Setup(e)
 	cnc.Setup(e)
 
 	e.Start("localhost:8080")

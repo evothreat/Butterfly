@@ -4,7 +4,7 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-func SetupRoutes(e *echo.Echo) {
+func setupRoutes(e *echo.Echo) {
 	g := e.Group("/api")
 
 	g.GET("/workers", GetAllWorkers)        // OK

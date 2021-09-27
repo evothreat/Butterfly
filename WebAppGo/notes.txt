@@ -2,3 +2,5 @@
 - avoid using raw urls in code
     * export in constants (f.e. LOGIN_URL) or
     * export in methods
+
+- change uncapitalize unexported functions
