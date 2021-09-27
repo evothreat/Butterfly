@@ -1,1 +1,4 @@
-if render login page, the url will be wrong
+- if render login page, the url will be wrong
+- avoid using raw urls in code
+    * export in constants (f.e. LOGIN_URL) or
+    * export in methods
