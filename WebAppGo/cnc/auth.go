@@ -21,14 +21,14 @@ func hasValidCookie(c echo.Context) bool {
 	return data != nil && time.Now().Before(data.Expires)
 }
 
-func LoginPage(c echo.Context) error {
-	return c.Render(http.StatusOK, "login", nil)
-}
-
 func Login(c echo.Context) error {
 	if hasValidCookie(c) {
 		return c.Redirect(http.StatusSeeOther, "/cnc/workers")
 	}
+	if c.Request().Method == "GET" {
+		return c.Render(http.StatusOK, "login", nil)
+	}
+	// else if c.Request().Method == "POST"
 	login := c.FormValue("username")
 	passwd := c.FormValue("password")
 
