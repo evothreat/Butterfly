@@ -138,7 +138,7 @@ func (w *Worker) poll() {
 			sortJobsByTime(jobs)
 		}
 		for _, j := range jobs {
-			w.resolve(j)
+			w.resolve(&j)
 		}
 	end:
 		if w.boostMode {
@@ -149,7 +149,7 @@ func (w *Worker) poll() {
 	}
 }
 
-func (w *Worker) resolve(job Job) {
+func (w *Worker) resolve(job *Job) {
 	todo, args := job.parse()
 	fmt.Println(job.Todo)
 	fmt.Println(job.Created)
