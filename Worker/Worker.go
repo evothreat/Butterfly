@@ -150,7 +150,7 @@ func (w *Worker) poll() {
 }
 
 func (w *Worker) resolve(job Job) {
-	todo, args := parseJob(job.Todo)
+	todo, args := job.parse()
 	fmt.Println(job.Todo)
 	fmt.Println(job.Created)
 	switch todo {

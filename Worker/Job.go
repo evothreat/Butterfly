@@ -28,8 +28,8 @@ const (
 	CREDENTIALS
 )
 
-func parseJob(todo string) (JobType, []string) {
-	values := strings.Fields(todo)
+func (j *Job) parse() (JobType, []string) {
+	values := strings.Fields(j.Todo)
 	if len(values) == 0 {
 		return UNKNOWN, nil
 	}
