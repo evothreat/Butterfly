@@ -23,40 +23,6 @@ hw5 := HardwareInfo{
 	}
 
 ------------------------------------------------------------------------------------------
-type Worker struct {
-	Id       string    `json:"id" db:"id"`
-	Hostname string    `json:"hostname" db:"hostname"`
-	Country  string    `json:"country" db:"country"`
-	IpAddr   string    `json:"ip_addr" db:"ip_addr"`
-	Os       string    `json:"os" db:"os"`
-	IsAdmin  bool      `json:"is_admin" db:"is_admin"`
-	Boost    bool      `json:"boost" db:"boost"`
-	LastSeen time.Time `json:"last_seen" db:"last_seen"`
-}
-
-type HardwareInfo struct {
-	Gpu      string `json:"gpu" db:"gpu"`
-	Cpu      string `json:"cpu" db:"cpu"`
-	Ram      string `json:"ram" db:"ram"`
-	WorkerId string `json:"worker_id" db:"worker_id"`
-}
-
-
-
-type JobReport struct {
-	JobId  int    `json:"job_id" db:"job_id"`
-	Report string `json:"report" db:"report"`
-}
-
-type Upload struct {
-	Id       int       `json:"id" db:"id"`
-	Filename string    `json:"filename" db:"filename"`
-	Type     string    `json:"type" db:"type"`
-	Size     uint64    `json:"size" db:"size"`
-	Created  time.Time `json:"created" db:"created"`
-	WorkerId string    `json:"worker_id" db:"worker_id"`
-}
-
 func ValuesMapToWhere(valuesMap map[string]interface{}) (string, []interface{}) {
 	cols := ""
 	vals := make([]interface{}, 0, 15)
@@ -66,10 +32,6 @@ func ValuesMapToWhere(valuesMap map[string]interface{}) (string, []interface{}) 
 	}
 	cols = strings.TrimSuffix(cols, ",")
 	return cols, vals
-}
-
-type Row interface {
-	Scan(...interface{}) error
 }
 
 type RowScanner interface {
@@ -100,27 +62,6 @@ func ExecQuery(query string, args ...interface{}) (int64, error) {
 		return 0, err
 	}
 	return res.RowsAffected()
-}
-
-
-func RowToDict(r types.Row, colsStr string) (map[string]string, error) {
-	cols := strings.Split(colsStr, ",")
-	n := len(cols)
-	values := make([][]byte, n)
-	valuesPtr := make([]interface{}, n)
-	for i := 0; i < n; i++ {
-		valuesPtr[i] = &values[i]
-	}
-	if err := r.Scan(valuesPtr...); err != nil {
-		return nil, err
-	}
-	dict := make(map[string]string)
-	for i, c := range cols {
-		fmt.Println(values[i])
-		dict[c] = string(values[i])			// cant convert all values to string
-	}
-	fmt.Println(dict)
-	return dict, nil
 }
 
 func RowToDict(r types.Row, colsStr string) ([]byte, error) {
@@ -172,3 +113,24 @@ func RowToDict(r types.Row, colsStr string) (map[string]interface{}, error) {
 	fmt.Println(dict)
 	return dict, nil
 }
+------------------------------------------------------------------------------------------
+function setBoostMode(val) {
+    $('#boost').prop('checked', val);
+    updateWorkerAttrsApi({boost: val}, function () {
+        alert('Failed to update boost mode value!');
+    });
+}
+
+if (command.startsWith('boost')) {
+                            let argsStr = command.replace('boost ', '');
+                            if (argsStr.startsWith('on')) {
+                                setBoostMode(true);
+                            } else if (argsStr.startsWith('off')) {
+                                setBoostMode(false);
+                            } else {
+                                terminal.error('Wrong parameter for boost mode!');
+                                terminal.resume();
+                                return;
+                            }
+                            job.todo = command
+                        } else

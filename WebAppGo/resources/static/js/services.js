@@ -2,6 +2,7 @@ let currWorkerId;
 let workersTable,
     jobsTable,
     uploadsTable;
+let terminal;
 
 // BYTES TO HUMAN-READABLE
 // TODO: find faster alternative or store strings instead of integers
@@ -195,22 +196,22 @@ function createJobsTable() {
                 data: 'is_done',
                 title: 'Resolved',
                 render: function (data, type) {
-                        if (type === 'display' || type === 'filter') {
-                            return data ? 'yes' : 'no';
-                        }
-                        return data;
-                    },
+                    if (type === 'display' || type === 'filter') {
+                        return data ? 'yes' : 'no';
+                    }
+                    return data;
+                },
                 width: "10%"
             },
             {
                 data: 'created',
                 title: 'Created',
                 render: function (data, type) {
-                        if (type === 'display') {
-                                return data.slice(0, 19).replace('T', ' ');
-                        }
-                        return data;
-                    },
+                    if (type === 'display') {
+                        return data.slice(0, 19).replace('T', ' ');
+                    }
+                    return data;
+                },
                 width: "18%"
             },
             {
@@ -266,17 +267,15 @@ function removeJob(jobId) {
     });
 }
 
-function createJobApi(job, func) {
+function createJobApi(job, funcSucc, funcErr) {
     $.ajax({
         type: 'POST',
         url: `/api/workers/${currWorkerId}/jobs`,
         data: JSON.stringify(job),
         contentType: 'application/json',
         dataType: 'json',
-        success: func,
-        error: function () {
-            alert('Failed to create job!');
-        }
+        success: funcSucc,
+        error: funcErr
     });
 }
 
@@ -290,8 +289,11 @@ function submitNewJobDlg() {
         is_done: false
     };
     createJobApi(job, function (data) {
-        addJobToTable(data);
-    });
+            addJobToTable(data);
+        }, function () {
+            alert('Failed to create job!');
+        }
+    );
     hideModal('#new-job-dlg');
 }
 
@@ -335,11 +337,11 @@ function createUploadsTable() {
                 data: 'created',
                 title: 'Created',
                 render: function (data, type) {
-                        if (type === 'display') {
-                                return data.slice(0, 19).replace('T', ' ');
-                        }
-                        return data;
-                    },
+                    if (type === 'display') {
+                        return data.slice(0, 19).replace('T', ' ');
+                    }
+                    return data;
+                },
                 width: "22%"
             },
             {
@@ -418,44 +420,46 @@ function retrieveReport(jobId, funSucc, funcErr, n = 10) {
     })
 }
 
-function updateBoostMode(val) {
+function updateWorkerAttrsApi(attrs, funcErr) {
     $.ajax({
         url: `/api/workers/${currWorkerId}`,
         type: 'PATCH',
-        data: JSON.stringify({boost: val}),
+        data: JSON.stringify(attrs),
         contentType: 'application/json',
-        error: function () {
-            alert('Failed to update boost mode!');
-        }
+        error: funcErr
     });
 }
 
-function getBoostMode(func) {
+function getWorkerAttrsApi(attrs, funcSucc, funcErr) {
     $.ajax({
-        url: `/api/workers/${currWorkerId}?props=boost`,
+        url: `/api/workers/${currWorkerId}?props=${attrs.toString()}`,
         type: 'GET',
         dataType: 'json',
-        success: func,
-        error: function () {
-            alert('Failed to get boost mode!');
-        }
+        success: funcSucc,
+        error: funcErr
     });
 }
 
 function setupBoostToggle() {
     let boost = $('#boost');
 
-    getBoostMode(function (data) {
+    getWorkerAttrsApi(['boost'], function (data) {
         boost.prop('checked', data.boost);
+    }, function () {
+        alert('Failed to get boost mode value!');
     });
-    boost.change(function () {
+    boost.change(function () {                                              // TODO: click to onclick
         let val = $(this).is(':checked');
         createJobApi({
             todo: 'boost ' + (val ? 'on' : 'off'),
             is_done: false
         }, function (data) {
-            updateBoostMode(val);
+            updateWorkerAttrsApi({boost: val}, function () {
+                alert('Failed to update boost mode value!');
+            })
             addJobToTable(data);
+        }, function () {
+            alert('Failed to create job!');
         });
     })
 }

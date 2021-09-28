@@ -4,3 +4,5 @@
     * export in methods
 
 - change uncapitalize unexported functions
+
+- instead of imitating click on active tab, call functions directly?

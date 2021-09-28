@@ -12,7 +12,7 @@ func main() {
 	e.Debug = true
 
 	e.Use(middleware.LoggerWithConfig(middleware.LoggerConfig{
-		Format: "method=${method}, uri=${uri}, status=${status}\n",
+		Format: "${method}, ${uri}, ${status}\n",
 	}))
 
 	api.Setup(e)
