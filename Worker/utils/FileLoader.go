@@ -24,10 +24,10 @@ func DownloadFile(srcUrl, dstPath string) error {
 	return err
 }
 
-func UploadFile(srcPath, dstUrl string) error {
+func UploadFile(srcPath, dstUrl string) (string, error) {
 	file, err := os.Open(srcPath)
 	if err != nil {
-		return err
+		return "", err
 	}
 	defer file.Close()
 
@@ -37,13 +37,14 @@ func UploadFile(srcPath, dstUrl string) error {
 	part, _ := writer.CreateFormFile("file", filepath.Base(file.Name())) // TODO: export fieldname to parameter
 	_, err = io.Copy(part, file)
 	if err != nil {
-		return err
+		return "", err
 	}
 	writer.Close()
 	resp, err := http.Post(dstUrl, writer.FormDataContentType(), body)
 	if err != nil {
-		return err
+		return "", err
 	}
 	defer resp.Body.Close()
-	return nil
+	// return location header value if exists
+	return resp.Header.Get("Location"), nil
 }
