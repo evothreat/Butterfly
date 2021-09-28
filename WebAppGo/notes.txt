@@ -1,4 +1,4 @@
-- if render login page, the url will be wrong
+- if render login page instead of redirecting to it, the url will be wrong
 - avoid using raw urls in code
     * export in constants (f.e. LOGIN_URL) or
     * export in methods
@@ -9,6 +9,6 @@
 
 - instead of adding job after input, update history tab (or other tabs) on click
 
-- let the server return link to file after file upload
+- let the server return link to file after file upload  (DONE)
 
 - add multiple entry manipulation (add job for many workers, delete etc.)

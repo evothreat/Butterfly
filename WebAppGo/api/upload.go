@@ -42,7 +42,7 @@ func CreateUpload(c echo.Context) error {
 	if err != nil {
 		return err
 	}
-	_, err = db.Exec("INSERT INTO uploads(filename,type,size,created,worker_id) VALUES(?,?,?,?,?)",
+	res, err := db.Exec("INSERT INTO uploads(filename,type,size,created,worker_id) VALUES(?,?,?,?,?)",
 		fileName, fileType, fileSize, time.Now(), workerId)
 	if err != nil {
 		if isNoReferencedRowErr(err) {
@@ -51,6 +51,9 @@ func CreateUpload(c echo.Context) error {
 		}
 		return err
 	}
+	uploadId, _ := res.LastInsertId()
+	// TODO: avoid raw url strings
+	c.Response().Header().Set(echo.HeaderLocation, fmt.Sprintf("/api/workers/%s/uploads/%d", workerId, uploadId))
 	return c.NoContent(http.StatusCreated)
 }
 
