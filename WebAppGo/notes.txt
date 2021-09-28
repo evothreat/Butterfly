@@ -6,3 +6,9 @@
 - change uncapitalize unexported functions
 
 - instead of imitating click on active tab, call functions directly?
+
+- instead of adding job after input, update history tab (or other tabs) on click
+
+- let the server return link to file after file upload
+
+- add multiple entry manipulation (add job for many workers, delete etc.)

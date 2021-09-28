@@ -280,7 +280,9 @@ function createJobApi(job, funcSucc, funcErr) {
 }
 
 function addJobToTable(job) {
-    jobsTable.row.add(job).draw(false);
+    if (jobsTable != null) {
+        jobsTable.row.add(job).draw(false);
+    }
 }
 
 function submitNewJobDlg() {

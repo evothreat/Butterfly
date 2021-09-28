@@ -56,29 +56,29 @@
                         if (command === '') {
                             return;
                         }
-                        const jobTypes = ['upload', 'download', 'chdir'];
+                        const jobTypes = ['upload', 'download', 'chdir', 'sleep'];
                         let job = {todo: '', is_done: false};
                         if (jobTypes.some(t => command.startsWith(t))) {
-                            job.todo = command
+                            job.todo = command;
                         } else {
-                            job.todo = 'cmd ' + command
+                            job.todo = 'cmd ' + command;
                         }
-                        createJobApi(job, function (res) {
-                            retrieveReport(res.id, rep => {
+                        createJobApi(job, function (data) {
+                            retrieveReport(data.id, rep => {
                                 terminal.echo(rep);
                                 terminal.resume();
                             }, function () {
                                 terminal.error('Failed to retrieve report!');
                                 terminal.resume();
                             });
-                            addJobToTable(job);
+                            addJobToTable(data);
                         }, function () {
                             terminal.error('Failed to create job!');
                             terminal.resume();
                         });
                     }, {
                     greetings: 'Welcome to butterfly!',
-                    height: 600
+                    height: 570
                 });
             });
             $('.active-tab').trigger('click');
