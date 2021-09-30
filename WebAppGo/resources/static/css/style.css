@@ -14,7 +14,7 @@ button {
 #body-content {
     margin: auto;
     width: 70%;
-    padding-top: 7px;
+    padding: 0;
 }
 
 .action-btn {
@@ -194,7 +194,7 @@ button {
 
 .tab-body {
     display: none;
-    padding-top: 12px;
+    /*padding-top: 12px;*/
     /*height: 100%;*/
 }
 
@@ -231,8 +231,8 @@ button {
 .toggle {
   position: relative;
   display: inline-block;
-  width: 65px;
-  height: 25px;
+  width: 62px;
+  height: 22px;
 }
 
 .slider {
@@ -262,19 +262,26 @@ button {
 
 .toggle input:checked + .slider::before { left: 50%; }
 
-.titled-toggle {
+.titled-items, .titled-it {
     display: flex;
     align-items: center;
 }
-.titled-toggle p {
-    margin: 6px 8px 9px 0;
+
+.titled-items {
+    justify-content: space-between;
+    height: 40px;
 }
 
-.table-head {
+.it-title {
+    margin-right: 10px;
+}
+
+.table-bar {
     display: flex;
+    align-items: center;
+    margin-top: 12px;
 }
 
-.table-head button {
-    margin-bottom: 10px;
+.table-bar button {
     margin-right: 10px;
 }

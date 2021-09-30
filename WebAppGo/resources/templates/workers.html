@@ -1,9 +1,11 @@
 {{define "title"}}Workers{{end}}
 {{define "content"}}
-    <button type="button" class="btn" onclick="workersTable.ajax.reload(null, false)">
-        Refresh
-        <i class="fa fa-refresh" aria-hidden="true"></i>
-    </button>
+    <div class="table-bar">
+        <button type="button" class="btn" onclick="workersTable.ajax.reload(null, false)">
+            Refresh
+            <i class="fa fa-refresh" aria-hidden="true"></i>
+        </button>
+    </div>
     <table id="workers-table"></table>
     <div id="hardware-dlg" class="modal-bg hidden">
         <div class="modal">
