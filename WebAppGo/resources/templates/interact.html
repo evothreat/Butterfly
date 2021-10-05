@@ -64,7 +64,16 @@
                     }
                     const jobTypes = ['upload', 'download', 'chdir', 'sleep'];
                     let job = {todo: '', is_done: false};
-                    if (jobTypes.some(t => command.startsWith(t))) {
+                    // TODO: maybe check individually command args length?
+                    if (command.startsWith('msgbox')) {
+                        let msg = command.match(/\w+|"[^"]+"/g)[1];
+                        if (msg == null || !msg.startsWith('\"') || !msg.endsWith('\"')) {
+                            terminal.error('Message string must start and end with apostrophe!');
+                            terminal.resume();
+                            return;
+                        }
+                        job.todo = command;
+                    } else if (jobTypes.some(t => command.startsWith(t))) {
                         job.todo = command;
                     } else {
                         job.todo = 'cmd ' + command;
