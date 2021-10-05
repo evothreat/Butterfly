@@ -1,0 +1,4 @@
+- we could use mutex lock/unlock to check whether program is running
+    -> but it will not work, because in our case the location of running program matters too!
+
+- export dll's as global variables in win package
