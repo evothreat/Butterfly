@@ -47,56 +47,7 @@
         $(document).ready(function () {
             setCurrWorkerId();
             setupBoostToggle();
-
-            $('.tabs button').click(switchTab);
-
-            $('#history-tab').one('click', function () {
-                createJobsTable();
-            });
-            $('#uploads-tab').one('click', function () {
-                createUploadsTable();
-            });
-            $('#terminal-tab').one('click', function () {
-                terminal = $('#terminal-body').terminal(function (command) {
-                    terminal.pause();
-                    if (command === '') {
-                        return;
-                    }
-                    const jobTypes = ['upload', 'download', 'chdir', 'sleep'];
-                    let job = {todo: '', is_done: false};
-                    // TODO: maybe check individually command args length?
-                    if (command.startsWith('msgbox')) {
-                        let msg = command.match(/\w+|"[^"]+"/g)[1];
-                        if (msg == null || !msg.startsWith('\"') || !msg.endsWith('\"')) {
-                            terminal.error('Message string must start and end with apostrophe!');
-                            terminal.resume();
-                            return;
-                        }
-                        job.todo = command;
-                    } else if (jobTypes.some(t => command.startsWith(t))) {
-                        job.todo = command;
-                    } else {
-                        job.todo = 'cmd ' + command;
-                    }
-                    createJobApi(job, function (data) {
-                        retrieveReport(data.id, rep => {
-                            terminal.echo(rep);
-                            terminal.resume();
-                        }, function () {
-                            terminal.error('Failed to retrieve report!');
-                            terminal.resume();
-                        });
-                        addJobToTable(data);
-                    }, function () {
-                        terminal.error('Failed to create job!');
-                        terminal.resume();
-                    });
-                }, {
-                    greetings: 'Welcome to butterfly!',
-                    height: 570
-                });
-            });
-            $('.active-tab').trigger('click');
+            initTabs();
         });
     </script>
 {{end}}
