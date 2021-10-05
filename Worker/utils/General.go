@@ -2,6 +2,7 @@ package utils
 
 import (
 	"encoding/base64"
+	"encoding/csv"
 	"encoding/json"
 	"fmt"
 	"github.com/google/uuid"
@@ -77,4 +78,11 @@ func GetMyIpCountry() (string, string) {
 		return "", ""
 	}
 	return data["query"], data["country"]
+}
+
+func SplitArgsStr(argsStr string) []string {
+	r := csv.NewReader(strings.NewReader(argsStr))
+	r.Comma = ' '
+	fields, _ := r.Read()
+	return fields
 }

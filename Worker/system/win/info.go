@@ -60,16 +60,14 @@ func GetTotalRam() (uint64, error) {
 		return 0, err
 	}
 	defer user32dll.Release()
-	globalMemoryStatusEx, _ := user32dll.FindProc("GlobalMemoryStatusEx")
 	msx := &MemoryStatusEx{
 		dwLength: 64,
 	}
-	r, _, _ := globalMemoryStatusEx.Call(uintptr(unsafe.Pointer(msx)))
+	r, _, err := user32dll.MustFindProc("GlobalMemoryStatusEx").Call(uintptr(unsafe.Pointer(msx)))
 	if r == 0 {
-		return 0, nil
+		return 0, err
 	}
 	return msx.ullTotalPhys, nil
 }
 
 // Maybe implement Disc Drives/Free Space (hint: GetLogicalDrives, GetDiskFreeSpaceEx)
-// add MessageBox show
