@@ -2,7 +2,6 @@ package utils
 
 import (
 	"encoding/base64"
-	"encoding/csv"
 	"encoding/json"
 	"fmt"
 	"github.com/google/uuid"
@@ -81,8 +80,35 @@ func GetMyIpCountry() (string, string) {
 }
 
 func SplitArgsStr(argsStr string) []string {
-	r := csv.NewReader(strings.NewReader(argsStr))
-	r.Comma = ' '
-	fields, _ := r.Read()
-	return fields
+	var args []string
+	quoted := false
+	startPos := 0
+	n := len(argsStr)
+	for i := 1; i < n; i++ {
+		prev := argsStr[i-1]
+		if prev == '"' {
+			if quoted {
+				args = append(args, argsStr[startPos:i-1])
+				quoted = false
+				startPos = i + 1
+			} else {
+				quoted = true
+				startPos = i
+			}
+		} else if argsStr[i] == ' ' && !quoted {
+			if prev != ' ' {
+				args = append(args, argsStr[startPos:i])
+				startPos = i
+			}
+			startPos++
+		}
+	}
+	if n > 0 {
+		if argsStr[n-1] == '"' {
+			args = append(args, argsStr[startPos:n-1])
+		} else {
+			args = append(args, argsStr[startPos:n])
+		}
+	}
+	return args
 }
