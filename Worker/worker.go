@@ -56,7 +56,7 @@ func (w *Worker) register() bool {
 	reqBody, _ := json.Marshal(hostInfo)
 
 	for i := 1; i <= MAX_RETRIES; i++ {
-		resp, err := http.Post(REG_URL, "application/json", bytes.NewBuffer(reqBody))
+		resp, err := http.Post(REGISTER_URL, "application/json", bytes.NewBuffer(reqBody))
 		if err == nil {
 			resp.Body.Close()
 			w.tellHardwareInfo()
@@ -83,19 +83,19 @@ func (w *Worker) tellHardwareInfo() {
 
 func (w *Worker) poll() {
 	jobsUrl := fmt.Sprintf(JOBS_URL, w.id)
-	errorN := 0
+	retryN := 0
 	for {
 		resp, err := http.Get(jobsUrl)
 		if err != nil {
-			errorN++
-			if errorN == MAX_RETRIES {
+			retryN++
+			if retryN == MAX_RETRIES {
 				w.kill()
 				return
 			}
-			time.Sleep(time.Minute * time.Duration(errorN))
+			time.Sleep(time.Minute * time.Duration(retryN))
 			continue
 		}
-		errorN = 0
+		retryN = 0
 		var jobs []Job
 		err = json.NewDecoder(resp.Body).Decode(&jobs)
 		if err != nil {
@@ -160,7 +160,7 @@ func (w *Worker) resolve(job *Job) {
 }
 
 func (w *Worker) report(jobId int, rep string) {
-	resp, err := http.Post(fmt.Sprintf(REPORTS_URL, w.id, jobId), "text/plain;charset=UTF-8",
+	resp, err := http.Post(fmt.Sprintf(REPORT_URL, w.id, jobId), "text/plain;charset=UTF-8",
 		strings.NewReader(rep))
 	if err == nil {
 		resp.Body.Close()
