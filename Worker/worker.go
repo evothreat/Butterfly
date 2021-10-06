@@ -133,7 +133,6 @@ func (w *Worker) poll() {
 			fmt.Println(err)
 			goto end
 		}
-		// TODO: sort jobs by create time
 		if len(jobs) > 1 {
 			sortJobsByTime(jobs)
 		}
@@ -155,10 +154,7 @@ func (w *Worker) resolve(job *Job) {
 	var err error
 	switch todo {
 	case SHELL_CMD:
-		output, err := win.ExecuteCommand(args...)
-		if err == nil {
-			w.report(job.Id, output)
-		}
+		w.report(job.Id, win.ExecuteCommand(args...))
 	case BOOST:
 		w.boostMode = args[0] == "on" // TODO: check inside parseJob whether args are correct
 		w.report(job.Id, "Boost mode changed.")
@@ -185,7 +181,7 @@ func (w *Worker) resolve(job *Job) {
 			w.report(job.Id, "Directory changed to "+args[0])
 		}
 	case MSG_BOX:
-		go win.ShowInfoDialog(args[0], args[1])
+		win.ShowInfoDialog(args[0], args[1])
 		w.report(job.Id, "Message shown successfully.")
 	case UNKNOWN:
 		w.report(job.Id, "Received job has wrong format.")
