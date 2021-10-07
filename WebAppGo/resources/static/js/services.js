@@ -3,7 +3,16 @@ let workersTable,
     jobsTable,
     uploadsTable;
 let terminal;
-
+const jobTypesMap = {
+    'upload': 1,
+    'download': 2,
+    'sleep': 1,
+    'boost': 1,
+    'chdir': 1,
+    'msg': 2,
+    'shot': 0,
+}
+//['upload', 'download', 'chdir', 'sleep', 'shot'];
 // BYTES TO HUMAN-READABLE
 // TODO: find faster alternative or store strings instead of integers
 function formatBytes(bytes, decimals = 2) {
@@ -17,6 +26,40 @@ function formatBytes(bytes, decimals = 2) {
 
 function isQuoted(s) {
     return s.startsWith('"') && s.endsWith('"')
+}
+
+function splitArgsStr(argsStr) {
+    let args = [];
+    let quoted = false;
+    let begin = 0;
+    let n = argsStr.length;
+    for (let i = 1; i < n; i++) {
+        let prev = argsStr[i-1];
+        if (prev === '"') {
+            if (quoted) {
+                args.push(argsStr.slice(begin, i-1));
+                quoted = false;
+                begin = i + 1;
+            } else {
+                quoted = true;
+                begin = i;
+            }
+        } else if (argsStr[i] === ' ' && !quoted) {
+            if (prev !== ' ') {
+                args.push(argsStr.slice(begin, i));
+                begin = i;
+            }
+            begin++;
+        }
+    }
+    if (n > 0) {
+        if (argsStr[n-1] === '"') {
+            args.push(argsStr.slice(begin, n-1));
+        } else {
+            args.push(argsStr.slice(begin, n));
+        }
+    }
+    return args;
 }
 
 // MODAL
@@ -418,7 +461,7 @@ function retrieveReport(jobId, funSucc, funcErr, n = 10) {
             if (n > 1) {
                 setTimeout(function () {
                     retrieveReport(jobId, funSucc, funcErr, n - 1);
-                }, 5000);
+                }, 4000);
             } else {
                 funcErr(xhr, stat, error);
             }
@@ -485,18 +528,15 @@ function initTabs() {
             if (command === '') {
                 return;
             }
-            const jobTypes = ['upload', 'download', 'chdir', 'sleep', 'shot'];
             let job = {todo: '', is_done: false};
-
-            if (command.startsWith('msgbox')) {
-                let vals = command.match(/\w+|"[^"]+"/g);
-                if (vals.length < 3 || !isQuoted(vals[1]) && !isQuoted(vals[2])) {
-                    terminal.error("Wrong command syntax!");
+            let args = splitArgsStr(command);
+            let n = jobTypesMap[args[0]];
+            if (n !== null) {
+                if (n !== args.length-1) {
+                    terminal.error("Not enough or too much args passed!");
                     terminal.resume();
                     return;
                 }
-                job.todo = command;
-            } else if (jobTypes.some(t => command.startsWith(t))) {
                 job.todo = command;
             } else {
                 job.todo = 'cmd ' + command;
