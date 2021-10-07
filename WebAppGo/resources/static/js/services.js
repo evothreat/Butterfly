@@ -524,11 +524,11 @@ function initTabs() {
     });
     $('#terminal-tab').one('click', function () {
         terminal = $('#terminal-body').terminal(function (command) {
-            terminal.pause();
             if (command === '') {
                 return;
             }
-            let job = {todo: '', is_done: false};
+            terminal.pause();
+            let job = {todo: null, is_done: false};
             let args = splitArgsStr(command);
             let n = jobTypesMap[args[0]];
             if (n !== null) {
