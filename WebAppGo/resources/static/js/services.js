@@ -10,7 +10,7 @@ const jobTypesMap = {
     'boost': 1,
     'chdir': 1,
     'msg': 2,
-    'shot': 0,
+    'shot': 0
 }
 //['upload', 'download', 'chdir', 'sleep', 'shot'];
 // BYTES TO HUMAN-READABLE
@@ -533,7 +533,7 @@ function initTabs() {
             let argsN = jobTypesMap[args.shift()];          // or use simply args[0]
             if (argsN != null) {
                 if (argsN !== args.length) {
-                    terminal.error("Not enough or too much args passed!");
+                    terminal.error('Not enough or too much args passed!');
                     terminal.resume();
                     return;
                 }
