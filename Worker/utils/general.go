@@ -79,6 +79,7 @@ func GetMyIpCountry() (string, string) {
 	return data["query"], data["country"]
 }
 
+// TODO: implement this in services.js
 func SplitArgsStr(argsStr string) []string {
 	var args []string
 	quoted := false

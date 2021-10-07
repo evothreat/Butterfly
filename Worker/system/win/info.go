@@ -55,11 +55,10 @@ func GetMachineGuid() (string, error) {
 }
 
 func GetTotalRam() (uint64, error) {
-	user32dll, err := windows.LoadDLL("kernel32.dll")
+	user32dll, err := windows.LoadDLL("kernel32.dll") // TODO: export in own file
 	if err != nil {
 		return 0, err
 	}
-	defer user32dll.Release()
 	msx := &MemoryStatusEx{
 		dwLength: 64,
 	}
