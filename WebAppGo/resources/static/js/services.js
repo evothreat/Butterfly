@@ -530,9 +530,9 @@ function initTabs() {
             terminal.pause();
             let job = {todo: null, is_done: false};
             let args = splitArgsStr(command);
-            let n = jobTypesMap[args[0]];
-            if (n != null) {
-                if (n !== args.length-1) {
+            let argsN = jobTypesMap[args.shift()];          // or use simply args[0]
+            if (argsN != null) {
+                if (argsN !== args.length) {
                     terminal.error("Not enough or too much args passed!");
                     terminal.resume();
                     return;
