@@ -17,7 +17,7 @@ type MemoryStatusEx struct {
 func GetOsName() (string, error) {
 	k, err := registry.OpenKey(registry.LOCAL_MACHINE, `SOFTWARE\Microsoft\Windows NT\CurrentVersion`, registry.QUERY_VALUE)
 	if err != nil {
-		return "", err // TODO: handle all errors! Return error message! Write to report
+		return "", err
 	}
 	defer k.Close()
 	res, _, _ := k.GetStringValue("ProductName")

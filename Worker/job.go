@@ -27,7 +27,7 @@ const (
 	KEYLOGGER
 	DDOS
 	CREDENTIALS
-	MSG_BOX
+	MSG
 )
 
 func (j *Job) parse() (JobType, []string) {
@@ -51,8 +51,8 @@ func (j *Job) parse() (JobType, []string) {
 		return BOOST, jobArgs
 	} else if jobType == "chdir" && n == 1 {
 		return CHDIR, jobArgs
-	} else if jobType == "msgbox" && n == 2 {
-		return MSG_BOX, jobArgs
+	} else if jobType == "msg" && n == 2 {
+		return MSG, jobArgs
 	} else if jobType == "shot" {
 		return SCREENSHOT, nil
 	}

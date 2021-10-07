@@ -79,36 +79,35 @@ func GetMyIpCountry() (string, string) {
 	return data["query"], data["country"]
 }
 
-// TODO: implement this in services.js
 func SplitArgsStr(argsStr string) []string {
 	var args []string
 	quoted := false
-	startPos := 0
+	begin := 0
 	n := len(argsStr)
 	for i := 1; i < n; i++ {
 		prev := argsStr[i-1]
 		if prev == '"' {
 			if quoted {
-				args = append(args, argsStr[startPos:i-1])
+				args = append(args, argsStr[begin:i-1])
 				quoted = false
-				startPos = i + 1
+				begin = i + 1
 			} else {
 				quoted = true
-				startPos = i
+				begin = i
 			}
 		} else if argsStr[i] == ' ' && !quoted {
 			if prev != ' ' {
-				args = append(args, argsStr[startPos:i])
-				startPos = i
+				args = append(args, argsStr[begin:i])
+				begin = i
 			}
-			startPos++
+			begin++
 		}
 	}
 	if n > 0 {
 		if argsStr[n-1] == '"' {
-			args = append(args, argsStr[startPos:n-1])
+			args = append(args, argsStr[begin:n-1])
 		} else {
-			args = append(args, argsStr[startPos:n])
+			args = append(args, argsStr[begin:n])
 		}
 	}
 	return args

