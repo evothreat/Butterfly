@@ -125,7 +125,11 @@ func (w *Worker) resolve(job *Job) error {
 	fmt.Println(job.Todo)
 	switch todo {
 	case SHELL_CMD:
-		w.report(job.Id, win.ExecuteCommand(args...))
+		if output := win.ExecuteCommand(args...); output != "" {
+			w.report(job.Id, output)
+			return nil
+		}
+		w.report(job.Id, "Command executed successfully.")
 	case BOOST:
 		w.boostMode = args[0] == "on" // TODO: check inside parseJob whether args are correct
 		w.report(job.Id, "Boost mode changed.")

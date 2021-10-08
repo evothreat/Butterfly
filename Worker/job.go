@@ -21,13 +21,10 @@ func (j *Job) parse() (JobType, []string) {
 	jobType := values[0]
 	jobArgs := values[1:]
 	jobTypeInfo, ok := jobTypesMap[jobType]
-	if !ok {
+	if !ok || !(jobTypeInfo.argsN == -1 || jobTypeInfo.argsN == len(jobArgs)) {
 		return UNKNOWN, nil
 	}
-	if jobTypeInfo.argsN == -1 || jobTypeInfo.argsN == len(jobArgs) {
-		return jobTypeInfo.jtype, jobArgs
-	}
-	return UNKNOWN, nil
+	return jobTypeInfo.jtype, jobArgs
 }
 
 func sortJobsByTime(jobs []Job) {
