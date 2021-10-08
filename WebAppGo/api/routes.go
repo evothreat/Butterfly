@@ -7,11 +7,11 @@ import (
 func setupRoutes(e *echo.Echo) {
 	g := e.Group("/api")
 
-	g.GET("/workers", GetAllWorkers)        // OK
-	g.POST("/workers", CreateWorker)        // OK
-	g.GET("/workers/:wid", GetWorker)       // OK
-	g.DELETE("/workers/:wid", DeleteWorker) // OK
-	g.PATCH("/workers/:wid", UpdateWorker)  // OK
+	g.GET("/workers", GetAllWorkers)  // OK
+	g.POST("/workers", CreateWorker)  // OK
+	g.GET("/workers/:wid", GetWorker) // OK
+	/*g.DELETE("/workers/:wid", DeleteWorker) // OK*/
+	g.PATCH("/workers/:wid", UpdateWorker) // OK
 
 	g.GET("/workers/:wid/jobs", GetAllJobs)
 	g.POST("/workers/:wid/jobs", CreateJob)        // OK

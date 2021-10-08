@@ -69,7 +69,7 @@ func CreateWorker(c echo.Context) error {
 	return c.NoContent(http.StatusCreated)
 }
 
-func DeleteWorker(c echo.Context) error {
+/*func DeleteWorker(c echo.Context) error {
 	res, err := db.Exec("DELETE FROM workers WHERE id=?", c.Param("wid"))
 	if err != nil {
 		return err
@@ -79,7 +79,7 @@ func DeleteWorker(c echo.Context) error {
 	}
 	os.Remove(filepath.Join(UPLOADS_DIR, c.Param("wid")))
 	return c.NoContent(http.StatusOK)
-}
+}*/
 
 func UpdateWorker(c echo.Context) error {
 	var w models.Worker
