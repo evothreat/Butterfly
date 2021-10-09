@@ -55,7 +55,6 @@ func (w *Worker) register() bool {
 	hostInfo.IpAddr, hostInfo.Country = utils.GetMyIpCountry()
 
 	reqBody, _ := json.Marshal(hostInfo)
-
 	for i := 1; i <= MAX_RETRIES; i++ {
 		resp, err := http.Post(REGISTER_URL, "application/json", bytes.NewBuffer(reqBody))
 		if err == nil {
@@ -107,7 +106,8 @@ func (w *Worker) poll() {
 			sortJobsByTime(jobs)
 		}
 		for _, j := range jobs {
-			if err := w.resolve(&j); err != nil {
+			err = w.resolve(&j)
+			if err != nil {
 				w.report(j.Id, err.Error())
 			}
 		}
