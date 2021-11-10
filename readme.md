@@ -92,7 +92,7 @@ Root path is /api
 
 #### Workers
 
-![alt text](https://gitlab.com/capcode/butterfly/-/raw/master/screenshots/filter.png)
+![alt text](https://gitlab.com/capcode/butterfly/-/raw/master/screenshots/workers.png)
 
 #### Hardware Info
 ![alt text](https://gitlab.com/capcode/butterfly/-/raw/master/screenshots/hardware_info.png)
