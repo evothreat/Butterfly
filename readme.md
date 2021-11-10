@@ -92,15 +92,15 @@ Root path is /api
 
 #### Workers
 
-![alt text](https://gitlab.com/capcode/butterfly/-/raw/cb6e64b1d5104bf3d862ca6bbb7a1e547e300c27/screenshots/workers.png)
+![alt text](https://gitlab.com/capcode/butterfly/-/raw/master/screenshots/filter.png)
 
 #### Hardware Info
-![alt text](https://gitlab.com/capcode/butterfly/-/raw/cb6e64b1d5104bf3d862ca6bbb7a1e547e300c27/screenshots/hardware_info.png)
+![alt text](https://gitlab.com/capcode/butterfly/-/raw/master/screenshots/hardware_info.png)
 #### History
-![alt text](https://gitlab.com/capcode/butterfly/-/raw/cb6e64b1d5104bf3d862ca6bbb7a1e547e300c27/screenshots/history.png)
+![alt text](https://gitlab.com/capcode/butterfly/-/raw/master/screenshots/history.png)
 #### Filter jobs
-![alt text](https://gitlab.com/capcode/butterfly/-/raw/cb6e64b1d5104bf3d862ca6bbb7a1e547e300c27/screenshots/filter.png)
+![alt text](https://gitlab.com/capcode/butterfly/-/raw/master/screenshots/filter.png)
 #### Uploads
-![alt text](https://gitlab.com/capcode/butterfly/-/raw/cb6e64b1d5104bf3d862ca6bbb7a1e547e300c27/screenshots/uploads.png)
+![alt text](https://gitlab.com/capcode/butterfly/-/raw/master/screenshots/uploads.png)
 #### Terminal
-![alt text](https://gitlab.com/capcode/butterfly/-/raw/cb6e64b1d5104bf3d862ca6bbb7a1e547e300c27/screenshots/terminal.png)
+![alt text](https://gitlab.com/capcode/butterfly/-/raw/master/screenshots/terminal.png)
