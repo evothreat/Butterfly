@@ -86,6 +86,8 @@ Root path is /api
 
 ### ToDo
 -   File explorer.
+-   Program explorer.
+-   Multi-user control (via. "owner"-field in workers table).
 -   Show Network Packets in real time.
 
 ### Screenshots
