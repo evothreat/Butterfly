@@ -94,15 +94,15 @@ Root path is /api
 
 #### Workers
 
-![alt text](https://gitlab.com/evothreat/butterfly/-/raw/master/screenshots/workers.png)
+![alt text](./screenshots/workers.png)
 
 #### Hardware Info
-![alt text](https://gitlab.com/evothreat/butterfly/-/raw/master/screenshots/hardware_info.png)
+![alt text](./screenshots/hardware_info.png)
 #### History
-![alt text](https://gitlab.com/evothreat/butterfly/-/raw/master/screenshots/history.png)
+![alt text](./screenshots/history.png)
 #### Filter jobs
-![alt text](https://gitlab.com/evothreat/butterfly/-/raw/master/screenshots/filter.png)
+![alt text](./screenshots/filter.png)
 #### Uploads
-![alt text](https://gitlab.com/evothreat/butterfly/-/raw/master/screenshots/uploads.png)
+![alt text](./screenshots/uploads.png)
 #### Terminal
-![alt text](https://gitlab.com/evothreat/butterfly/-/raw/master/screenshots/terminal.png)
+![alt text](./screenshots/terminal.png)
