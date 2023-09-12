@@ -1,6 +1,6 @@
 # Butterfly
 
-Software, that allows you  to control remote PCs using HTTP/S protocol.
+An advanced tool that allows for remote management of computers using the HTTP/S protocol by coordinating the distribution of tasks and offering an intuitive interface to view their results.
 
 ### Project structure
 
