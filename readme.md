@@ -6,7 +6,7 @@ An advanced tool that allows for remote management of computers using the HTTP/S
 
 -   WebAppGo - Contains REST API and CNC (Command & Control) written in golang.
 -   WebAppPy - Contains REST API and CNC  written in python.
--   Worker - Contains client that will be started on remote PC. Written in golang.
+-   Worker - Contains client that will be started on remote computer. Written in golang.
 
 ### How it works?
 
